@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
+@import "tailwindcss";
+@source "@/app/cat/[slug]/*";
+@source "@/app/components/*";
+
+:root {
+  --spacing: 1px;
+  --font-roboto: Roboto;
+  --white: #fff;
+  --black: #000;
+  --primary: #902677;
+  --primary-dark: #89186E;
+  --text: #8A186E;
+  --pink: #CE25A6;
+}
+
+
+body {
+  background: var(--white);
+  color: var(--black);
+  font-family: var(--font-roboto);
+}

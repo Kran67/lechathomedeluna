@@ -148,12 +148,6 @@ export default function Property({ slug }: CatProps) {
                         <div className="flex flex-col gap-32">
                             <div className="flex flex-col gap-16">
                                 <span className="text-2xl text-(--text)">{cat?.name}</span>
-                                <IconButton
-                                    icon={IconButtonImages.Location}
-                                    imgWidth={10}
-                                    imgHeight={12}
-                                    text={cat?.location}
-                                    className="gap-14 text-sm text-(--text) font-normal cursor-default!" />
                             </div>
                             <p className="text-sm text-(--text) font-normal whitespace-break-spaces">{cat?.description}</p>
                         </div>

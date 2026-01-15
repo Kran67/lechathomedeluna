@@ -2,7 +2,9 @@ export enum HeaderMenuItems {
     Home,
     About,
     Messaging,
-    Adoption
+    Adoption,
+    Login,
+    Logout
 }
 
 export enum LogoSizes {

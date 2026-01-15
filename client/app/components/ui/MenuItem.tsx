@@ -13,6 +13,7 @@ interface MenuItemProps {
     isActive?: boolean;
     url: string;
     className?: string;
+    onClick?: () => void;
 }
 
 /**
@@ -24,11 +25,13 @@ interface MenuItemProps {
  * @param {boolean?} MenuItemProps.isActive - Statut de l'élément actif ou non actif
  * @param {string?} MenuItemProps.url - Url de redirection lors du clique sur l'élément
  * @param {string?} MenuItemProps.className - Classes css de l'élément
+ * @param {function?} MenuItemProps.onClick - Function à executer sur le clique du lien avant redirection si elle est passée
  */
-export default function MenuItem({ text, isActive = false, url, className }: MenuItemProps) {
+export default function MenuItem({ text, isActive = false, url, className, onClick }: MenuItemProps) {
     const router: AppRouterInstance = useRouter();
 
     const handleClick: () => void = () => {
+        onClick?.();
         router.push(url);
     };
 

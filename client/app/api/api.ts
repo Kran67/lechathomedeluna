@@ -51,7 +51,7 @@ export const getCat = cache(async (id: string) => {
 export const getProfile = cache(async (id: string) => {
     const cookieStore = await cookies();
     const token: string | undefined = cookieStore.get("token")?.value;
-    console.log(id);
+
     if (process.env.NEXT_PUBLIC_MOCK_MODE === "true") {
         return usersMock.find((u) => u.id === id);
     } else {

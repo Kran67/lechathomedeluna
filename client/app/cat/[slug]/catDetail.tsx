@@ -13,6 +13,7 @@ import { catService } from "@/app/services/catService";
 import Carousel from "@/app/components/data/Carousel";
 import { createPortal } from "react-dom";
 import { prepareBodyToShowModal } from "@/app/lib/utils";
+import { useUser } from "@/app/contexts/userContext";
 
 /**
  * Interface pour les chats d'initialisation d'un chat
@@ -31,6 +32,7 @@ interface CatProps {
  * @param { string } slug - Identifiant du chat
  */
 export default function Property({ slug }: CatProps) {
+    const { user } = useUser();
     // on va chercher le chat
     const { cat, error } = catService(slug);
     // si le chat n'a pas été trouvée, on redirige vers la page 404
@@ -59,13 +61,14 @@ export default function Property({ slug }: CatProps) {
                 )}
             <Header />
             <div className="flex flex-col w-full gap-10 lg:gap-24 lg:w-970 px-16 pb-80 lg:px-0 lg:pb-0">
-                <div className="lg:flex lg:flex-row lg:gap-10 w-full lg:py-16 lg:px-7 border-b-0 lg:border-b-1 border-solid border-b-(--light-grey)">
+                <div className="lg:flex lg:flex-row lg:gap-10 w-full lg:py-16 lg:px-7 border-b-0 lg:border-b-1 border-solid border-b-(--pink)">
                     <IconButton
                         icon={IconButtonImages.LeftArrow}
                         imgWidth={8}
                         imgHeight={6}
                         text="Retour aux chats"
                         url="/"
+                        svgFill="#902677"
                         className="text-sm text-(--text) gap-5 bg-(--white) rounded-[10px] py-8 px-16 w-189" />
                 </div>
                 <div className="flex flex-col lg:flex-row gap-10 w-full lg:flex-wrap">
@@ -154,6 +157,7 @@ export default function Property({ slug }: CatProps) {
                             </div>
                             <p className="text-sm text-(--text) font-normal whitespace-break-spaces">{cat?.description}</p>
                         </div>
+                        <CollapseElement title="Informations" content={[`${cat?.age} an(s)`, cat?.sex, cat?.dress, cat?.status]} />
                     </div>
                 </div>
             </div>

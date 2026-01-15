@@ -6,7 +6,6 @@ import Logo from "@/app/components/ui/Logo";
 import MenuItem from "@/app/components/ui/MenuItem";
 import Link from "@/app/components/ui/Link";
 import IconButton from "@/app/components/ui/IconButton";
-import Button from "@/app/components/ui/Button";
 import { useUser } from "@/app/contexts/userContext";
 import { Cookies, useCookies } from 'next-client-cookies';
 import { prepareBodyToShowModal } from "@/app/lib/utils";
@@ -37,10 +36,10 @@ export default function Header({ activeMenu }: HeaderProps) {
         cookies.remove("userId");
         clear();
     }
-
+    console.log(`-${user}-`);
     return (
         <header
-            className="flex w-full md:w-1000 md:px-100 items-center justify-between font-normal">
+            className="flex w-full xl:w-1140 md:p-20 items-center justify-between font-normal">
             <Logo size={LogoSizes.Small} className="flex md:hidden" />
             <Logo size={LogoSizes.Large} className="hidden md:flex" />
             <MenuItem
@@ -53,11 +52,17 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.About}
                 url="/about"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold" />
-            {/* <MenuItem
-                text="Les chats à adopter"
-                isActive={activeMenu === HeaderMenuItems.Adoption}
-                url="/adoption"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold w-62 whitespace-nowrap" /> */}
+            {!user && <MenuItem
+                text="Se connecter"
+                isActive={activeMenu === HeaderMenuItems.Login}
+                url="/login"
+                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
+            {user && <MenuItem
+                text={user.name + " - Se déconnecter"}
+                isActive={activeMenu === HeaderMenuItems.Logout}
+                url="/"
+                onClick={() => { clear(); cookies.remove('token') }}
+                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
             <IconButton
                 icon={isMenuVisible ? IconButtonImages.Cross : IconButtonImages.Menu}
                 className="md:hidden mr-11 mb-6"

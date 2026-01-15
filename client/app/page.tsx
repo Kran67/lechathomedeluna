@@ -29,7 +29,7 @@ export default function HomePage() {
       <div className="flex flex-col gap-51 md:gap-40 px-16 md:p-0 w-full xl:w-1115">
         <div className="flex flex-col gap-8 w-full xl:w-1115 lg:w-800 items-center text-center">
           <span className="text-[32px] text-(--primary) lg:w-342 w-full">Association de protection des animaux</span>
-          <span className="text-sm text-(--text) font-normal w-full">​Ensemble, écrivons un avenir meilleur pour nos amis les chats !</span>
+          <span className="text-lg text-(--text) font-normal w-full">​Ensemble, écrivons un avenir meilleur pour nos amis les chats !</span>
         </div>
         {/* <div className="flex flex-col rounded-[20px] bg-(--white) relative overflow-hidden h-458">
           <Image src={HomeImage} alt="Image de la propriété" className="absolute -left-389 md:-left-2 -top-219 max-w-1117 h-894" />

@@ -6,6 +6,7 @@ import { UserProvider } from "@/app/contexts/userContext";
 import { cookies } from "next/headers";
 import { User } from "@/app/interfaces/user";
 import { CookiesProvider } from "next-client-cookies/server";
+import { getProfile } from "@/app/api/api";
 
 /**
  * Ajout de la police de caractère utilisée sur le site
@@ -31,7 +32,7 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies();
   const userId: string | undefined = cookieStore.get("userId")?.value;
-  const user: User | null = null; //await getProfile(userId ?? "");
+  const user: User | null = await getProfile(userId ?? "");
 
   return (
     <html lang="fr">

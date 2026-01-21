@@ -1,10 +1,10 @@
 'use client'
 
-import { Cat } from "@/app/interfaces/cat";
-import CatCard from "@/app/components/data/CatCard";
-import { catsService } from "@/app/services/catsService";
-import { useEffect } from "react";
-import { prepareBodyToShowModal } from "@/app/lib/utils";
+import { useEffect } from 'react';
+
+import CatCard from '@/app/components/data/CatCard';
+import { Cat } from '@/app/interfaces/cat';
+import { prepareBodyToShowModal } from '@/app/lib/utils';
 
 /**
  * Ajout les métadata à la page
@@ -21,8 +21,8 @@ export function generateMetadata(cats: Cat[]): any {
             title: cat.name,
             description: cat.description,
             openGraph: {
-                '@type': cat.cover,
-                images: [cat.cover],
+                '@type': cat.pictures[0],
+                images: [cat.pictures[0]],
             },
         }
     });
@@ -35,7 +35,7 @@ export function generateMetadata(cats: Cat[]): any {
  * @interface GalleryProps
  */
 interface GalleryProps {
-    onlyToAdopt?: boolean;
+    cats: Cat[];
 }
 
 /**
@@ -46,16 +46,7 @@ interface GalleryProps {
  * @param { onlyToAdopt } GalleryProps - Les proriétés de la gallery
  * @param {boolean?} CarouselProps.onlyToAdopt - Indique si on affiche uniqument les chat à adopter
  */
-export default function Gallery({ onlyToAdopt }: GalleryProps) {
-    let cats: Cat[] | any;
-    //let properties: Property[] | any = [];
-    // on va chercher les propriétés
-    cats = catsService(onlyToAdopt).cats;
-    // si aucune propriété n'a pas été trouvée, on donne un tableau vide
-    if (cats?.error) {
-        cats = []
-    }
-
+export default function Gallery({ cats }: GalleryProps) {
     useEffect(() => {
         prepareBodyToShowModal("");
     }, [cats]);

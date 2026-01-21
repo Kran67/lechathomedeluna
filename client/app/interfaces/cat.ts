@@ -1,23 +1,24 @@
-import { HostFamily } from "@/app/interfaces/hostFamily";
+import { HostFamily } from '@/app/interfaces/hostFamily';
 
 type catSex = "Mâle" | "Femelle";
-type catStatus = "negatif" | "positif";
+type catStatus = "negatif" | "positif" | "non testé";
 
 export interface Cat {
     id: string;
     description?: string;
     name: string;
-    status: catStatus;
+    status?: catStatus;
     numIdentification?: string;
-    sex: catSex;
-    dress: string;
+    sex?: catSex;
+    dress?: string;
+    race?: string;
     isSterilized?: boolean;
     sterilizationDate?: Date;
-    age: number;
+    birthday?: string;
+    isDuringVisit?: boolean;
     isAdopted?: boolean;
-    adoptionDate?: Date;
+    adoptionDate?: string;
     hostFamily?: HostFamily;
-    cover?: string;
-    vaccines: string[];
+    //vaccines: Vaccine[];
     pictures: string[]
 }

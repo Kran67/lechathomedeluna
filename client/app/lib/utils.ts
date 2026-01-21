@@ -1,3 +1,5 @@
+import { UserRole } from '@/app/enums/enums';
+
 /**
  * Prépare le corps du document html pour l'affichage de fenêtre modale, enlève la scrollbar
  * 
@@ -30,4 +32,14 @@ export const validatePassword = (pw: string): boolean => {
 export const truncate = (str: string, maxlength: number = 100): string => {
     const finalStr: string = str.substring(0, maxlength);
     return finalStr ? `${finalStr}...` : "";
+}
+
+export const dateAge = (dateStr: string | undefined) => {
+    if (dateStr === undefined) return 0;
+    const date = new Date(dateStr);
+    return Math.abs((new Date(Date.now() - date.getTime()).getUTCFullYear()) - 1970);
+}
+
+export const hasRoles = (roles: UserRole[], rolesToCheck: UserRole[]): boolean => {
+    return rolesToCheck.some(role => roles.includes(role));
 }

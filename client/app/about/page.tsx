@@ -1,9 +1,10 @@
-import Footer from "@/app/components/layout/Footer";
-import Header from "@/app/components/layout/Header";
-import { HeaderMenuItems } from "@/app/enums/enums";
-import Image from "next/image";
-import { Metadata } from "next";
-import Luna from "@/app/assets/images/luna.png";
+import { Metadata } from 'next';
+import Image from 'next/image';
+
+import Luna from '@/app/assets/images/luna.png';
+import Footer from '@/app/components/layout/Footer';
+import Header from '@/app/components/layout/Header';
+import { HeaderMenuItems } from '@/app/enums/enums';
 
 /**
  * Ajout les métadata à la page
@@ -23,9 +24,9 @@ export const metadata: Metadata = {
  */
 export default function AboutPage() {
     return (
-        <main className="flex flex-col gap-40 w-full items-center md:pt-40 md:px-140">
+        <main className="flex flex-col gap-20 w-full items-center md:pt-20 md:px-140">
             <Header activeMenu={HeaderMenuItems.About} />
-            <div className="flex flex-col gap-51 md:gap-40 w-full xl:w-1115 items-center px-16 md:pb-80 ">
+            <div className="flex flex-col gap-51 md:gap-20 w-full xl:w-1115 items-center px-16 md:pb-80 ">
                 <div className="flex flex-col gap-8 w-full md:w-742">
                     <span className="text-[32px] font-bold text-(--primary)">Qui est Luna ?</span>
                     <div className="flex gap-5">

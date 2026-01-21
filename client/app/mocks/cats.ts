@@ -1,4 +1,4 @@
-import { Cat } from "@/app/interfaces/cat";
+import { Cat } from '@/app/interfaces/cat';
 
 export const catsMock: Cat[] = [
     {
@@ -17,111 +17,166 @@ Calypso a simplement besoin de temps, de douceur et de stabilité pour continuer
         sex: "Femelle",
         dress: "Marron",
         isAdopted: true,
-        age: 3,
-        cover: "https://static.wixstatic.com/media/4b58ef_6887a66fc17e4b378b5f4da964bb340f~mv2.jpg/v1/fill/w_355,h_376,al_c,q_100,usm_0.66_1.00_0.01,enc_avif,quality_auto/4b58ef_6887a66fc17e4b378b5f4da964bb340f~mv2.jpg",
+        adoptionDate: "06/01/2026",
+        birthday: "01/01/2023",
+        numIdentification: "250269604",
         hostFamily: {
             id: "1",
             name: "Sandra Daout",
             location: ""
         },
         pictures: [
-            "https://static.wixstatic.com/media/4b58ef_6887a66fc17e4b378b5f4da964bb340f~mv2.jpg/v1/fill/w_355,h_376,al_c,q_100,usm_0.66_1.00_0.01,enc_avif,quality_auto/4b58ef_6887a66fc17e4b378b5f4da964bb340f~mv2.jpg",
-            "https://scontent-cdg4-3.xx.fbcdn.net/v/t39.30808-6/612218786_848681087803308_276811322665013301_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=127cfc&_nc_ohc=cNvqVVvoeZIQ7kNvwED4ni4&_nc_oc=AdmIhn9EXpxqZ_xuXi7Dc3XBHqdADvS5HwvMKlr_yjhvxWiu8avNAprHLYDHiRAJ1lf4dVdq9qJM2KdhxaZE6icX&_nc_zt=23&_nc_ht=scontent-cdg4-3.xx&_nc_gid=Rn53_aCA9UrZZjSesQM8FA&oh=00_AfqHO1js6lgTpA0VehiPvTldyOgZSEyfShCuDryMggdRQQ&oe=696EAEBE",
-            "https://scontent-cdg4-2.xx.fbcdn.net/v/t39.30808-6/612018708_848681084469975_2036324314013573776_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=127cfc&_nc_ohc=WL7ezLR5Rn0Q7kNvwH5iySb&_nc_oc=AdlqnTLZetAf5dHEXmejUwl9Ym8s2y_ORlP1bYXX9cCwG0YTErhL_eKOkKjvVC4I0Ms-zoDLbmNuk1havvA3ppvX&_nc_zt=23&_nc_ht=scontent-cdg4-2.xx&_nc_gid=iSjb6R_HPOBWVvqShTLEuA&oh=00_AfqnYsGU2qyDPFYPpAIaNODyohkoUI1TuCqYr_NfR96x1Q&oe=696EB929",
-            "https://scontent-cdg4-1.xx.fbcdn.net/v/t39.30808-6/612418837_848681117803305_7242915402187383181_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=127cfc&_nc_ohc=YXOy2Pp-y2cQ7kNvwFQVQV9&_nc_oc=AdnvQNSm5aQ_TaXOLOWHmiNft8YB648tbxhOB7Z-VoFhKA9k1H3GY3-jbebMOvmG7FNaqKhvHiMW434BTRWVqMo0&_nc_zt=23&_nc_ht=scontent-cdg4-1.xx&_nc_gid=e9avMlVcfL6m0yudv0_-2g&oh=00_AfrERLJ_EkmbMjX7eq6RXaZJCoXhwSMOhC4ZU4wUj5mfSg&oe=696EB991",
-            "https://scontent-cdg4-3.xx.fbcdn.net/v/t39.30808-6/611955569_848681101136640_5699636795128421606_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=127cfc&_nc_ohc=z1Ebk_jvnqEQ7kNvwHc5gUt&_nc_oc=AdmZX0K3vjMatD-EnBQT7GAauUyqcvi2HSE-IaJ9UxTqb69E2FNHgIAWEVdbJkF0gTfMeWzfQT0in2ntuY8lsSKF&_nc_zt=23&_nc_ht=scontent-cdg4-3.xx&_nc_gid=cJ-Zg8rriNS67-iU6Ia2QA&oh=00_AfpImRmMqg2xhoWznhhY7TmtaEyTso54rbY3BboK82W6KA&oe=696EAF7F"
+            "/images/chats/calypso/calypso-1.jpg",
+            "/images/chats/calypso/calypso-2.jpg",
+            "/images/chats/calypso/calypso-3.jpg",
+            "/images/chats/calypso/calypso-4.jpg",
+            "/images/chats/calypso/calypso-5.jpg"
         ],
-        vaccines: [],
+        //vaccines: [],
     },
     {
         id: "0979876d",
         name: "Réglisse",
-        description: "",
+        description: `✨ Malgré que ce ne soit pas un chaton ni un chat très câlin, offrez-lui sa chance de découvrir un foyer doux… il vous le rendra au centuple ❤️🐾
+Voici Réglisse 1 an, une petite minette encore bien sauvageonne 🐱
+Elle ne se laisse pas facilement approcher par l’humain, mais adore jouer et peut même picorer dans la main lorsqu’un petit bout de nourriture l’intéresse 😄
+Elle aime aussi dormir sur le lit, mais dès qu’on bouge, elle part comme un éclair ⚡
+Réglisse reste très joueuse, surtout avec Abby, sa camarade de jeu, et apprécie la compagnie féline pour s’épanouir pleinement 🐾
+C’est une minette attachante pour une famille prête à lui laisser du temps et de l’espace pour gagner confiance. 
+Cette petite sauvageonne a droit à sa chance et rêve d’un foyer doux et aimant où elle pourra s’épanouir 🏡❤️`,
         status: "negatif",
         sex: "Femelle",
         dress: "Noire",
-        age: 15,
-        cover: "https://static.wixstatic.com/media/4b58ef_7815ca87ecfd49a5bc3a1984a4b4041c~mv2.jpg/v1/fill/w_355,h_376,al_c,q_100,usm_0.66_1.00_0.01,enc_avif,quality_auto/4b58ef_7815ca87ecfd49a5bc3a1984a4b4041c~mv2.jpg",
+        isAdopted: true,
+        birthday: "01/01/2015",
+        numIdentification: "250269605",
         hostFamily: {
             id: "1",
             name: "Sandra Daout",
             location: ""
         },
-        pictures: [],
-        vaccines: [],
+        pictures: [
+            "/images/chats/réglisse/reglisse-1.jpg",
+            "/images/chats/réglisse/reglisse-2.jpg",
+            "/images/chats/réglisse/reglisse-3.jpg",
+            "/images/chats/réglisse/reglisse-4.jpg"
+        ],
+        //vaccines: [],
     },
     {
         id: "d60ca600",
-        name: "Nina",
-        description: "",
-        status: "negatif",
+        name: "Choupinette",
+        description: `📍 Visible au bar à chats Le Wiccat à Strasbourg @wiccat.coffeeshop 
+Voici Choupinette, une jolie minette de 7 ans, douce et pleine de tendresse 💕
+Très câline, elle est encore un peu timide au premier abord, mais elle prend de plus en plus confiance et se montre chaque jour plus calme et apaisée.
+Choupinette est une véritable boule de douceur qui adore les moments de câlins et la présence des humains, qu’elle préfère largement à celle de ses congénères 😺
+Elle tolère les autres chats, mais serait plus épanouie en étant la seule minette de son futur foyer.
+Un cœur tendre qui ne demande qu’un foyer calme, patient et aimant pour s’épanouir pleinement 🏡💌`,
+        status: "non testé",
         sex: "Femelle",
-        dress: "Noire",
-        age: 10,
-        cover: "https://static.wixstatic.com/media/4b58ef_ba932adfa780432ba51d92aa456fe140~mv2.jpg/v1/fill/w_355,h_376,al_c,q_100,usm_0.66_1.00_0.01,enc_avif,quality_auto/4b58ef_ba932adfa780432ba51d92aa456fe140~mv2.jpg",
+        dress: "Tigré",
+        birthday: "01/01/2019",
+        numIdentification: "250269606",
         hostFamily: {
             id: "1",
             name: "Sandra Daout",
             location: ""
         },
-        pictures: [],
-        vaccines: [],
+        pictures: [
+            "/images/chats/choupinette/choupinette-1.jpg",
+            "/images/chats/choupinette/choupinette-2.jpg",
+            "/images/chats/choupinette/choupinette-3.jpg",
+            "/images/chats/choupinette/choupinette-4.jpg",
+            "/images/chats/choupinette/choupinette-5.jpg",
+            "/images/chats/choupinette/choupinette-6.jpg",
+            "/images/chats/choupinette/choupinette-7.jpg",
+        ],
+        //vaccines: [],
     },
     {
         id: "af6d2d48",
         name: "Thimotée",
         description: `Thimotée, 8 ans, c’est le chat parfait : très sociable, gentil et incroyablement facile à vivre 💕.
-            Il aime bien manger (sans être trop gourmand 😋). 
-            💉 Thimotée est FIV positif, mais cela ne l’empêche absolument pas de vivre normalement et longtemps.
-            Et malgré son âge, il déborde d’énergie : même le vétérinaire lui donnerait 5 ans tant il est vif et en forme ! 😸
-            C’est un matou doux, attachant et plein de charme, mais aussi très actif. Il aura donc besoin d’un foyer dynamique, idéalement avec un accès sécurisé à l’extérieur pour s’épanouir pleinement.
-            Il adore les enfants, parfaits compagnons de jeux pour se défouler et partager de beaux moments.
-            Thimotée, c’est un amour de chat avec encore tant d’affection à offrir`,
+Il aime bien manger (sans être trop gourmand 😋). 
+💉 Thimotée est FIV positif, mais cela ne l’empêche absolument pas de vivre normalement et longtemps.
+Et malgré son âge, il déborde d’énergie : même le vétérinaire lui donnerait 5 ans tant il est vif et en forme ! 😸
+C’est un matou doux, attachant et plein de charme, mais aussi très actif. Il aura donc besoin d’un foyer dynamique, idéalement avec un accès sécurisé à l’extérieur pour s’épanouir pleinement.
+Il adore les enfants, parfaits compagnons de jeux pour se défouler et partager de beaux moments.
+Thimotée, c’est un amour de chat avec encore tant d’affection à offrir`,
         status: "positif",
         sex: "Mâle",
         dress: "Noir",
-        age: 8,
-        cover: "https://static.wixstatic.com/media/4b58ef_6211b1f2114748c0b5331343c7acd2bf~mv2.jpg/v1/fill/w_355,h_376,al_c,q_100,usm_0.66_1.00_0.01,enc_avif,quality_auto/4b58ef_6211b1f2114748c0b5331343c7acd2bf~mv2.jpg",
+        isAdopted: true,
+        adoptionDate: "20/01/2026",
+        birthday: "01/01/2018",
+        numIdentification: "250269607",
         hostFamily: {
             id: "1",
             name: "Sandra Daout",
             location: ""
         },
-        pictures: [],
-        vaccines: [],
+        pictures: [
+            "/images/chats/thimotée/thimotee-1.jpg",
+            "/images/chats/thimotée/thimotee-2.jpg",
+            "/images/chats/thimotée/thimotee-3.jpg"
+        ],
+        //vaccines: [],
     },
     {
         id: "1e180563",
-        name: "Minou",
-        description: "",
-        status: "negatif",
+        name: "Stocky",
+        description: `Voici Stocky, un mâle de 3 ans, au caractère calme et posé 💛
+C’est un chat tranquille, agréable à vivre, qui apprécie les environnements sereins et les longues siestes.
+Stocky aime les câlins et ronronne volontiers, même s’il se laisse peu porter 😺
+Assez indépendant, il aime toutefois rester près de son humain pour partager des moments de calme.
+🍽️ Côté repas, monsieur est un peu exigeant : il mange uniquement des croquettes au poisson.
+👶 Il s’entend très bien avec les enfants.
+🐱 En revanche, Stocky n’est pas ok avec les autres chats et devra être le seul félin du foyer.
+Un compagnon doux, discret et attachant, qui cherche une famille prête à respecter son rythme et à lui offrir un foyer paisible 🏡💌`,
+        status: "non testé",
         sex: "Mâle",
-        dress: "Beige",
-        age: 5,
-        cover: "https://static.wixstatic.com/media/4b58ef_cf36cdcd67f9491680367a08da4a9b05~mv2.jpg/v1/fill/w_355,h_376,al_c,q_100,usm_0.66_1.00_0.01,enc_avif,quality_auto/4b58ef_cf36cdcd67f9491680367a08da4a9b05~mv2.jpg",
+        dress: "Gris",
+        birthday: "01/01/2023",
+        numIdentification: "250269608",
         hostFamily: {
             id: "1",
             name: "Sandra Daout",
             location: ""
         },
-        pictures: [],
-        vaccines: [],
+        pictures: [
+            "/images/chats/stocky/stocky-1.jpg",
+            "/images/chats/stocky/stocky-2.jpg",
+            "/images/chats/stocky/stocky-3.jpg",
+            "/images/chats/stocky/stocky-4.jpg",
+            "/images/chats/stocky/stocky-5.jpg",
+        ],
+        //vaccines: [],
     },
     {
         id: "6ff132c6",
-        name: "Abby",
-        description: "",
+        name: "Salem",
+        description: `📍 Visible au bar à chats Le Wiccat à Strasbourg @wiccat.coffeeshop 
+Salem, magnifique matou de 10 ans, est prêt à trouver sa famille pour la vie.
+Sous son pelage noir aux reflets marron qui apparaissent joliment à la lumière surtout sur son petit visage se cache un véritable trésor de douceur ✨
+🛋️ Calme, gentil et apaisant, Salem s’entend aussi bien avec les humains qu’avec les autres chats.
+Il adore les câlins, vient volontiers se poser sur les genoux pour profiter d’un moment de tendresse, et se montre toujours patient et délicat.
+C’est le papy parfait, sociable, câlin et facile à vivre. Un compagnon idéal pour une famille aimante qui souhaite offrir une seconde chance à un chat au grand cœur ❤️
+👉 Salem n’attend plus que son foyer définitif, un endroit où profiter sereinement de l’amour et du confort qu’il mérite.`,
         status: "negatif",
-        sex: "Femelle",
-        dress: "Tigré",
-        age: 5,
-        cover: "https://static.wixstatic.com/media/4b58ef_52616042e4a8454cb9dcefe1c9e6b34b~mv2.jpg/v1/fill/w_355,h_376,al_c,q_100,usm_0.66_1.00_0.01,enc_avif,quality_auto/4b58ef_52616042e4a8454cb9dcefe1c9e6b34b~mv2.jpg",
+        sex: "Mâle",
+        dress: "Noir",
+        birthday: "01/01/2016",
+        numIdentification: "250269609",
         hostFamily: {
             id: "1",
             name: "Sandra Daout",
             location: ""
         },
-        pictures: [],
-        vaccines: [],
+        pictures: [
+            "/images/chats/salem/salem-1.jpg",
+            "/images/chats/salem/salem-2.jpg",
+            "/images/chats/salem/salem-3.jpg",
+        ],
+        //vaccines: [],
     },
 ];

@@ -1,6 +1,11 @@
 'use client'
 
-import { InputTypes } from "@/app/enums/enums";
+import Image from 'next/image';
+
+import {
+  InputImageTypes,
+  InputTypes,
+} from '@/app/enums/enums';
 
 /**
  * Interface pour les propriétés d'initialisation d'un champ de saisie
@@ -12,6 +17,7 @@ interface InputProps {
     label?: string;
     type?: InputTypes;
     value?: string;
+    imageType?: InputImageTypes;
     placeHolder?: string;
     required?: boolean;
     width?: number;
@@ -27,11 +33,12 @@ interface InputProps {
  * Affiche d'un bouton avec une icône
  * 
  * @function Input
- * @param { name, label, type, value, placeHolder, required, width, onChange, hasError, autoComplete = "on", maxLength, className } InputProps - Les proriétés du champ de saisie
+ * @param { name, label, type, value, imageType, placeHolder, required, width, onChange, hasError, autoComplete = "on", maxLength, className } InputProps - Les proriétés du champ de saisie
  * @param {string} IconButtonProps.name - Nom du champ de saisie
  * @param {string?} IconButtonProps.label - Label du champ de saisie
  * @param {InputTypes?} IconButtonProps.type - Type du champ de saisie
  * @param {string?} IconButtonProps.value - Valeur du champ de saisie
+ * @param {InputImageTypes?} IconButtonProps.imageType - Type d'image à afficher dans le champ de saisie
  * @param {string?} IconButtonProps.placeHolder - Espace réservé du champ de saisie
  * @param {boolean?} IconButtonProps.required - Indique si le champ de saisie doit être obligatoire ou non
  * @param {number?} IconButtonProps.width - Taille du champ de saisie
@@ -42,7 +49,7 @@ interface InputProps {
  * @param {string?} IconButtonProps.className - Classes css du champ de saisie
  * @param {boolean?} IconButtonProps.showLabel - Indique si le label du champ est visible ou non
  */
-export default function Input({ name, label, type, value, placeHolder, required, width, onChange, hasError, autoComplete = "on", maxLength, className, showLabel = true }: InputProps) {
+export default function Input({ name, label, type, value, imageType, placeHolder, required, width, onChange, hasError, autoComplete = "on", maxLength, className, showLabel = true }: InputProps) {
     const classNames: string = [
         "input",
         "flex",
@@ -54,6 +61,10 @@ export default function Input({ name, label, type, value, placeHolder, required,
         className ?? ""
     ].join(" ");
 
+    const imgHeight: 14 | 16 = imageType === InputImageTypes.Search
+        ? 14
+        : 16;
+        
     return (
         <div className={classNames} style={{ "minWidth": width, "maxWidth": width }}>
             <label className={"text-sm text-(--text) font-medium " + (!showLabel ? "hidden" : "")} htmlFor={name}>{label}{required ? " *" : ""}</label>
@@ -68,10 +79,13 @@ export default function Input({ name, label, type, value, placeHolder, required,
                     placeholder={placeHolder}
                     required={required}
                     autoComplete={autoComplete}
-                    onChange={onChange}
+                    onInput={onChange}
                     maxLength={maxLength}
                     aria-required={required}
                 />
+                {imageType &&
+                    <Image src={"/images/" + imageType + ".svg"} width={15} height={imgHeight} alt={" Image " + imageType} />
+                }
             </div>
         </div>
     );

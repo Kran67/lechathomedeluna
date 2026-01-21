@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react";
-import type { Cat } from "@/app/interfaces/cat";
-import { catsMock } from "@/app/mocks/cats";
+import {
+  useEffect,
+  useState,
+} from 'react';
+
+import type { Cat } from '@/app/interfaces/cat';
+import { catsMock } from '@/app/mocks/cats';
 
 /**
  * Permet de récupèrer les chats depuis la base de données
@@ -8,7 +12,7 @@ import { catsMock } from "@/app/mocks/cats";
  * @function catService
  * @returns { cats: Cat[] | null, loading: boolean, refresh: any, error: boolean }
  */
-export function catsService(onlyToAdopt: boolean = false): { cats: Cat[] | null, loading: boolean, refresh: any, error: boolean } {
+export function catsService(adopted: boolean = false, numId?: string): { cats: Cat[] | null, loading: boolean, refresh: any, error: boolean } {
     const [cats, setCats] = useState<Cat[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -18,7 +22,17 @@ export function catsService(onlyToAdopt: boolean = false): { cats: Cat[] | null,
         setLoading(true);
         try {
             if (process.env.NEXT_PUBLIC_MOCK_MODE === "true") {
-                setCats(catsMock);
+                if (numId) {
+                    const filteredCats = catsMock.filter((cat: Cat) => cat.numIdentification === numId);
+                    console.log("Refreshing cats...", filteredCats);
+                    setCats(filteredCats);
+                } else {
+                    if (adopted) {
+                        setCats(catsMock.filter((cat: Cat) => cat.isAdopted));
+                    } else {
+                        setCats(catsMock.filter((cat: Cat) => !cat.isAdopted));
+                    }
+                }
             } else {
 
                 const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats`, {
@@ -34,6 +48,11 @@ export function catsService(onlyToAdopt: boolean = false): { cats: Cat[] | null,
                 }
 
                 const data = await res.json();
+                if (numId) {
+                    const filteredCats = data.filter((cat: Cat) => cat.numIdentification === numId);
+                    setCats(filteredCats);
+                    return;
+                }
 
                 setCats(data);
             }

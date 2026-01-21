@@ -5,20 +5,15 @@ import {
   useState,
 } from 'react';
 
-//import { Metadata } from 'next';
 import Gallery from '@/app/components/data/Gallery';
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
+import Input from '@/app/components/ui/Input';
 import {
   HeaderMenuItems,
   InputImageTypes,
-  UserRole,
 } from '@/app/enums/enums';
-
-import Input from './components/ui/Input';
-import { useUser } from './contexts/userContext';
-import { hasRoles } from './lib/utils';
-import { catsService } from './services/catsService';
+import { catsService } from '@/app/services/catsService';
 
 /**
  * Ajout les métadata à la page
@@ -32,14 +27,13 @@ import { catsService } from './services/catsService';
 //};
 
 /**
- * Affiche la page d'accueil
+ * Affiche la page des chats adoptés
  * 
- * @function HomePage
+ * @function AdoptedCats
  */
-export default function HomePage() {
+export default function AdoptedCats() {
   const [search, setSearch] = useState<string>("");
-  const { user } = useUser();
-  const service = catsService(false, search);
+  const service = catsService(true, search);
 
   useEffect(() => {
     service.refresh(search);
@@ -47,12 +41,11 @@ export default function HomePage() {
   
   return (
     <main className="flex flex-col gap-51 md:gap-20 w-full items-center md:pt-20 md:px-140">
-      <Header activeMenu={HeaderMenuItems.Home} />
+      <Header activeMenu={HeaderMenuItems.AdoptedCats} />
       <div className="flex flex-col gap-51 md:gap-20 px-16 md:p-0 w-full xl:w-1115">
         <div className="flex flex-col gap-8 w-full xl:w-1115 lg:w-800 items-center text-center">
-          <span className="text-[32px] text-(--primary) w-full">Association de protection des animaux</span>
-          <span className="text-lg text-(--text) font-normal w-full">​Ensemble, écrivons un avenir meilleur pour nos amis les chats !</span>
-          {user && hasRoles(user.roles, [UserRole.Admin, UserRole.HostFamily]) &&<div className="flex w-full items-center justify-center">
+          <span className="text-[32px] text-(--primary) w-full">Les chats qui ont été adoptés</span>
+          <div className="flex w-full items-center justify-center">
                   <Input
                     name="search"
                     placeHolder="Rechercher un chat par son numéro d'identification"
@@ -61,7 +54,7 @@ export default function HomePage() {
                     value={search}
                     showLabel={false}
                     onChange={(e) => setSearch(e.target.value)} />
-          </div>}
+          </div>
         </div>
       </div>
       <Gallery cats={service.cats ?? []} />

@@ -4,7 +4,12 @@ export enum HeaderMenuItems {
     Messaging,
     Adoption,
     Login,
-    Logout
+    Logout,
+    AdoptedCats,
+    HealthRegister,
+    VeterinaryVouchers,
+    Events,
+    Volunteers
 }
 
 export enum LogoSizes {
@@ -38,8 +43,15 @@ export enum InputTypes {
     Date = 'date'
 }
 
+export enum InputImageTypes {
+    Calendar = "calendar",
+    BottomArrow = "bottom_arrow",
+    Search = "search"
+}
+
 export enum UserRole {
     Admin,
+    Assistant,
     HostFamily,
-    Visitor
+    Volunteer
 }

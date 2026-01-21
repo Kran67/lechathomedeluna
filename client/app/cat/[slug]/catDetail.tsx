@@ -1,19 +1,30 @@
 'use client'
 
-import Header from "@/app/components/layout/Header";
-import Footer from "@/app/components/layout/Footer";
-import IconButton from "@/app/components/ui/IconButton";
-import { IconButtonImages } from "@/app/enums/enums";
-import Image from "next/image";
-import Button from "@/app/components/ui/Button";
-import { redirect, RedirectType } from 'next/navigation'
-import CollapseElement from "@/app/components/ui/CollapseElement";
-import { useEffect, useState } from "react";
-import { catService } from "@/app/services/catService";
-import Carousel from "@/app/components/data/Carousel";
-import { createPortal } from "react-dom";
-import { prepareBodyToShowModal } from "@/app/lib/utils";
-import { useUser } from "@/app/contexts/userContext";
+import {
+  useEffect,
+  useState,
+} from 'react';
+import { createPortal } from 'react-dom';
+
+import Image from 'next/image';
+import {
+  redirect,
+  RedirectType,
+} from 'next/navigation';
+
+import Carousel from '@/app/components/data/Carousel';
+import Footer from '@/app/components/layout/Footer';
+import Header from '@/app/components/layout/Header';
+import Button from '@/app/components/ui/Button';
+import CollapseElement from '@/app/components/ui/CollapseElement';
+import IconButton from '@/app/components/ui/IconButton';
+import { useUser } from '@/app/contexts/userContext';
+import { IconButtonImages } from '@/app/enums/enums';
+import {
+  dateAge,
+  prepareBodyToShowModal,
+} from '@/app/lib/utils';
+import { catService } from '@/app/services/catService';
 
 /**
  * Interface pour les chats d'initialisation d'un chat
@@ -53,7 +64,7 @@ export default function Property({ slug }: CatProps) {
     }, [viewCarousel]);
 
     return (
-        <main className="flex flex-col gap-10 lg:gap-85 w-full items-center lg:pt-40 lg:px-140 relative">
+        <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 lg:px-140 relative">
             {viewCarousel &&
                 createPortal(
                     <Carousel images={cat?.pictures} imageIndex={carouselImageIndex} closeCarousel={() => setViewCarousel(false)} onIndexChange={setCarouselImageIndex} />,
@@ -74,9 +85,9 @@ export default function Property({ slug }: CatProps) {
                 <div className="flex flex-col lg:flex-row gap-10 w-full lg:flex-wrap">
                     <div className="flex flex-col lg:flex-row gap-10">
                         <div className="flex w-full lg:w-303 h-357 overflow-hidden md:justify-center rounded-[10px] ">
-                            {cat?.cover && <Image
+                            {cat?.pictures[0] && <Image
                                 data-testid="property-image-1"
-                                src={cat?.cover}
+                                src={cat?.pictures[0]}
                                 alt="Image du chat n°1"
                                 className="h-357 w-635 lg:w-535 max-w-1240 cursor-pointer rounded-[10px] "
                                 width={1240}
@@ -151,7 +162,7 @@ export default function Property({ slug }: CatProps) {
                             </div>
                             <p className="text-sm text-(--text) font-normal whitespace-break-spaces">{cat?.description}</p>
                         </div>
-                        <CollapseElement title="Informations" content={[`${cat?.age} an(s)`, cat?.sex, cat?.dress, cat?.status]} />
+                        <CollapseElement title="Informations" content={[`${dateAge(cat?.birthday)} an(s)`, cat?.sex, cat?.dress, cat?.status]} />
                     </div>
                 </div>
             </div>

@@ -23,7 +23,7 @@ export function catsService(adopted: boolean = false, numId?: string): { cats: C
         try {
             if (process.env.NEXT_PUBLIC_MOCK_MODE === "true") {
                 if (numId) {
-                    const filteredCats = catsMock.filter((cat: Cat) => cat.numIdentification === numId);
+                    const filteredCats = catsMock.filter((cat: Cat) => cat.numIdentification?.startsWith(numId));
                     console.log("Refreshing cats...", filteredCats);
                     setCats(filteredCats);
                 } else {

@@ -34,25 +34,29 @@ async function initSchema(db) {
     phone TEXT NOT NULL,
     address TEXT NOT NULL,
     city TEXT NOT NULL,
-    role TEXT NOT NULL CHECK (role IN ('admin', 'assistant', 'hostfamilyrefer', 'hostfamily', 'volunteer')),
+    role TEXT NOT NULL CHECK (role IN ('admin', 'assistant', 'hostfamilyreference', 'hostfamily', 'volunteer')),
     email TEXT,
     password_hash TEXT,
     blacklist INTEGER DEFAULT 0,
-    user_id INTEGER,
+    referrer_id INTEGER,
+    reset_token TEXT,
+    reset_expires INTEGER,
     UNIQUE(email)
-    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE RESTRICT
+    FOREIGN KEY(referrer_id) REFERENCES users(id) ON DELETE RESTRICT
   );
 
   CREATE TABLE IF NOT EXISTS cats (
-    id TEXT PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     slug TEXT NOT NULL UNIQUE,
+    name TEXT NOT NULL,
     description TEXT,
-    status TEXT NOT NULL CHECK (status IN ('positif','négatif','non testé')),
+    status TEXT NOT NULL CHECK (status IN ('Positif','Négatif','Non testé')),
     numIdentification TEXT,
-    sex TEXT NOT NULL CHECK (sex IN ('mâle','femelle')),
+    sex TEXT NOT NULL CHECK (sex IN ('Mâle','Femelle')),
     dress TEXT,
     race TEXT,
+    isSterilized INTEGER DEFAULT 0,
+    sterilizationDate TEXT,
     birthDate TEXT,
     isDuringVisit INTEGER DEFAULT 0,
     isAdopted INTEGER DEFAULT 0,
@@ -73,8 +77,8 @@ async function initSchema(db) {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     cat_id TEXT NOT NULL,
     date TEXT NOT NULL,
-    UNIQUE(property_id, name),
-    FOREIGN KEY(property_id) REFERENCES properties(id) ON DELETE CASCADE
+    UNIQUE(cat_id, date),
+    FOREIGN KEY(cat_id) REFERENCES cats(id) ON DELETE CASCADE
   );
 
   CREATE TABLE IF NOT EXISTS cat_vaccine_pictures (
@@ -85,7 +89,10 @@ async function initSchema(db) {
     FOREIGN KEY(cat_vaccine_id) REFERENCES cat_vaccines(id) ON DELETE CASCADE
   );
 
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email);
+  CREATE INDEX IF NOT EXISTS idx_users_reset_token ON users(reset_token);
   CREATE INDEX IF NOT EXISTS idx_cats_hostfamily ON cats(hostfamily_id);
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_cats_slug ON cats(slug);
   `;
 
   await db.execAsync(schema);
@@ -115,17 +122,39 @@ async function seedIfEmpty(db) {
     db.serialize(async () => {
       try {
         const usedSlugs = new Set();
+        await db.runAsync('INSERT INTO users(name, lastname, phone, address, city, role, email) VALUES (?,?,?,?,?,?,?)', 
+                [
+                  'Sylvie',
+                  '',
+                  '0000000000',
+                  'Unknown',
+                  'Unknown',
+                  'hostfamily',
+                  'admin@example.com'
+                ]);
         for (const p of data) {
           // Ensure owner user exists
-          let user = await db.getAsync('SELECT id FROM users WHERE email = ? ', [email]);
-          if (!user) {
-            const ins = await db.runAsync('INSERT INTO users(name, lastname, phone, address, city, role, email) VALUES (?,?,?,?,?,?,?)', 
-              [hostName, hostName, p.host && p.host.phone ? p.host.phone : '0000000000', p.host && p.host.address ? p.host.address : 'Unknown', p.host && p.host.city ? p.host.city : 'Unknown', role, email]);
-            user = { id: ins.lastID };
+          let user = null;
+          if (p.hostFamily) {
+            user = await db.getAsync('SELECT id FROM users WHERE email = ? ', [p.hostFamily.email]);
+            if (!user) {
+              const ins = await db.runAsync('INSERT INTO users(name, lastname, phone, address, city, role, email, referrer_id) VALUES (?,?,?,?,?,?,?,?)', 
+                [
+                  p.hostFamily && p.hostFamily.name,
+                  p.hostFamily && p.hostFamily.lastName,
+                  p.hostFamily && p.hostFamily.phone ? p.hostFamily.phone : '0000000000',
+                  p.hostFamily && p.hostFamily.address ? p.hostFamily.address : 'Unknown',
+                  p.hostFamily && p.hostFamily.city ? p.hostFamily.city : 'Unknown',
+                  p.hostFamily && p.hostFamily.role ? p.hostFamily.role : 'hostfamily',
+                  p.hostFamily && p.hostFamily.email ? p.hostFamily.email : `unknown${Date.now()}@example.com`,
+                  p.hostFamily && p.hostFamily.referrerId ? p.hostFamily.referrerId : null
+                ]);
+              user = { id: ins.lastID };
+            }
           }
 
           // Prepare slug
-          const base = slugify(p.title || p.id || hostName);
+          const base = slugify(p.name || p.id || 'cat');
           let slug = base;
           let n = 2;
           while (usedSlugs.has(slug)) {
@@ -135,16 +164,32 @@ async function seedIfEmpty(db) {
 
           // Insert cat
           await db.runAsync(
-            'INSERT OR IGNORE INTO cats(id, slug, name, description, status, sex, dress, isAdopted, adoptionDate, birthday, numIdentification, hostfamily_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
-            [p.id, slug, p.name || null, p.description || null, p.status || null, p.sex || null, p.dress || null, p.isAdopted ? 1 : 0, p.adoptionDate || null, p.birthday || null, p.numIdentification || null, user.id]
+            'INSERT  INTO cats(id, slug, name, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdopted, adoptionDate, hostfamily_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            [
+              p.id,
+              slug,
+              p.name,
+              p.description || null,
+              p.status || null,
+              p.numIdentification || null,
+              p.sex || null,
+              p.dress || null,
+              p.race || null,
+              p.isSterilized ? 1 : 0,
+              p.sterilizationDate || null,
+              p.birthDate || null,
+              p.isDuringVisit ? 1 : 0,
+              p.isAdopted ? 1 : 0,
+              p.adoptionDate || null,
+              user && user.id || null
+            ]
           );
 
           // Pictures
           const pics = new Set();
-          if (p.cover) pics.add(p.cover);
           if (Array.isArray(p.pictures)) p.pictures.forEach(u => u && pics.add(u));
           for (const url of pics) {
-            await db.runAsync('INSERT OR IGNORE INTO cats_pictures(cat_id, url) VALUES (?,?)', [p.id, url]);
+            await db.runAsync('INSERT OR IGNORE INTO cat_pictures(cat_id, url) VALUES (?,?)', [p.id, url]);
           }
 
           // Equipments

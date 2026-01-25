@@ -2,7 +2,8 @@ import { Cat } from '@/app/interfaces/cat';
 
 export const catsMock: Cat[] = [
     {
-        id: "c67ab8a7",
+        id: 1,
+        slug: "c67ab8a7",
         name: "Calypso",
         description: `✨ Calypso cherche avant tout une famille prête à lui donner sa chance, avec douceur et patience, afin qu’elle puisse enfin découvrir la sécurité d’un vrai foyer et s’épanouir à son rythme ❤️🐾
 Voici Calypso, une chatte de 3 ans au cœur sensible 💛
@@ -32,10 +33,11 @@ Calypso a simplement besoin de temps, de douceur et de stabilité pour continuer
             "/images/chats/calypso/calypso-4.jpg",
             "/images/chats/calypso/calypso-5.jpg"
         ],
-        //vaccines: [],
+        vaccines: [],
     },
     {
-        id: "0979876d",
+        id: 2,
+        slug: "0979876d",
         name: "Réglisse",
         description: `✨ Malgré que ce ne soit pas un chaton ni un chat très câlin, offrez-lui sa chance de découvrir un foyer doux… il vous le rendra au centuple ❤️🐾
 Voici Réglisse 1 an, une petite minette encore bien sauvageonne 🐱
@@ -61,10 +63,11 @@ Cette petite sauvageonne a droit à sa chance et rêve d’un foyer doux et aima
             "/images/chats/réglisse/reglisse-3.jpg",
             "/images/chats/réglisse/reglisse-4.jpg"
         ],
-        //vaccines: [],
+        vaccines: [],
     },
     {
-        id: "d60ca600",
+        id: 3,
+        slug: "d60ca600",
         name: "Choupinette",
         description: `📍 Visible au bar à chats Le Wiccat à Strasbourg @wiccat.coffeeshop 
 Voici Choupinette, une jolie minette de 7 ans, douce et pleine de tendresse 💕
@@ -91,10 +94,11 @@ Un cœur tendre qui ne demande qu’un foyer calme, patient et aimant pour s’�
             "/images/chats/choupinette/choupinette-6.jpg",
             "/images/chats/choupinette/choupinette-7.jpg",
         ],
-        //vaccines: [],
+        vaccines: [],
     },
     {
-        id: "af6d2d48",
+        id: 4,
+        slug: "af6d2d48",
         name: "Thimotée",
         description: `Thimotée, 8 ans, c’est le chat parfait : très sociable, gentil et incroyablement facile à vivre 💕.
 Il aime bien manger (sans être trop gourmand 😋). 
@@ -120,10 +124,11 @@ Thimotée, c’est un amour de chat avec encore tant d’affection à offrir`,
             "/images/chats/thimotée/thimotee-2.jpg",
             "/images/chats/thimotée/thimotee-3.jpg"
         ],
-        //vaccines: [],
+        vaccines: [],
     },
     {
-        id: "1e180563",
+        id: 4,
+        slug: "1e180563",
         name: "Stocky",
         description: `Voici Stocky, un mâle de 3 ans, au caractère calme et posé 💛
 C’est un chat tranquille, agréable à vivre, qui apprécie les environnements sereins et les longues siestes.
@@ -150,10 +155,11 @@ Un compagnon doux, discret et attachant, qui cherche une famille prête à respe
             "/images/chats/stocky/stocky-4.jpg",
             "/images/chats/stocky/stocky-5.jpg",
         ],
-        //vaccines: [],
+        vaccines: [],
     },
     {
-        id: "6ff132c6",
+        id: 5,
+        slug: "6ff132c6",
         name: "Salem",
         description: `📍 Visible au bar à chats Le Wiccat à Strasbourg @wiccat.coffeeshop 
 Salem, magnifique matou de 10 ans, est prêt à trouver sa famille pour la vie.
@@ -177,6 +183,6 @@ C’est le papy parfait, sociable, câlin et facile à vivre. Un compagnon idéa
             "/images/chats/salem/salem-2.jpg",
             "/images/chats/salem/salem-3.jpg",
         ],
-        //vaccines: [],
+        vaccines: [],
     },
 ];

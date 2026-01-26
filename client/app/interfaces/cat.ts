@@ -11,7 +11,7 @@ export interface Vaccine {
 }
 
 export interface Cat {
-    id: number;
+    id: string;
     slug: string;
     description?: string;
     name: string;
@@ -22,7 +22,7 @@ export interface Cat {
     race?: string;
     isSterilized?: boolean;
     sterilizationDate?: Date;
-    birthday?: string;
+    birthDate?: string;
     isDuringVisit?: boolean;
     isAdopted?: boolean;
     adoptionDate?: string;

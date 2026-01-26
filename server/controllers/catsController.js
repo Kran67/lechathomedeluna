@@ -15,7 +15,7 @@ function statusFromError(e) {
 async function list(req, res) {
   const db = req.app.locals.db;
   try {
-    const rows = await listCats(db);
+    const rows = await listCats(db, req.params.isAdopted);
     res.json(rows);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
@@ -44,7 +44,7 @@ async function create(req, res) {
     let msg = e.message;
     if (code === 409) msg = 'Cat with same id already exists';
     if (msg === 'title is required') return res.status(400).json({ error: msg });
-    if (msg.startsWith('host_id')) return res.status(400).json({ error: msg });
+    if (msg.startsWith('hostfamily_id')) return res.status(400).json({ error: msg });
     res.status(code).json({ error: msg });
   }
 }

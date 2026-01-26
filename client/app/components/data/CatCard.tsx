@@ -35,13 +35,13 @@ export default function CatCard({ cat }: PropsCC) {
 
     // au clique sur les détails, redirection vers la page du chat
     const handleClick: () => void = () => {
-        router.push(`/cat/${cat.id}`);
+        router.push(`/cat/${cat.slug}`);
     };
 
     return (
         <div className="flex flex-col rounded-[10px] bg-(--white) w-full md:w-355 relative cursor-pointer" onClick={() => handleClick()}>
             <div className="relative h-376 overflow-hidden rounded-t-[10px]">
-                <img src={cat.pictures[0]} alt="Image du chat" className="absolute h-376" width={355} height={376} />
+                <img src={cat.pictures?.[0]} alt="Image du chat" className="absolute h-376" width={355} height={376} />
             </div>
             <div className="flex flex-col justify-between pt-16 pb-24">
                 <div className="flex flex-col gap-8">
@@ -49,7 +49,7 @@ export default function CatCard({ cat }: PropsCC) {
                     <span className="text-sm text-(--text) font-normal md:h-80">{truncate(cat.description ?? "", 210)}</span>
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-sm text-(--text) font-medium">Age : {dateAge(cat.birthday)} an(s)</span>
+                    <span className="text-sm text-(--text) font-medium">Age : {dateAge(cat.birthDate)} an(s)</span>
                     <span className="text-sm text-(--text) font-medium">Sexe : {cat.sex}</span>
                     <span className="text-sm text-(--text) font-medium">Robe : {cat.dress}</span>
                     {user && <span className="text-sm text-(--text) font-medium">Status (FIV & FELV) : {cat.status}</span>}

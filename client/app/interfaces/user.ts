@@ -1,14 +1,12 @@
-import { UserRole } from '@/app/enums/enums';
-
 export interface User {
     id: string;
     name: string;
-    email: string;
-    password: string;
+    lastName: string;
     phone: string;
+    address: string;
     city: string;
-    idFARef?: string;
-    blacklisted?: boolean;    
-    picture: string;
-    roles: UserRole[];
+    role: string;
+    email: string;
+    blacklisted: number;
+    referrer_id?: string;
 }

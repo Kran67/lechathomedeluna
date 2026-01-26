@@ -34,10 +34,10 @@ async function initSchema(db) {
     phone TEXT NOT NULL,
     address TEXT NOT NULL,
     city TEXT NOT NULL,
-    role TEXT NOT NULL CHECK (role IN ('admin', 'assistant', 'hostfamilyreference', 'hostfamily', 'volunteer')),
+    role TEXT NOT NULL CHECK (role IN ('Admin', 'Assistant', 'HostFamily', 'Volunteer')),
     email TEXT,
     password_hash TEXT,
-    blacklist INTEGER DEFAULT 0,
+    blacklisted INTEGER DEFAULT 0,
     referrer_id INTEGER,
     reset_token TEXT,
     reset_expires INTEGER,
@@ -122,15 +122,16 @@ async function seedIfEmpty(db) {
     db.serialize(async () => {
       try {
         const usedSlugs = new Set();
-        await db.runAsync('INSERT INTO users(name, lastname, phone, address, city, role, email) VALUES (?,?,?,?,?,?,?)', 
+        await db.runAsync('INSERT INTO users(name, lastname, phone, address, city, role, email, password_hash) VALUES (?,?,?,?,?,?,?,?)', 
                 [
                   'Sylvie',
                   '',
                   '0000000000',
                   'Unknown',
                   'Unknown',
-                  'hostfamily',
-                  'admin@example.com'
+                  'Admin',
+                  'admin@exemple.com',
+                  'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba'
                 ]);
         for (const p of data) {
           // Ensure owner user exists
@@ -143,8 +144,8 @@ async function seedIfEmpty(db) {
                   p.hostFamily && p.hostFamily.name,
                   p.hostFamily && p.hostFamily.lastName,
                   p.hostFamily && p.hostFamily.phone ? p.hostFamily.phone : '0000000000',
-                  p.hostFamily && p.hostFamily.address ? p.hostFamily.address : 'Unknown',
-                  p.hostFamily && p.hostFamily.city ? p.hostFamily.city : 'Unknown',
+                  p.hostFamily && p.hostFamily.address ? p.hostFamily.address : '',
+                  p.hostFamily && p.hostFamily.city ? p.hostFamily.city : '',
                   p.hostFamily && p.hostFamily.role ? p.hostFamily.role : 'hostfamily',
                   p.hostFamily && p.hostFamily.email ? p.hostFamily.email : `unknown${Date.now()}@example.com`,
                   p.hostFamily && p.hostFamily.referrerId ? p.hostFamily.referrerId : null

@@ -17,7 +17,7 @@ import {
 
 import Input from './components/ui/Input';
 import { useUser } from './contexts/userContext';
-import { hasRoles } from './lib/utils';
+import { hasRole } from './lib/utils';
 import { catsService } from './services/catsService';
 
 /**
@@ -52,7 +52,7 @@ export default function HomePage() {
         <div className="flex flex-col gap-8 w-full xl:w-1115 lg:w-800 items-center text-center">
           <span className="text-[32px] text-(--primary) w-full">Association de protection des animaux</span>
           <span className="text-lg text-(--text) font-normal w-full">​Ensemble, écrivons un avenir meilleur pour nos amis les chats !</span>
-          {user && hasRoles(user.roles, [UserRole.Admin, UserRole.HostFamily]) &&<div className="flex w-full items-center justify-center">
+          {user && hasRole(user.role, [UserRole.Admin, UserRole.HostFamily]) &&<div className="flex w-full items-center justify-center">
                   <Input
                     name="search"
                     placeHolder="Rechercher un chat par son numéro d'identification"

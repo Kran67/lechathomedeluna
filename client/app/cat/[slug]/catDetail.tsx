@@ -141,20 +141,20 @@ export default function Property({ slug }: CatProps) {
                             </div>
                         </div>
                     </div>
-                    <div
+                    { cat?.hostFamily && <div
                         className="flex flex-col w-full lg:w-345 gap-8 lg:h-281 border border-solid border-(--pink) rounded-[10px] p-24 bg-(--white) order-1 lg:order-0">
                         <span className="text-base text-(--text)">L'adoptant</span>
                         <div className="flex gap-18 pt-16 pb-16 items-center">
                             <div className="rounded-[10px] w-81 h-82 overflow-hidden relative">
                                 {/* {cat?.host.picture && <Image src={cat?.host.picture} alt="Image de l'hôte" fill style={{ objectFit: "cover" }} />} */}
                             </div>
-                            <span className="text-base ext-(--text) font-normal">{cat?.hostFamily.name}</span>
+                            <span className="text-base ext-(--text) font-normal">{cat?.hostFamily?.name}</span>
                         </div>
                         <Button
                             url="/messenging"
                             text="Envoyer un message"
                             className="text-sm text-(--white) bg-(--primary) rounded-[10px] py-8 px-32" />
-                    </div>
+                    </div>}
                     <div className="flex flex-col gap-40 lg:w-full bg-(--white) rounded-[10px] border boder-solid border-(--pink) p-24 order-0 lg:order-1">
                         <div className="flex flex-col gap-32">
                             <div className="flex flex-col gap-16">
@@ -162,7 +162,7 @@ export default function Property({ slug }: CatProps) {
                             </div>
                             <p className="text-sm text-(--text) font-normal whitespace-break-spaces">{cat?.description}</p>
                         </div>
-                        <CollapseElement title="Informations" content={[`${dateAge(cat?.birthday)} an(s)`, cat?.sex, cat?.dress, cat?.status]} />
+                        <CollapseElement title="Informations" content={[`${dateAge(cat?.birthDate)} an(s)`, cat?.sex, cat?.dress, cat?.status]} />
                     </div>
                 </div>
             </div>

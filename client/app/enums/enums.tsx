@@ -9,7 +9,8 @@ export enum HeaderMenuItems {
     HealthRegister,
     VeterinaryVouchers,
     Events,
-    Volunteers
+    Volunteers,
+    Profile
 }
 
 export enum LogoSizes {
@@ -40,7 +41,8 @@ export enum InputTypes {
     Text = 'text',
     Password = 'password',
     Email = 'email',
-    Date = 'date'
+    Date = 'date',
+    Hidden = 'hidden'
 }
 
 export enum InputImageTypes {
@@ -50,8 +52,8 @@ export enum InputImageTypes {
 }
 
 export enum UserRole {
-    Admin,
-    Assistant,
-    HostFamily,
-    Volunteer
+    Admin = "Admin",
+    Assistant = "Assistant",
+    HostFamily = "HostFamily",
+    Volunteer = "Volunteer"
 }

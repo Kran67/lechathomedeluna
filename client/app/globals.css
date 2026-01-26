@@ -25,3 +25,24 @@ body {
   background-color: rgba(255, 255, 255, 0.8);
   background-blend-mode: lighten;
 }
+
+.select .select__control,
+.select .select__control:hover {
+  border-radius: 0;
+  border-color: var(--pink);
+  box-shadow: none;
+}
+
+.select .select__indicator.select__clear-indicator svg path,
+.select .select__indicator.select__dropdown-indicator svg path {
+  fill: var(--pink);
+}
+
+.select .select__indicator-separator {
+  background-color: var(--pink);
+}
+
+.select .select__control .select__value-container .select__single-value {
+  font-size: var(--text-sm);
+  color: var(--text);
+}

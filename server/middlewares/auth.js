@@ -25,7 +25,7 @@ function requireAuth(req, res, next) {
 
 function requireAdmin(req, res, next) {
   requireAuth(req, res, () => {
-    if (req.user.role !== 'admin') return res.status(403).json({ error: 'admin required' });
+    if (req.user.role !== 'Admin') return res.status(403).json({ error: 'admin required' });
     next();
   });
 }
@@ -46,7 +46,7 @@ function requireSelfOrAdmin(param = 'id') {
   return function (req, res, next) {
     requireAuth(req, res, () => {
       const requestedId = String(req.params && req.params[param]);
-      if (req.user.role === 'admin' || String(req.user.id) === requestedId) return next();
+      if (req.user.role === 'Admin' || String(req.user.id) === requestedId) return next();
       return res.status(403).json({ error: 'forbidden' });
     });
   };

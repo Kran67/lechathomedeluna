@@ -2,7 +2,7 @@ import { Cat } from '@/app/interfaces/cat';
 
 export const catsMock: Cat[] = [
     {
-        id: 1,
+        id: "1",
         slug: "c67ab8a7",
         name: "Calypso",
         description: `✨ Calypso cherche avant tout une famille prête à lui donner sa chance, avec douceur et patience, afin qu’elle puisse enfin découvrir la sécurité d’un vrai foyer et s’épanouir à son rythme ❤️🐾
@@ -19,7 +19,7 @@ Calypso a simplement besoin de temps, de douceur et de stabilité pour continuer
         dress: "Marron",
         isAdopted: true,
         adoptionDate: "06/01/2026",
-        birthday: "01/01/2023",
+        birthDate: "01/01/2023",
         numIdentification: "250269604",
         hostFamily: {
             id: "1",
@@ -36,7 +36,7 @@ Calypso a simplement besoin de temps, de douceur et de stabilité pour continuer
         vaccines: [],
     },
     {
-        id: 2,
+        id: "2",
         slug: "0979876d",
         name: "Réglisse",
         description: `✨ Malgré que ce ne soit pas un chaton ni un chat très câlin, offrez-lui sa chance de découvrir un foyer doux… il vous le rendra au centuple ❤️🐾
@@ -50,7 +50,7 @@ Cette petite sauvageonne a droit à sa chance et rêve d’un foyer doux et aima
         sex: "Femelle",
         dress: "Noire",
         isAdopted: true,
-        birthday: "01/01/2015",
+        birthDate: "01/01/2015",
         numIdentification: "250269605",
         hostFamily: {
             id: "1",
@@ -66,7 +66,7 @@ Cette petite sauvageonne a droit à sa chance et rêve d’un foyer doux et aima
         vaccines: [],
     },
     {
-        id: 3,
+        id: "3",
         slug: "d60ca600",
         name: "Choupinette",
         description: `📍 Visible au bar à chats Le Wiccat à Strasbourg @wiccat.coffeeshop 
@@ -78,7 +78,7 @@ Un cœur tendre qui ne demande qu’un foyer calme, patient et aimant pour s’�
         status: "non testé",
         sex: "Femelle",
         dress: "Tigré",
-        birthday: "01/01/2019",
+        birthDate: "01/01/2019",
         numIdentification: "250269606",
         hostFamily: {
             id: "1",
@@ -97,7 +97,7 @@ Un cœur tendre qui ne demande qu’un foyer calme, patient et aimant pour s’�
         vaccines: [],
     },
     {
-        id: 4,
+        id: "4",
         slug: "af6d2d48",
         name: "Thimotée",
         description: `Thimotée, 8 ans, c’est le chat parfait : très sociable, gentil et incroyablement facile à vivre 💕.
@@ -112,7 +112,7 @@ Thimotée, c’est un amour de chat avec encore tant d’affection à offrir`,
         dress: "Noir",
         isAdopted: true,
         adoptionDate: "20/01/2026",
-        birthday: "01/01/2018",
+        birthDate: "01/01/2018",
         numIdentification: "250269607",
         hostFamily: {
             id: "1",
@@ -127,7 +127,7 @@ Thimotée, c’est un amour de chat avec encore tant d’affection à offrir`,
         vaccines: [],
     },
     {
-        id: 4,
+        id: "5",
         slug: "1e180563",
         name: "Stocky",
         description: `Voici Stocky, un mâle de 3 ans, au caractère calme et posé 💛
@@ -141,7 +141,7 @@ Un compagnon doux, discret et attachant, qui cherche une famille prête à respe
         status: "non testé",
         sex: "Mâle",
         dress: "Gris",
-        birthday: "01/01/2023",
+        birthDate: "01/01/2023",
         numIdentification: "250269608",
         hostFamily: {
             id: "1",
@@ -158,7 +158,7 @@ Un compagnon doux, discret et attachant, qui cherche une famille prête à respe
         vaccines: [],
     },
     {
-        id: 5,
+        id: "6",
         slug: "6ff132c6",
         name: "Salem",
         description: `📍 Visible au bar à chats Le Wiccat à Strasbourg @wiccat.coffeeshop 
@@ -171,7 +171,7 @@ C’est le papy parfait, sociable, câlin et facile à vivre. Un compagnon idéa
         status: "negatif",
         sex: "Mâle",
         dress: "Noir",
-        birthday: "01/01/2016",
+        birthDate: "01/01/2016",
         numIdentification: "250269609",
         hostFamily: {
             id: "1",

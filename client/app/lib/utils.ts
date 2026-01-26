@@ -1,5 +1,3 @@
-import { UserRole } from '@/app/enums/enums';
-
 /**
  * Prépare le corps du document html pour l'affichage de fenêtre modale, enlève la scrollbar
  * 
@@ -40,6 +38,15 @@ export const dateAge = (dateStr: string | undefined) => {
     return Math.abs((new Date(Date.now() - date.getTime()).getUTCFullYear()) - 1970);
 }
 
-export const hasRoles = (roles: UserRole[], rolesToCheck: UserRole[]): boolean => {
-    return rolesToCheck.some(role => roles.includes(role));
+export const hasRole = (userRole: string, rolesToCheck: string[]): boolean => {
+    return rolesToCheck.includes(userRole);
+}
+
+/**
+ * Lance une redirection de page avec un délai
+ * @param url: string - l'adresse de redirection
+ * @param delay: number - (default 0) le delai avant la redirection
+ */
+export const redirectWithDelay = (url: string, delay: number = 0): void => {
+    setTimeout(() => window.location.href = url, delay);
 }

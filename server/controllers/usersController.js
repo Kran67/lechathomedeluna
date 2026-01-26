@@ -40,7 +40,7 @@ async function create(req, res) {
 async function update(req, res) {
   const db = req.app.locals.db;
   try {
-    const allowAdminRole = req.user && req.user.role === 'admin';
+    const allowAdminRole = req.user && req.user.role === 'Admin';
     const updated = await updateUser(db, req.params.id, req.body || {}, { allowAdminRole });
     res.json(updated);
   } catch (e) {

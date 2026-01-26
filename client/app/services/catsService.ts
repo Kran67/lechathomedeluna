@@ -34,8 +34,8 @@ export function catsService(adopted: boolean = false, numId?: string): { cats: C
                     }
                 }
             } else {
-
-                const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats`, {
+                let url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats/${adopted}`;
+                const res: Response = await fetch(url, {
                     method: "GET",
                     cache: "no-store",
                     headers: { 'Content-Type': 'application/json', }

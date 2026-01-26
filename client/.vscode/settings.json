@@ -3,6 +3,6 @@
         "titleBar.activeBackground": "#5bff9a",
         "titleBar.activeForeground": "#000",
         "titleBar.inactiveBackground": "#5bff9a",
-        "titleBar.inactiveForeground": "#000"
+        "titleBar.inactiveForeground": "#000",
     }
 }

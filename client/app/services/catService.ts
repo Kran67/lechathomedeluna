@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react";
-import type { Cat } from "@/app/interfaces/cat";
-import { catsMock } from "@/app/mocks/cats";
+import {
+  useEffect,
+  useState,
+} from 'react';
+
+import type { Cat } from '@/app/interfaces/cat';
+import { catsMock } from '@/app/mocks/cats';
 
 /**
  * Permet de récupèrer un chat depuis la base de données
@@ -19,7 +23,7 @@ export function catService(id: string): { cat: Cat | any, loading: boolean, refr
         setLoading(true);
         try {
             if (process.env.NEXT_PUBLIC_MOCK_MODE === "true") {
-                setCat(catsMock.find((p) => p.id === id));
+                setCat(catsMock.find((p) => p.slug === id));
             } else {
                 const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats/${id}`, {
                     method: "GET",

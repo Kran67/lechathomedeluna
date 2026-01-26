@@ -3,14 +3,15 @@ function mapCatRow(row) {
   return {
     id: row.id,
     slug: row.slug,
-    title: row.title,
+    name: row.name,
     description: row.description,
-    cover: row.cover,
-    location: row.location,
-    price_per_night: row.price_per_night,
-    rating_avg: row.rating_avg,
-    ratings_count: row.ratings_count,
-    host: row.host_id ? { id: row.host_id, name: row.host_name, picture: row.host_picture } : undefined,
+    status: row.status,
+    sex: row.sex,
+    dress: row.dress,
+    race: row.race,
+    birthDate: row.birthDate,
+    pictures: [row.url],
+    hostFamily: row.hostFamily_id ? { id: row.hostFamily_id, name: row.hostFamily_name } : undefined,
   };
 }
 
@@ -37,33 +38,33 @@ async function ensureUniqueSlug(db, base, excludeId = null) {
   }
 }
 
-async function listCats(db) {
+async function listCats(db, isAdopted) {
   const rows = await db.allAsync(`
-      SELECT p.*, u.name AS host_name, u.picture AS host_picture
-      FROM cats p
-      JOIN users u ON u.id = p.host_id
-      ORDER BY p.title ASC
+      SELECT DISTINCT c.id, c.slug, c.name, substr(c.description, 1, 210) AS description, c.status, c.sex, c.dress, c.race, c.birthDate, cp.url
+      FROM cats c
+      JOIN cat_pictures cp ON cp.cat_id = c.id
+	    GROUP BY c.id, c.slug, c.name, c.description, c.status, c.sex, c.dress, c.race, c.birthDate
+      ${isAdopted !== undefined ? 'HAVING c.isAdopted = ' + (isAdopted === 'true' ? '1' : '0') : ''}
+      ORDER BY c.name ASC
     `);
   return rows.map(mapCatRow);
 }
 
 async function getCatDetails(db, id) {
   const row = await db.getAsync(`
-    SELECT p.*, u.name AS host_name, u.picture AS host_picture
+    SELECT p.*, u.id AS hostFamily_id, u.name AS hostFamily_name
     FROM cats p
-    JOIN users u ON u.id = p.host_id
-    WHERE p.id = ?
+    LEFT JOIN users u ON u.id = p.hostfamily_id
+    WHERE p.slug = ?
   `, [id]);
   if (!row) return null;
   const base = mapCatRow(row);
-  const pictures = await db.allAsync('SELECT url FROM cat_pictures WHERE cat_id = ?', [id]);
-  //const equipments = await db.allAsync('SELECT name FROM cat_equipments WHERE cat_id = ?', [id]);
-  //const tags = await db.allAsync('SELECT name FROM cats_tags WHERE cat_id = ?', [id]);
+  const pictures = await db.allAsync('SELECT url FROM cat_pictures WHERE cat_id = ?', [base.id]);
+  //const vaccines = await db.allAsync('SELECT name FROM cat_equipments WHERE cat_id = ?', [id]);
   return {
     ...base,
     pictures: pictures.map(r => r.url),
-    //equipments: equipments.map(r => r.name),
-    //tags: tags.map(r => r.name),
+    //vaccines: equipments.map(r => r.name),
   };
 }
 
@@ -83,7 +84,7 @@ async function ensureHost(db, host_id, host) {
 async function createCat(db, payload) {
   const {
     id,
-    title,
+    name,
     description = null,
     cover = null,
     location = null,
@@ -91,42 +92,36 @@ async function createCat(db, payload) {
     host_id,
     host,
     pictures = [],
-    equipments = [],
-    tags = [],
+    vaccines = [],
   } = payload || {};
 
-  if (!title) throw new Error('title is required');
+  if (!name) throw new Error('Nom est requis');
   let price = Number(price_per_night);
   if (!Number.isFinite(price) || price <= 0) price = 80;
 
-  const resolvedHostId = await ensureHost(db, host_id, host);
-  if (!resolvedHostId) {
-    const err = new Error('host_id or host{name,picture} is required');
-    err.status = 400; // to allow controller to map specific status
-    throw err;
-  }
+  //const resolvedHostId = await ensureHost(db, host_id, host);
+  //if (!resolvedHostId) {
+  //  const err = new Error('host_id ou host{nom,image} requis');
+  //  err.status = 400; // to allow controller to map specific status
+  //  throw err;
+  //}
 
   const newId = id || genId();
   const base = slugify(title);
   const uniqueSlug = await ensureUniqueSlug(db, base);
   await db.runAsync(
     'INSERT INTO cats(id, title, slug, description, cover, location, host_id, price_per_night) VALUES (?,?,?,?,?,?,?,?)',
-    [newId, title, uniqueSlug, description, cover, location, resolvedHostId, price]
+    [newId, title, uniqueSlug, description, cover, location, price]
   );
 
   if (Array.isArray(pictures)) {
     for (const url of pictures) {
-      if (url) await db.runAsync('INSERT OR IGNORE INTO cat_pictures(property_id, url) VALUES (?,?)', [newId, url]);
+      if (url) await db.runAsync('INSERT OR IGNORE INTO cat_pictures(cat_id, url) VALUES (?,?)', [newId, url]);
     }
   }
 //  if (Array.isArray(equipments)) {
 //    for (const name of equipments) {
 //      if (name) await db.runAsync('INSERT OR IGNORE INTO property_equipments(property_id, name) VALUES (?,?)', [newId, name]);
-//    }
-//  }
-//  if (Array.isArray(tags)) {
-//    for (const name of tags) {
-//      if (name) await db.runAsync('INSERT OR IGNORE INTO property_tags(property_id, name) VALUES (?,?)', [newId, name]);
 //    }
 //  }
 
@@ -156,7 +151,7 @@ async function updateCat(db, id, changes) {
   }
 
   if (fields.length === 0) {
-    const err = new Error('No fields to update');
+    const err = new Error('Aucun champ à mettre à jour');
     err.status = 400;
     throw err;
   }
@@ -173,7 +168,7 @@ async function updateCat(db, id, changes) {
 async function deleteCat(db, id) {
   const r = await db.runAsync('DELETE FROM cats WHERE id = ?', [id]);
   if (r.changes === 0) {
-    const err = new Error('Cat not found');
+    const err = new Error('Chat introuvable');
     err.status = 404;
     throw err;
   }

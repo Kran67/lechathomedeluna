@@ -11,11 +11,11 @@ const uploads = require('../controllers/uploadsController');
 router.use(dbReady);
 
 // Properties
-router.get('/cats', cats.list);
+router.get('/cats/:isAdopted', cats.list);
 router.get('/cats/:id', cats.getById);
-router.post('/cats', requireRole(['admin','']), cats.create);
-router.patch('/cats/:id', requireRole(['','admin']), cats.update);
-router.delete('/cats/:id', requireRole(['','admin']), cats.remove);
+router.post('/cats', requireRole(['admin','assistant', 'hostfamilyreference', 'hostfamily']), cats.create);
+router.patch('/cats/:id', requireRole(['admin','assistant', 'hostfamilyreference', 'hostfamily']), cats.update);
+router.delete('/cats/:id', requireRole(['admin']), cats.remove);
 
 // Users
 router.get('/users', requireAdmin, users.list);
@@ -24,9 +24,9 @@ router.post('/users', requireAdmin, users.create);
 router.patch('/users/:id', requireSelfOrAdmin('id'), users.update);
 
 // Uploads
-router.post('/uploads/image', requireRole(['','admin']), uploads.uploadImage);
+router.post('/uploads/image', requireRole(['admin']), uploads.uploadImage);
 
 // Delete one or multiple uploaded images by filename or URL
-router.delete('/uploads/images', requireRole(['','admin']), uploads.deleteImages);
+router.delete('/uploads/images', requireRole(['admin']), uploads.deleteImages);
 
 module.exports = router;

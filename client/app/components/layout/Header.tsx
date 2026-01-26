@@ -19,7 +19,7 @@ import {
   UserRole,
 } from '@/app/enums/enums';
 import {
-  hasRoles,
+  hasRole,
   prepareBodyToShowModal,
 } from '@/app/lib/utils';
 
@@ -44,12 +44,6 @@ export default function Header({ activeMenu }: HeaderProps) {
     const { user, clear } = useUser();
     const cookies: Cookies = useCookies();
 
-    const handleLogout = () => {
-        cookies.remove("token");
-        cookies.remove("userId");
-        clear();
-    }
-    console.log(`-${user}-`);
     return (
         <header
             className="flex w-full xl:w-1140 md:p-20 items-center justify-between font-normal">
@@ -60,17 +54,17 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.Home}
                 url="/"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />
-            {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant]) && <MenuItem
+            {user && hasRole(user.role, [UserRole.Admin, UserRole.Assistant]) && <MenuItem
                 text="Registre sanitaire"
                 isActive={activeMenu === HeaderMenuItems.HealthRegister}
                 url="/healthRegister"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
-            {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant]) && <MenuItem
+            {user && hasRole(user.role, [UserRole.Admin, UserRole.Assistant]) && <MenuItem
                 text="Bons vétérinaires"
                 isActive={activeMenu === HeaderMenuItems.VeterinaryVouchers}
                 url="/veterinary"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
-            {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Volunteer]) && <MenuItem
+            {user && hasRole(user.role, [UserRole.Admin, UserRole.Volunteer]) && <MenuItem
                 text="Evénements"
                 isActive={activeMenu === HeaderMenuItems.Events}
                 url="/events"
@@ -80,7 +74,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.Adoption}
                 url="/adoption"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />
-            {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant, UserRole.Volunteer]) && <MenuItem
+            {user && hasRole(user.role, [UserRole.Admin, UserRole.Assistant, UserRole.Volunteer]) && <MenuItem
                 text="Bénévoles"
                 isActive={activeMenu === HeaderMenuItems.Volunteers}
                 url="/"
@@ -90,7 +84,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.AdoptedCats}
                 url="/adoptedCats"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />
-            {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant, UserRole.HostFamily]) && <MenuItem
+            {user && hasRole(user.role, [UserRole.Admin, UserRole.Assistant, UserRole.HostFamily]) && <MenuItem
                 text="Messagerie"
                 isActive={activeMenu === HeaderMenuItems.Messaging}
                 url="/messaging"
@@ -106,10 +100,9 @@ export default function Header({ activeMenu }: HeaderProps) {
                 url="/login"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
             {user && <MenuItem
-                text={user.name + " Se déconnecter"}
+                text={user.name + " " + user.lastName}
                 isActive={activeMenu === HeaderMenuItems.Logout}
-                url="/"
-                onClick={() => handleLogout()}
+                url="/profile"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold w-90" />}
             <IconButton
                 icon={isMenuVisible ? IconButtonImages.Cross : IconButtonImages.Menu}

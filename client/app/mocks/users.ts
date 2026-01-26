@@ -6,51 +6,56 @@ export const usersMock: User[] = [
         id: "1",
         name: "Sandra  Daout",
         email: "admin@exemple.com",
-        password: "",
         phone: "",
         city: "",
-        picture: "",
-        roles: [UserRole.Admin]
+        role: UserRole.Admin,
+        lastName: '',
+        address: '',
+        blacklisted: 0
     },
     {
         id: "2",
         name: "Sandra  Daout",
         email: "assistant@exemple.com",
-        password: "",
         phone: "",
         city: "",
-        picture: "",
-        roles: [UserRole.Assistant]
+        role: UserRole.Assistant,
+        lastName: '',
+        address: '',
+        blacklisted: 0
     },
     {
         id: "3",
         name: "Sandra  Daout",
         email: "faref@exemple.com",
-        password: "",
         phone: "",
         city: "",
-        picture: "",
-        roles: [UserRole.HostFamily]
+        role: UserRole.HostFamily,
+        lastName: '',
+        address: '',
+        blacklisted: 0
     },
     {
         id: "4",
         name: "Sandra  Daout",
         email: "fa@exemple.com",
-        password: "",
         phone: "",
         city: "",
-        picture: "",
-        idFARef: "3",
-        roles: [UserRole.HostFamily]
+        referrer_id: "3",
+        role: UserRole.HostFamily,
+        lastName: '',
+        address: '',
+        blacklisted: 0
     },
     {
         id: "5",
         name: "Sandra  Daout",
         email: "benevole@exemple.com",
-        password: "",
         phone: "",
         city: "",
-        picture: "",
-        roles: [UserRole.Volunteer]
+        role: UserRole.Volunteer,
+        lastName: '',
+        address: '',
+        blacklisted: 0
     }
 ];

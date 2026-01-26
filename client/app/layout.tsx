@@ -1,12 +1,14 @@
-import type { Metadata } from "next";
-import { Roboto_Condensed } from "next/font/google";
-import "@/app/globals.css";
-import { NextFontWithVariable } from "next/dist/compiled/@next/font";
-import { UserProvider } from "@/app/contexts/userContext";
-import { cookies } from "next/headers";
-import { User } from "@/app/interfaces/user";
-import { CookiesProvider } from "next-client-cookies/server";
-import { getProfile } from "@/app/api/api";
+import '@/app/globals.css';
+
+import type { Metadata } from 'next';
+import { CookiesProvider } from 'next-client-cookies/server';
+import { NextFontWithVariable } from 'next/dist/compiled/@next/font';
+import { Roboto_Condensed } from 'next/font/google';
+import { cookies } from 'next/headers';
+
+import { getProfile } from '@/app/api/api';
+import { UserProvider } from '@/app/contexts/userContext';
+import { User } from '@/app/interfaces/user';
 
 /**
  * Ajout de la police de caractère utilisée sur le site

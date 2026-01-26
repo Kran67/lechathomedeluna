@@ -21,7 +21,7 @@
             "phone": "0601020304",
             "address": "10 rue des Fleurs",
             "city": "Strasbourg",
-            "role": "hostfamilyreference",
+            "role": "HostFamily",
             "email": "faref@exemple.com"
         },
         "pictures": [
@@ -52,7 +52,7 @@
             "phone": "0601020304",
             "address": "10 rue des Fleurs",
             "city": "Strasbourg",
-            "role": "hostfamily",
+            "role": "HostFamily",
             "email": "fa@exemple.com",
             "referrerId": 2
         },

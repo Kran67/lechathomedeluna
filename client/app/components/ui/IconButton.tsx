@@ -1,8 +1,11 @@
 'use client'
 
-import { useRouter } from "next/navigation";
-import { IconButtonImages } from "@/app/enums/enums";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import {
+  AppRouterInstance,
+} from 'next/dist/shared/lib/app-router-context.shared-runtime';
+import { useRouter } from 'next/navigation';
+
+import { IconButtonImages } from '@/app/enums/enums';
 
 /**
  * Interface pour les propriétés d'initialisation du IconButton
@@ -101,6 +104,17 @@ export default function IconButton({ icon, className, onClick, url, imgWidth, im
                     <path d="M9 12h12l-3 -3" fill={svgFill ?? "#99331A"} stroke={svgStroke ?? "#99331A"} />
                     <path d="M18 15l3 -3" fill={svgFill ?? "#99331A"} stroke={svgStroke ?? "#99331A"} />
                 </svg>;
+            case IconButtonImages.Pen:
+                return <svg width={imgWidth ?? "24"} height={imgHeight ?? "24"} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="m15.84078,2.89099a1.19166,1.19166 0 0 1 1.573,-0.09891l0.11202,0.09891l3.57499,3.57499a1.19166,1.19166 0 0 1 -1.573,1.78392l-0.11202,-0.09891l-3.57499,-3.57499a1.19166,1.19166 0 0 1 0,-1.68501z"  fill={svgFill ?? "#99331A"} />
+                    <path d="m17.62827,1.10349a3.71918,3.71918 0 0 1 5.42207,5.0884l-0.16207,0.1716l-10.12914,10.12914a1.19166,1.19166 0 0 1 -0.6864,0.33843l-0.15611,0.01072l-3.57499,0a1.19166,1.19166 0 0 1 -1.18332,-1.05224l-0.00834,-0.13942l0,-3.57499a1.19166,1.19166 0 0 1 0.24548,-0.72453l0.10367,-0.11917l10.12914,-10.12914l0,0.00119zm3.57499,1.68501a1.33705,1.33705 0 0 0 -1.77319,-0.10367l-0.11678,0.10367l-9.77998,9.77998l0,1.88879l1.88879,0l9.78117,-9.77879a1.33705,1.33705 0 0 0 0.10367,-1.77319l-0.10367,-0.11678z"  fill={svgFill ?? "#99331A"} />
+                    <path d="m9.44155,0.1585a1.19166,1.19166 0 0 1 0.13942,2.37498l-0.13942,0.00834l-4.94898,0a2.10924,2.10924 0 0 0 -2.1009,1.93526l-0.00834,0.17398l0,14.8505c0,1.10586 0.85204,2.01391 1.93526,2.1009l0.17398,0.00596l14.8505,0a2.10924,2.10924 0 0 0 2.1009,-1.93526l0.00596,-0.17398l0,-4.95017a1.19166,1.19166 0 0 1 2.37498,-0.13942l0.00834,0.13942l0,4.95017a4.49257,4.49257 0 0 1 -4.2602,4.48542l-0.23237,0.00715l-14.84931,0a4.49257,4.49257 0 0 1 -4.48542,-4.2602l-0.00596,-0.23237l0,-14.84931a4.49257,4.49257 0 0 1 4.2602,-4.48542l0.23237,-0.00596l4.95017,0l-0.00119,0z"  fill={svgFill ?? "#99331A"} />
+               </svg>;
+            case IconButtonImages.BlackListed:
+                return <svg width={imgWidth ?? "24"} height={imgHeight ?? "24"} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="m15.77426,11.85107a8.62765,8.62765 0 0 0 -2.14381,-1.33039a5.60355,5.60355 0 1 0 -5.88192,0c-3.5935,1.53103 -6.1874,5.7825 -6.1874,10.77869a0.72304,0.72304 0 0 0 0.72304,0.72304l9.03798,0a6.77487,6.77487 0 0 1 4.45211,-10.17134z" fill={svgFill ?? "#99331A"} />
+                    <path d="m20.8771,14.74969a5.33422,5.33422 0 0 0 -7.45633,-0.08134l-0.0235,0.01988l-0.01085,0.01265l-0.05061,0.0488a5.33241,5.33241 0 1 0 7.54129,0zm-3.77064,-0.16449a3.91164,3.91164 0 0 1 2.78189,1.15325a3.94237,3.94237 0 0 1 0.5007,4.95462l-5.45171,-5.45532a3.91164,3.91164 0 0 1 2.16912,-0.65254zm-2.78189,6.72064a3.93152,3.93152 0 0 1 -0.39586,-5.09742l5.48967,5.49328a3.9261,3.9261 0 0 1 -5.0938,-0.39586z" fill={svgFill ?? "#99331A"} />
+                </svg>
 
             default:
                 return <svg width={imgWidth ?? "11"} height={imgHeight ?? "9"} viewBox="0 0 11 9" fill="none" xmlns="http://www.w3.org/2000/svg">

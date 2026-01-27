@@ -101,7 +101,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
             {user && <MenuItem
                 text={user.name + " " + user.lastName}
-                isActive={activeMenu === HeaderMenuItems.Logout}
+                isActive={activeMenu === HeaderMenuItems.Profile}
                 url="/profile"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold w-90" />}
             <IconButton

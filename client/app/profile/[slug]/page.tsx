@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 import { User } from '@/app/interfaces/user';
 import {
@@ -15,13 +16,19 @@ export default async function ProfilePage({ params }: { params: Promise<{ slug: 
     const token: string | undefined = cookieStore.get("token")?.value;
     let profile: User | null = null;
     let users: User[] = [];
+    let res;
 
-    let res = await getById(token, slug);
-    if (!res.error) {
-        profile = res;
-        console.log("Profile loaded:", profile);
-    } else {
-        throw new Error(res.error);
+    if (!token || token === "") {
+        redirect("/");
+    }
+
+    if (slug !== "new") {
+        let res = await getById(token, slug);
+        if (!res.error) {
+            profile = res;
+        } else {
+            throw new Error(res.error);
+        }
     }
     res = await getAll(token);
     if (!res.error) {
@@ -31,6 +38,6 @@ export default async function ProfilePage({ params }: { params: Promise<{ slug: 
     }
 
     return (
-        <Profile profile={profile} users={users} />
+        <Profile profile={profile} users={users} isNew={slug === "new"} />
     );
 }

@@ -61,7 +61,7 @@ export default function Input({ name, label, type, value, imageType, placeHolder
         "flex-1",
         showLabel ? "gap-7" : "",
         "justify-start",
-        showLabel ? "h-77" : "h-63",
+        showLabel ? "h-77" : "",
         className ?? ""
     ].join(" ");
 
@@ -89,7 +89,7 @@ export default function Input({ name, label, type, value, imageType, placeHolder
             />
         ) : (
             <div className={classNames} style={{ "minWidth": width, "maxWidth": width }}>
-                <label className={"text-sm text-(--text) font-medium " + (!showLabel ? "hidden" : "")} htmlFor={name}>{label}{required ? " *" : ""}</label>
+                {showLabel && <label className="text-sm text-(--text) font-medium " htmlFor={name}>{label}{required ? " *" : ""}</label>}
                 <div className={"flex justify-between items-center bg-(--white) border " +
                     (!hasError ? "border-(--pink)" : "border-(--primary-dark)") + " border-solid rounded-[4px]" + (showLabel ? "py-16" : "") + " px-10 gap-10 h-40"}>
                     <input

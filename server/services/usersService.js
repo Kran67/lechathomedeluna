@@ -1,24 +1,34 @@
 async function listUsers(db) {
-  return await db.allAsync('SELECT id, name, lastName FROM users ORDER BY id DESC');
+  return await db.allAsync('SELECT * FROM users ORDER BY id DESC');
 }
 
 async function getUser(db, id) {
   return await db.getAsync('SELECT * FROM users WHERE id = ?', [id]);
 }
 
-async function createUser(db, { email, name, role = 'client' }) {
+async function createUser(db, { email, name, lastName, phone, address, city, role, blacklisted, referrer_id }) {
   if (!email) {
-    const err = new Error('Email est requis');
+    const err = new Error("L'email est requis");
     err.status = 400;
     throw err;
   }
-  if (!['Admin', 'Assistant', 'FamilyHostReference'].includes(role)) {
+  if (!name) {
+    const err = new Error('Le Nom est requis');
+    err.status = 400;
+    throw err;
+  }
+  if (!lastName) {
+    const err = new Error('Le prénom est requis');
+    err.status = 400;
+    throw err;
+  }
+  if (!['Assistant', 'HostFamily', 'Volunteer'].includes(role)) {
     const err = new Error('Rôle invalide');
     err.status = 400;
     throw err;
   }
   try {
-    const r = await db.runAsync('INSERT INTO users(email, name, role) VALUES (?,?,?)', [email, name, role]);
+    const r = await db.runAsync('INSERT INTO users(email, name, lastName, role, phone, address, city, blacklisted, referrer_id) VALUES (?,?,?,?,?,?,?,?,?)', [email, name, lastName, role, phone, address, city, blacklisted, referrer_id]);
     return await getUser(db, r.lastID);
   } catch (e) {
     if (/UNIQUE/i.test(e.message)) {

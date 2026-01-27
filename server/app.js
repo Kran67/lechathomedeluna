@@ -29,7 +29,10 @@ initialize().then((db) => {
   console.error('Database initialization failed:', err);
 });
 
-app.use(cors());
+app.use(cors(/*{
+  origin: "https://lechathomedeluna.vercel.app",
+  credentials: true
+}*/));
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Headers', '*');
   next();

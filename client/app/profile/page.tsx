@@ -10,6 +10,7 @@ import {
   Cookies,
   useCookies,
 } from 'next-client-cookies';
+import dynamic from 'next/dynamic';
 import { redirect } from 'next/navigation';
 import { toast } from 'react-toastify';
 
@@ -19,7 +20,10 @@ import Header from '@/app/components/layout/Header';
 import Input from '@/app/components/ui/Input';
 import Link from '@/app/components/ui/Link';
 import { useUser } from '@/app/contexts/userContext';
-import { HeaderMenuItems } from '@/app/enums/enums';
+import {
+  Cities,
+  HeaderMenuItems,
+} from '@/app/enums/enums';
 
 import Button from '../components/ui/Button';
 import { User } from '../interfaces/user';
@@ -29,11 +33,14 @@ import {
   update,
 } from '../services/userService';
 
+const Select = dynamic(() => import("react-select"), { ssr: false });
+
 export default function Profile() {
     const { user, clear } = useUser();
     const cookies: Cookies = useCookies();
     const token: string | undefined = cookies.get("token");
     const [profile, setProfile] = useState<User | null>(null);
+    const [city, setCity] = useState<string>(user?.city || "");
 
     if (!user) {
         redirect("/");
@@ -97,7 +104,22 @@ export default function Profile() {
                             <Input name="lastname" label="Nom" value={profile?.lastName} />
                             <Input name="phone" label="Téléphone" value={profile?.phone} />
                             <Input name="address" label="Adresse" value={profile?.address} />
-                            <Input name="city" label="Ville" value={profile?.city} />
+                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                                <label className="text-sm text-(--text) font-medium " htmlFor="city">Ville</label>
+                                <Select
+                                    options={Cities}
+                                    className="select"
+                                    classNamePrefix="select"
+                                    name="city"
+                                    id="city"
+                                    isMulti={false}
+                                    isClearable={true}
+                                    isSearchable={true}
+                                    placeholder="Ville"
+                                    value={Cities.find(c => c.value === city)}
+                                    onChange={(e:any) => setCity(e?.value as string ?? "")}
+                                />
+                            </div>
                         </div>
                         <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
                             <Button text="Modifier les informations" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />

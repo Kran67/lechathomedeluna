@@ -10,24 +10,34 @@ import {
   useCookies,
 } from 'next-client-cookies';
 import dynamic from 'next/dynamic';
-import { redirect } from 'next/navigation';
+import {
+  redirect,
+  useRouter,
+} from 'next/navigation';
 import { toast } from 'react-toastify';
 
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
 import Button from '@/app/components/ui/Button';
+import IconButton from '@/app/components/ui/IconButton';
 import Input from '@/app/components/ui/Input';
 import { useUser } from '@/app/contexts/userContext';
 import {
+  Blacklists,
+  Cities,
   HeaderMenuItems,
-  UserRole,
+  IconButtonImages,
+  Roles,
 } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
 import {
   hasRole,
   redirectWithDelay,
 } from '@/app/lib/utils';
-import { update } from '@/app/services/userService';
+import {
+  create,
+  update,
+} from '@/app/services/userService';
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 
@@ -37,53 +47,24 @@ const Select = dynamic(() => import("react-select"), { ssr: false });
  * @interface ProfileProps
  */
 interface ProfileProps {
+    isNew: boolean;
     profile: User | null;
     users?: User[];
 }
 
-export default function Profile({ profile, users }: ProfileProps) {
+export default function Profile({ profile, users, isNew }: ProfileProps) {
     const { user } = useUser();
     const cookies: Cookies = useCookies();
     const token: string | undefined = cookies.get("token");
+    const [city, setCity] = useState<string>(profile?.city || "");
     const [role, setRole] = useState<string>(profile?.role || "");
     const [blacklisted, setBlacklisted] = useState<boolean>(profile?.blacklisted === 1 ? true : false);
     const [referrer, setReferrer] = useState<string>(profile?.referrer_id || "");
-
+    const router = useRouter();
+    
     if (!user || !hasRole(user?.role, ["Admin"])) {
         redirect("/");
     }
-
-    const roles: {
-        value: string;
-        label: string;
-    }[] = [
-            {
-                value: UserRole.Assistant,
-                label: UserRole.Assistant,
-            },
-            {
-                value: UserRole.HostFamily,
-                label: "Famille d'acceuil",
-            },
-            {
-                value: UserRole.Volunteer,
-                label: "Bénévole",
-            },
-        ];
-
-    const blacklists: {
-        value: boolean;
-        label: string;
-    }[] = [
-            {
-                value: false,
-                label: "Non",
-            },
-            {
-                value: true,
-                label: "Oui",
-            },
-        ];
 
     // Avant chaque soumission, vérification des données fournies valides.
     const handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void> = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -91,27 +72,43 @@ export default function Profile({ profile, users }: ProfileProps) {
 
         const form: EventTarget & HTMLFormElement = e.currentTarget;
         const formData: FormData = new FormData(form);
+        let res;
 
-        const res = await update(
-            token,
-            profile!.id,
-            formData.get("name") as string,
-            formData.get("lastname") as string,
-            formData.get("phone") as string,
-            formData.get("address") as string,
-            formData.get("city") as string,
-            role,
-            blacklisted,
-            referrer ?? null
-        );
+        if (isNew) {
+            res = await create(
+                token,
+                formData.get("email") as string,
+                formData.get("name") as string,
+                formData.get("lastname") as string,
+                formData.get("phone") as string,
+                formData.get("address") as string,
+                city,
+                role,
+                blacklisted,
+                referrer !== "" ? referrer : null
+            );
+        } else {
+            res = await update(
+                token,
+                profile!.id,
+                formData.get("name") as string,
+                formData.get("lastname") as string,
+                formData.get("phone") as string,
+                formData.get("address") as string,
+                city,
+                role,
+                blacklisted,
+                referrer !== "" ? referrer : null
+            );
+        }
         if (!res.error) {
-            redirectWithDelay(`/profile/${profile?.id}`, 1000);
+            redirectWithDelay(`/profile/${res.id}`, 1000);
         } else {
             toast.error(res.error);
         }
     };
 
-    const filteredUsers = users?.filter(u => u.id !== profile?.id && !profile?.blacklisted).map(u => ({
+    const filteredUsers = users?.filter(u => u.id !== profile?.id || !profile?.blacklisted).map(u => ({
         value: u.id,
         label: u.name + ' ' + u.lastName,
     }));
@@ -120,24 +117,50 @@ export default function Profile({ profile, users }: ProfileProps) {
         <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 lg:px-140 relative">
             <Header activeMenu={HeaderMenuItems.Profile} />
             <div className="flex flex-col w-full gap-10 lg:gap-24 lg:w-970 px-16 pb-80 lg:px-0 lg:pb-0">
+                <div className="lg:flex lg:flex-row lg:gap-10 w-full lg:py-16 lg:px-7 border-b-0 lg:border-b-1 border-solid border-b-(--pink)">
+                    <IconButton
+                        icon={IconButtonImages.LeftArrow}
+                        imgWidth={8}
+                        imgHeight={6}
+                        text="Retour"
+                        url="#"
+                        onClick={() => router.back()}
+                        svgFill="#902677"
+                        className="text-sm text-(--text) gap-5 bg-(--white) rounded-[10px] py-8 px-16 w-189" />
+                </div>
                 <div className="flex flex-col flex-1 gap-20 md:gap-41 rounded-[10px] border border-solid border-(--pink) bg-(--white) py-20 px-30 md:py-40 md:px-59">
                     <form onSubmit={handleSubmit} className="flex flex-col gap-20 md:gap-41" role="form" aria-label="Information du compte">
                         <div className="flex flex-col gap-4 md:gap-8">
-                            <h5 className="text-(--grey-800)">Compte de {profile?.name + " " + profile?.lastName}</h5>
+                            <h5 className="text-(--grey-800)">{ isNew ? "Création d'un utilisateur" : "Compte de " +  profile?.name + " " + profile?.lastName}</h5>
                         </div>
                         <div className="flex flex-col gap-12 md:gap-24">
                             <Input name="id" label="Identifiant" value={profile?.id} hidden={true} />
-                            <Input name="email" label="Email" value={profile?.email} readOnly={true} />
-                            <Input name="name" label="Prénom" value={profile?.name} />
-                            <Input name="lastname" label="Nom" value={profile?.lastName} />
+                            <Input name="email" label="Email" value={profile?.email} readOnly={!isNew} required={isNew} />
+                            <Input name="name" label="Prénom" value={profile?.name} required={isNew} />
+                            <Input name="lastname" label="Nom" value={profile?.lastName} required={isNew} />
                             <Input name="phone" label="Téléphone" value={profile?.phone} />
                             <Input name="address" label="Adresse" value={profile?.address} />
-                            <Input name="city" label="Ville" value={profile?.city} />
+                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                                <label className="text-sm text-(--text) font-medium " htmlFor="city">Ville</label>
+                                <Select
+                                    options={Cities}
+                                    className="select"
+                                    classNamePrefix="select"
+                                    name="city"
+                                    id="city"
+                                    isMulti={false}
+                                    isClearable={true}
+                                    isSearchable={true}
+                                    placeholder="Ville"
+                                    value={Cities.find(c => c.value === city)}
+                                    onChange={(e:any) => setCity(e?.value as string ?? "")}
+                                />
+                            </div>
                             {user?.role === "Admin" && 
                                 <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
-                                    <label className="text-sm text-(--text) font-medium " htmlFor="role">Rôle</label>
+                                    <label className="text-sm text-(--text) font-medium " htmlFor="role">Rôle {isNew ? "*": ""}</label>
                                     <Select
-                                        options={roles}
+                                        options={Roles}
                                         className="select"
                                         classNamePrefix="select"
                                         name="role"
@@ -146,8 +169,9 @@ export default function Profile({ profile, users }: ProfileProps) {
                                         isClearable={false}
                                         isSearchable={false}
                                         placeholder="Rôle"
-                                        value={roles.find(r => r.value === role)}
+                                        value={Roles.find(r => r.value === role)}
                                         onChange={(e:any) => setRole(e?.value as string ?? "")}
+                                        required={isNew}
                                     />
                                 </div>
                             }
@@ -155,7 +179,7 @@ export default function Profile({ profile, users }: ProfileProps) {
                                 <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                     <label className="text-sm text-(--text) font-medium " htmlFor="blacklisted">Sur liste noire</label>
                                     <Select
-                                        options={blacklists}
+                                        options={Blacklists}
                                         className="select"
                                         classNamePrefix="select"
                                         name="blacklisted"
@@ -164,7 +188,7 @@ export default function Profile({ profile, users }: ProfileProps) {
                                         isClearable={false}
                                         isSearchable={false}
                                         placeholder="Sur liste noire"
-                                        value={blacklists.find(r => r.value === blacklisted)}
+                                        value={Blacklists.find(r => r.value === blacklisted)}
                                         onChange={(e:any) => { console.log(e?.value); setBlacklisted(e?.value ?? false)}}
                                     />
                                 </div>
@@ -188,7 +212,7 @@ export default function Profile({ profile, users }: ProfileProps) {
                                 </div>}
                         </div>
                         <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
-                            <Button text="Modifier les informations" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />
+                            <Button text={ isNew ? "Créer l'utilisateur" : "Modifier les informations"} className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />
                         </div>
                     </form>
                 </div>

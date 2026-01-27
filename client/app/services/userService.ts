@@ -45,6 +45,21 @@ export const getById = cache(async (token: string | undefined, id: string) => {
     }
 });
 
+export const create = async (token: string | undefined, email: string, name: string, lastName: string, phone: string, address: string, city: string, role: string, blacklisted: boolean, referrer_id: string | null) => {
+    try {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+            body: JSON.stringify({ name, lastName, email, phone, address, city, role, blacklisted, referrer_id }),
+        });
+
+        return await res.json()
+    } catch (err) {
+        console.error("Erreur lors de la création de l'utilisateur :", err);
+        return null;
+    }
+}
+
 /**
  * Permet de mettre à jour un utilisateur
  * 

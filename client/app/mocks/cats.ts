@@ -24,7 +24,6 @@ Calypso a simplement besoin de temps, de douceur et de stabilité pour continuer
         hostFamily: {
             id: "1",
             name: "Sandra Daout",
-            location: ""
         },
         pictures: [
             "/images/chats/calypso/calypso-1.jpg",
@@ -55,7 +54,6 @@ Cette petite sauvageonne a droit à sa chance et rêve d’un foyer doux et aima
         hostFamily: {
             id: "1",
             name: "Sandra Daout",
-            location: ""
         },
         pictures: [
             "/images/chats/réglisse/reglisse-1.jpg",
@@ -83,7 +81,6 @@ Un cœur tendre qui ne demande qu’un foyer calme, patient et aimant pour s’�
         hostFamily: {
             id: "1",
             name: "Sandra Daout",
-            location: ""
         },
         pictures: [
             "/images/chats/choupinette/choupinette-1.jpg",
@@ -117,7 +114,6 @@ Thimotée, c’est un amour de chat avec encore tant d’affection à offrir`,
         hostFamily: {
             id: "1",
             name: "Sandra Daout",
-            location: ""
         },
         pictures: [
             "/images/chats/thimotée/thimotee-1.jpg",
@@ -146,7 +142,6 @@ Un compagnon doux, discret et attachant, qui cherche une famille prête à respe
         hostFamily: {
             id: "1",
             name: "Sandra Daout",
-            location: ""
         },
         pictures: [
             "/images/chats/stocky/stocky-1.jpg",
@@ -176,7 +171,6 @@ C’est le papy parfait, sociable, câlin et facile à vivre. Un compagnon idéa
         hostFamily: {
             id: "1",
             name: "Sandra Daout",
-            location: ""
         },
         pictures: [
             "/images/chats/salem/salem-1.jpg",

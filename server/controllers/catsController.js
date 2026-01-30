@@ -15,7 +15,17 @@ function statusFromError(e) {
 async function list(req, res) {
   const db = req.app.locals.db;
   try {
-    const rows = await listCats(db, req.params.isAdopted);
+    const rows = await listCats(db);
+    res.json(rows);
+  } catch (e) {
+    res.status(statusFromError(e)).json({ error: e.message });
+  }
+}
+
+async function listAdopted(req, res) {
+  const db = req.app.locals.db;
+  try {
+    const rows = await listCats(db, true);
     res.json(rows);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
@@ -26,7 +36,8 @@ async function getById(req, res) {
   const db = req.app.locals.db;
   try {
     const prop = await getCatDetails(db, req.params.id);
-    if (!prop) return res.status(404).json({ error: 'Cat not found' });
+    console.log(prop);
+    if (!prop) return res.status(404).json({ error: 'Chat introuvable' });
     res.json(prop);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
@@ -42,8 +53,10 @@ async function create(req, res) {
     const code = statusFromError(e);
     // Map message for validation consistency
     let msg = e.message;
-    if (code === 409) msg = 'Cat with same id already exists';
-    if (msg === 'title is required') return res.status(400).json({ error: msg });
+    if (code === 409) msg = 'Un chat avec le même identifiant existe déjà.';
+    if (msg === 'Nom est requis') return res.status(400).json({ error: msg });
+    if (msg === 'Description est requis') return res.status(400).json({ error: msg });
+    if (msg === 'Sexe est requis') return res.status(400).json({ error: msg });
     if (msg.startsWith('hostfamily_id')) return res.status(400).json({ error: msg });
     res.status(code).json({ error: msg });
   }
@@ -52,7 +65,7 @@ async function create(req, res) {
 async function update(req, res) {
   const db = req.app.locals.db;
   try {
-    const updated = await updateCat(db, req.params.id, req.body || {});
+    const updated = await updateCat(db, req.params.slug, req.body || {});
     res.json(updated);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
@@ -71,6 +84,7 @@ async function remove(req, res) {
 
 module.exports = {
   list,
+  listAdopted,
   getById,
   create,
   update,

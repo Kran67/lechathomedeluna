@@ -1,9 +1,15 @@
-import { getCat } from "@/app/api/api";
-import { Cat } from "@/app/interfaces/cat";
-import { ResolvingMetadata, Metadata } from "next";
-import { redirect, RedirectType } from "next/navigation";
-import CatDetail from "@/app/cat/[slug]/catDetail";
+import {
+  Metadata,
+  ResolvingMetadata,
+} from 'next';
+import {
+  redirect,
+  RedirectType,
+} from 'next/navigation';
 
+import { getCat } from '@/app/api/api';
+import CatDetail from '@/app/cat/[slug]/catDetail';
+import { Cat } from '@/app/interfaces/cat';
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -26,21 +32,21 @@ export async function generateMetadata({ params, searchParams }: Props,
 }
 
 /**
- * Affiche les détails d'une propriété
+ * Affiche les détails d'un chat
  * 
  * @async
  * @function CatPage
- * @param { params: Promise<{ slug: string }> } params - Identifiant de la propriété sous forme de Promise
+ * @param { params: Promise<{ slug: string }> } params - Identifiant du chat sous forme de Promise
  */
 export default async function CatPage({ params }: { params: Promise<{ slug: string }> }) {
-  // on récupère le paramétre slug (identifiant de la propriété)
+  // on récupère le paramétre slug (identifiant du chat)
   const slug = (await params).slug;
   // on va chercher le chat
-  const { cat, error } = await getCat(slug);
+  const cat = await getCat(slug);
   // si le chat n'a pas été trouvée, on redirige vers la page 404
-  if (cat?.error || error) {
+  if (cat?.error) {
     redirect("/404", RedirectType.push);
   }
 
-  return <CatDetail slug={slug} />
+  return <CatDetail cat={cat} />
 }

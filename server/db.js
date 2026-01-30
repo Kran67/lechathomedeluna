@@ -200,12 +200,6 @@ async function seedIfEmpty(db) {
           //  }
           //}
 
-          // Tags
-          //if (Array.isArray(p.tags)) {
-          //  for (const name of p.tags) {
-          //    await db.runAsync('INSERT OR IGNORE INTO property_tags(property_id, name) VALUES (?,?)', [p.id, name]);
-          //  }
-          //}
         }
         resolve();
       } catch (e) {

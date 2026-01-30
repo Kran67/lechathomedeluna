@@ -15,6 +15,7 @@ import {
   UserRole,
 } from '@/app/enums/enums';
 
+import Button from './components/ui/Button';
 import Input from './components/ui/Input';
 import { useUser } from './contexts/userContext';
 import { hasRole } from './lib/utils';
@@ -52,7 +53,8 @@ export default function HomePage() {
         <div className="flex flex-col gap-8 w-full xl:w-1115 lg:w-800 items-center text-center">
           <span className="text-[32px] text-(--primary) w-full">Association de protection des animaux</span>
           <span className="text-lg text-(--text) font-normal w-full">​Ensemble, écrivons un avenir meilleur pour nos amis les chats !</span>
-          {user && hasRole(user.role, [UserRole.Admin, UserRole.HostFamily]) &&<div className="flex w-full items-center justify-center">
+          {user && hasRole(user.role, [UserRole.Admin, UserRole.HostFamily]) &&
+            <div className="flex w-full items-center justify-center gap-10">
                   <Input
                     name="search"
                     placeHolder="Rechercher un chat par son numéro d'identification"
@@ -61,6 +63,7 @@ export default function HomePage() {
                     value={search}
                     showLabel={false}
                     onChange={(e) => setSearch(e.target.value)} />
+            <Button text='Ajouter une fiche chat' url='/admin/cat' className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-16 text-(--white) md:w-170' />
           </div>}
         </div>
       </div>

@@ -102,7 +102,7 @@ export default function Header({ activeMenu }: HeaderProps) {
             {user && <MenuItem
                 text={user.name + " " + user.lastName}
                 isActive={activeMenu === HeaderMenuItems.Profile}
-                url="/profile"
+                url="/admin/profile"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold w-90" />}
             <IconButton
                 icon={isMenuVisible ? IconButtonImages.Cross : IconButtonImages.Menu}

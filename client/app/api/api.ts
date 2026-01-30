@@ -1,7 +1,10 @@
-import { cache } from "react";
-import { cookies } from "next/headers";
-import { catsMock } from "@/app/mocks/cats";
-import { usersMock } from "../mocks/users";
+import { cache } from 'react';
+
+import { cookies } from 'next/headers';
+
+import { catsMock } from '@/app/mocks/cats';
+
+import { usersMock } from '../mocks/users';
 
 /**
  * Récupère la liste des propriétés
@@ -11,7 +14,7 @@ import { usersMock } from "../mocks/users";
  * @returns {Promise<any>} - Une liste de chats ou un objet { error: string }
  */
 export const getCats = cache(async () => {
-    const data = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/properties`, {
+    const data: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/properties`, {
         method: "GET",
         cache: "no-store",
         headers: { 'Content-Type': 'application/json', }
@@ -27,11 +30,11 @@ export const getCats = cache(async () => {
  * @param {string} id - Identifiant du chat
  * @returns {Promise<any>} - Un chat ou un objet { error: string }
  */
-export const getCat = cache(async (id: string) => {
+export const getCat = cache(async (slug: string) => {
     if (process.env.NEXT_PUBLIC_MOCK_MODE === "true") {
-        return catsMock.find((p) => p.id === id);
+        return catsMock.find((p) => p.id === slug);
     } else {
-        const data: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats/${id}`, {
+        const data: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats/${slug}`, {
             method: "GET",
             cache: "no-store",
             headers: { 'Content-Type': 'application/json', }

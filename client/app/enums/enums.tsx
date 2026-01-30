@@ -31,7 +31,8 @@ export enum IconButtonImages {
     Trash = "trash",
     Star = "star",
     Pen = "pen",
-    BlackListed = "blacklisted"
+    BlackListed = "blacklisted",
+    ChangePassword = "changepassword"
 }
 
 export enum ButtonTypes {
@@ -78,7 +79,7 @@ export const Roles: {
         },
     ];
 
-export const Blacklists: {
+export const YesNo: {
     value: boolean;
     label: string;
 }[] = [
@@ -91,6 +92,38 @@ export const Blacklists: {
             label: "Oui",
         },
     ];
+
+export const CatStatus : {
+    value: string;
+    label: string;
+}[] = [
+    {
+        value: "Non testé",
+        label: "Non testé"
+    },
+    {
+        value: "Positif",
+        label: "Positif"
+    },
+    {
+        value: "Négatif",
+        label: "Négatif"
+    }
+];
+
+export const CatSexes : {
+    value: string;
+    label: String;
+}[] = [
+    {
+        value: "Mâle",
+        label: "Mâle"
+    },
+    {
+        value: "Femelle",
+        label: "Femelle"
+    }
+]
 
 export const Cities: {
     value: string;

@@ -21,7 +21,7 @@ export interface Cat {
     dress?: string;
     race?: string;
     isSterilized?: boolean;
-    sterilizationDate?: Date;
+    sterilizationDate?: string;
     birthDate?: string;
     isDuringVisit?: boolean;
     isAdopted?: boolean;

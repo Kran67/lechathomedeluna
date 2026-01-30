@@ -23,11 +23,11 @@ import IconButton from '@/app/components/ui/IconButton';
 import Input from '@/app/components/ui/Input';
 import { useUser } from '@/app/contexts/userContext';
 import {
-  Blacklists,
   Cities,
   HeaderMenuItems,
   IconButtonImages,
   Roles,
+  YesNo,
 } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
 import {
@@ -179,7 +179,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                                 <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                     <label className="text-sm text-(--text) font-medium " htmlFor="blacklisted">Sur liste noire</label>
                                     <Select
-                                        options={Blacklists}
+                                        options={YesNo}
                                         className="select"
                                         classNamePrefix="select"
                                         name="blacklisted"
@@ -188,7 +188,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                                         isClearable={false}
                                         isSearchable={false}
                                         placeholder="Sur liste noire"
-                                        value={Blacklists.find(r => r.value === blacklisted)}
+                                        value={YesNo.find(r => r.value === blacklisted)}
                                         onChange={(e:any) => { console.log(e?.value); setBlacklisted(e?.value ?? false)}}
                                     />
                                 </div>

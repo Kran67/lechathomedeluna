@@ -14,9 +14,9 @@ import dynamic from 'next/dynamic';
 import { redirect } from 'next/navigation';
 import { toast } from 'react-toastify';
 
-//import { toast } from 'react-toastify';
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
+import Button from '@/app/components/ui/Button';
 import Input from '@/app/components/ui/Input';
 import Link from '@/app/components/ui/Link';
 import { useUser } from '@/app/contexts/userContext';
@@ -24,14 +24,12 @@ import {
   Cities,
   HeaderMenuItems,
 } from '@/app/enums/enums';
-
-import Button from '../components/ui/Button';
-import { User } from '../interfaces/user';
-import { redirectWithDelay } from '../lib/utils';
+import { User } from '@/app/interfaces/user';
+import { redirectWithDelay } from '@/app/lib/utils';
 import {
   getById,
   update,
-} from '../services/userService';
+} from '@/app/services/userService';
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 
@@ -76,7 +74,7 @@ export default function Profile() {
             profile!.referrer_id ?? null
         );
         if (!res.error) {
-            redirectWithDelay("/profile", 1000);
+            redirectWithDelay("/admin/profile", 1000);
         } else {
             toast.error(res.error);
         }
@@ -126,7 +124,7 @@ export default function Profile() {
                             <Link text="Réinitialiser mon mot de passe" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)' />
                         </div>
                         {user?.role === "Admin" && <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
-                            <Link text="Administrer les utilisateurs" url="/users" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-250' />
+                            <Link text="Administrer les utilisateurs" url="/admin/users" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-250' />
                             {/* <Link text="Réinitialiser mon mot de passe" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)' /> */}
                         </div>}
                     </form>

@@ -34,7 +34,10 @@ export function catsService(adopted: boolean = false, numId?: string): { cats: C
                     }
                 }
             } else {
-                let url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats/${adopted}`;
+                let url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats`;
+                if (adopted) {
+                    url+="Adopted";
+                }
                 const res: Response = await fetch(url, {
                     method: "GET",
                     cache: "no-store",
@@ -82,4 +85,97 @@ export function catsService(adopted: boolean = false, numId?: string): { cats: C
     }, []);
 
     return { cats, loading, refresh, error };
+}
+
+export const create = async (
+    token: string | undefined,
+    name: string,
+    description: string,
+    status: string | null,
+    numIdentification: string | null,
+    sex: string | null,
+    dress: string | null,
+    race: string | null,
+    isSterilized: boolean | null,
+    sterilizationDate: string | null,
+    birthDate: string | null,
+    isDuringVisit: boolean | null,
+    isAdopted: boolean | null,
+    adoptionDate: string | null,
+    hostFamilyId: string | null
+    ) => {
+    try {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+            body: JSON.stringify({
+                name,
+                description,
+                status,
+                numIdentification,
+                sex,
+                dress,
+                race,
+                isSterilized,
+                sterilizationDate,
+                birthDate,
+                isDuringVisit,
+                isAdopted,
+                adoptionDate,
+                hostFamilyId
+            }),
+        });
+
+        return await res.json()
+    } catch (err) {
+        console.error("Erreur lors de la création de la fiche du chat :", err);
+        return null;
+    }
+}
+
+export const update = async (
+    token: string | undefined,
+    slug: string,
+    name: string,
+    description: string,
+    status: string | null,
+    numIdentification: string | null,
+    sex: string | null,
+    dress: string | null,
+    race: string | null,
+    isSterilized: boolean | null,
+    sterilizationDate: string | null,
+    birthDate: string | null,
+    isDuringVisit: boolean | null,
+    isAdopted: boolean | null,
+    adoptionDate: string | null,
+    hostFamilyId: string | null
+    ) => {
+    try {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats/${slug}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+            body: JSON.stringify({
+                name,
+                description,
+                status,
+                numIdentification,
+                sex,
+                dress,
+                race,
+                isSterilized,
+                sterilizationDate,
+                birthDate,
+                isDuringVisit,
+                isAdopted,
+                adoptionDate,
+                hostFamilyId
+            }),
+        });
+
+        return await res.json()
+    } catch (err) {
+        console.error("Erreur lors de la modification de la fiche du chat :", err);
+        return null;
+    }
 }

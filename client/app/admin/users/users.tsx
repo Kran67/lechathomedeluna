@@ -8,21 +8,21 @@ import {
 import dynamic from 'next/dynamic';
 import { redirect } from 'next/navigation';
 
-import Footer from '../components/layout/Footer';
-import Header from '../components/layout/Header';
-import Button from '../components/ui/Button';
-import IconButton from '../components/ui/IconButton';
-import Input from '../components/ui/Input';
-import { useUser } from '../contexts/userContext';
+import Footer from '@/app/components/layout/Footer';
+import Header from '@/app/components/layout/Header';
+import Button from '@/app/components/ui/Button';
+import IconButton from '@/app/components/ui/IconButton';
+import Input from '@/app/components/ui/Input';
+import { useUser } from '@/app/contexts/userContext';
 import {
-  Blacklists,
   HeaderMenuItems,
   IconButtonImages,
   InputImageTypes,
   Roles,
-} from '../enums/enums';
-import { User } from '../interfaces/user';
-import { hasRole } from '../lib/utils';
+  YesNo,
+} from '@/app/enums/enums';
+import { User } from '@/app/interfaces/user';
+import { hasRole } from '@/app/lib/utils';
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 
@@ -70,13 +70,13 @@ export default function UsersList({ users }: UsersListProps) {
                         imgWidth={8}
                         imgHeight={6}
                         text="Retour"
-                        url="/profile"
+                        url="/admin/profile"
                         svgFill="#902677"
                         className="text-sm text-(--text) gap-5 bg-(--white) rounded-[10px] py-8 px-16 w-189" />
                 </div>
                 <span className="text-lg text-(--primary) w-full">Liste des utilisateurs</span>
                 <div className="flex flex w-full gap-10">
-                    <Button text='Ajouter un utilisateur' url='/profile/new' className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />
+                    <Button text='Ajouter un utilisateur' url='/admin/profile/new' className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />
                     <Input
                         name="search"
                         placeHolder="Rechercher un utilisateur"
@@ -102,7 +102,7 @@ export default function UsersList({ users }: UsersListProps) {
                             })}}
                         />
                         <Select
-                            options={Blacklists}
+                            options={YesNo}
                             className="select"
                             classNamePrefix="select"
                             name="blacklisted"
@@ -141,7 +141,12 @@ export default function UsersList({ users }: UsersListProps) {
                             <span className="text-(--text) border-l w-150 px-5">{user.city}</span>
                             <span className="text-(--text) border-l w-90 px-5">{user.role}</span>
                             <span className="flex justify-center gap-5 border-(--pink) border-l w-70 px-5">
-                                <IconButton url={`/profile/${user.id}`} icon={IconButtonImages.Pen} svgFill="#CE25A6" imgWidth={20} title="Editer le profile" />
+                                {user && !hasRole(user.role, ["Admin"]) &&
+                                    <>
+                                        <IconButton url={`/admin/profile/${user.id}`} icon={IconButtonImages.Pen} svgFill="#CE25A6" imgWidth={20} title="Editer le profile" />
+                                        <IconButton url={`/admin/resetpassword/${user.id}`} icon={IconButtonImages.ChangePassword} svgFill="#CE25A6" imgWidth={20} title="Changer le mot de passe" />
+                                    </>
+                                }
                             </span>
                         </div>
                     ))}

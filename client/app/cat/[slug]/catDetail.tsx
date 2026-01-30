@@ -7,10 +7,6 @@ import {
 import { createPortal } from 'react-dom';
 
 import Image from 'next/image';
-import {
-  redirect,
-  RedirectType,
-} from 'next/navigation';
 
 import Carousel from '@/app/components/data/Carousel';
 import Footer from '@/app/components/layout/Footer';
@@ -18,13 +14,12 @@ import Header from '@/app/components/layout/Header';
 import Button from '@/app/components/ui/Button';
 import CollapseElement from '@/app/components/ui/CollapseElement';
 import IconButton from '@/app/components/ui/IconButton';
-import { useUser } from '@/app/contexts/userContext';
 import { IconButtonImages } from '@/app/enums/enums';
+import { Cat } from '@/app/interfaces/cat';
 import {
   dateAge,
   prepareBodyToShowModal,
 } from '@/app/lib/utils';
-import { catService } from '@/app/services/catService';
 
 /**
  * Interface pour les chats d'initialisation d'un chat
@@ -32,7 +27,7 @@ import { catService } from '@/app/services/catService';
  * @interface CatProps
  */
 interface CatProps {
-    slug: string;
+    cat: Cat | undefined;
 }
 
 /**
@@ -42,21 +37,27 @@ interface CatProps {
  * @function Cat
  * @param { string } slug - Identifiant du chat
  */
-export default function Property({ slug }: CatProps) {
-    const { user } = useUser();
-    // on va chercher le chat
-    const { cat, error } = catService(slug);
-    // si le chat n'a pas été trouvée, on redirige vers la page 404
-    if (cat?.error || error) {
-        redirect("/404", RedirectType.push);
-    }
-
+export default function Property({ cat }: CatProps) {
     const [viewCarousel, setViewCarousel] = useState(false);
     const [carouselImageIndex, setCarouselImageIndex] = useState(0);
 
     const viewCarouselAndActiveImage = (viewCarousel: boolean, index: number) => {
         setViewCarousel(viewCarousel);
         setCarouselImageIndex(index);
+    }
+
+    const collapseElementContent: string[] = [];
+    if (cat?.birthDate) {
+        collapseElementContent.push(`${dateAge(cat?.birthDate)} an(s)`);
+    }
+    if (cat?.sex) {
+        collapseElementContent.push(cat?.sex);
+    }
+    if (cat?.dress) {
+        collapseElementContent.push(cat?.dress);
+    }
+    if (cat?.status) {
+        collapseElementContent.push(cat?.status);
     }
 
     useEffect(() => {
@@ -67,7 +68,7 @@ export default function Property({ slug }: CatProps) {
         <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 lg:px-140 relative">
             {viewCarousel &&
                 createPortal(
-                    <Carousel images={cat?.pictures} imageIndex={carouselImageIndex} closeCarousel={() => setViewCarousel(false)} onIndexChange={setCarouselImageIndex} />,
+                    <Carousel images={cat?.pictures ?? []} imageIndex={carouselImageIndex} closeCarousel={() => setViewCarousel(false)} onIndexChange={setCarouselImageIndex} />,
                     document.body
                 )}
             <Header />
@@ -162,7 +163,7 @@ export default function Property({ slug }: CatProps) {
                             </div>
                             <p className="text-sm text-(--text) font-normal whitespace-break-spaces">{cat?.description}</p>
                         </div>
-                        <CollapseElement title="Informations" content={[`${dateAge(cat?.birthDate)} an(s)`, cat?.sex, cat?.dress, cat?.status]} />
+                        <CollapseElement title="Informations" content={collapseElementContent} />
                     </div>
                 </div>
             </div>

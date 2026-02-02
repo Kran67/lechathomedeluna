@@ -1,18 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
-const dbReady = require('../middlewares/dbReady');
 const { requireRole, requireAdmin, requireSelfOrAdmin, requireAuth } = require('../middlewares/auth');
 const cats = require('../controllers/CatsController');
 const users = require('../controllers/usersController');
 const uploads = require('../controllers/uploadsController');
 
-// Ensure DB is ready for all API routes
-router.use(dbReady);
-
 // Properties
 router.get('/cats', cats.list);
-router.get('/catsAdopted', cats.listAdopted);
+router.get('/catsAdopted/:year', cats.listAdopted);
 router.get('/cats/:id', cats.getById);
 router.post('/cats', requireRole(['Admin','Assistant', 'HostFamily']), cats.create);
 router.patch('/cats/:slug', requireRole(['Admin','Assistant', 'HostFamily']), cats.update);

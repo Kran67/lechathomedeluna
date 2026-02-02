@@ -1,12 +1,14 @@
-async function listUsers(db) {
-  return await db.allAsync('SELECT * FROM users ORDER BY id DESC');
+const pool = require("../db/pool");
+
+async function listUsers() {
+  return await pool.query('SELECT * FROM users ORDER BY id DESC');
 }
 
-async function getUser(db, id) {
-  return await db.getAsync('SELECT * FROM users WHERE id = ?', [id]);
+async function getUser(id) {
+  return await pool.query('SELECT * FROM users WHERE id = $1', [id]);
 }
 
-async function createUser(db, { email, name, lastName, phone, address, city, role, blacklisted, referrer_id }) {
+async function createUser({ email, name, lastName, phone, address, city, role, blacklisted, referrer_id }) {
   if (!email) {
     const err = new Error("L'email est requis");
     err.status = 400;
@@ -28,8 +30,8 @@ async function createUser(db, { email, name, lastName, phone, address, city, rol
     throw err;
   }
   try {
-    const r = await db.runAsync('INSERT INTO users(email, name, lastName, role, phone, address, city, blacklisted, referrer_id) VALUES (?,?,?,?,?,?,?,?,?)', [email, name, lastName, role, phone, address, city, blacklisted, referrer_id]);
-    return await getUser(db, r.lastID);
+    const r = await pool.query('INSERT INTO users(email, name, lastName, role, phone, address, city, blacklisted, referrer_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)', [email, name, lastName, role, phone, address, city, blacklisted, referrer_id]);
+    return await getUser(r.lastID);
   } catch (e) {
     if (/UNIQUE/i.test(e.message)) {
       const err = new Error("L'utilisateur existe déjà");
@@ -40,8 +42,8 @@ async function createUser(db, { email, name, lastName, phone, address, city, rol
   }
 }
 
-async function updateUser(db, id, changes = {}) {
-  const allowedFields = ['name', 'lastName', 'phone', 'address', 'city', 'role', 'password_hash', 'blacklisted', 'referrer_id'];
+async function updateUser(id, changes = {}) {
+  const allowedFields = ['name', 'lastName', 'phone', 'address', 'city', 'role', 'blacklisted', 'referrer_id'];
   const fields = [];
   const params = [];
   for (const key of allowedFields) {
@@ -54,7 +56,7 @@ async function updateUser(db, id, changes = {}) {
           throw err;
         }
       }
-      fields.push(`${key} = ?`);
+      fields.push(`${key} = $${allowedFields.indexOf(key) + 1}`);
       params.push(changes[key]);
     }
   }
@@ -64,13 +66,13 @@ async function updateUser(db, id, changes = {}) {
     throw err;
   }
   params.push(id);
-  const r = await db.runAsync(`UPDATE users SET ${fields.join(', ')} WHERE id = ?`, params);
-  if (r.changes === 0) {
+  const res = await pool.query(`UPDATE users SET ${fields.join(', ')} WHERE id = $${fields.length + 1}`, params);
+  if (res.rowCount === 0) {
     const err = new Error('Utilisateur introuvable');
     err.status = 404;
     throw err;
   }
-  return await getUser(db, id);
+  return await getUser(id);
 }
 
 module.exports = {

@@ -1,14 +1,22 @@
 'use client'
 
-import Header from "@/app/components/layout/Header";
-import Footer from "@/app/components/layout/Footer";
-import { InputTypes } from "@/app/enums/enums";
-import Input from "@/app/components/ui/Input";
-import Button from "@/app/components/ui/Button";
-import Link from "@/app/components/ui/Link";
-import { FormEvent, useState } from "react";
-import { Cookies, useCookies } from 'next-client-cookies';
-import { login } from "@/app/services/authService";
+import {
+  FormEvent,
+  useState,
+} from 'react';
+
+import {
+  Cookies,
+  useCookies,
+} from 'next-client-cookies';
+
+import Footer from '@/app/components/layout/Footer';
+import Header from '@/app/components/layout/Header';
+import Button from '@/app/components/ui/Button';
+import Input from '@/app/components/ui/Input';
+import Link from '@/app/components/ui/Link';
+import { InputTypes } from '@/app/enums/enums';
+import { login } from '@/app/services/authService';
 
 /**
  * Affiche la page de connexion

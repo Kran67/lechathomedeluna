@@ -36,8 +36,7 @@ async function uploadImage(req, res) {
     // If a property_id is provided, ensure it exists (for better UX)
     if (propertyId) {
       try {
-        const db = req.app.locals.db;
-        const p = await db.getAsync('SELECT id FROM properties WHERE id = ?', [propertyId]);
+        const p = await pool.query('SELECT id FROM properties WHERE id = $1', [propertyId]);
         if (!p) return res.status(404).json({ error: 'Property not found for provided property_id' });
       } catch (e) {
         return res.status(500).json({ error: 'Validation failed: ' + e.message });
@@ -108,7 +107,6 @@ async function deleteImages(req, res) {
   const not_found = [];
   const errors = [];
 
-  const db = req.app.locals.db;
   for (const name of filenames) {
     const full = path.join(uploadDir, name);
     try {
@@ -125,14 +123,14 @@ async function deleteImages(req, res) {
       const url = '/uploads/' + name;
       // Clean references in DB (best-effort)
       try {
-        await db.runAsync('DELETE FROM property_pictures WHERE url = ?', [url]);
+        await pool.query('DELETE FROM cats_pictures WHERE url = $1', [url]);
       } catch (_) {}
-      try {
-        await db.runAsync('UPDATE properties SET cover = NULL WHERE cover = ?', [url]);
-      } catch (_) {}
-      try {
-        await db.runAsync('UPDATE users SET picture = NULL WHERE picture = ?', [url]);
-      } catch (_) {}
+      //try {
+      //  await db.runAsync('UPDATE properties SET cover = NULL WHERE cover = ?', [url]);
+      //} catch (_) {}
+      //try {
+      //  await db.runAsync('UPDATE users SET picture = NULL WHERE picture = ?', [url]);
+      //} catch (_) {}
     } catch (e) {
       errors.push({ filename: name, error: e.message });
       results.push({ filename: name, status: 'error', error: e.message });

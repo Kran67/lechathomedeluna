@@ -12,7 +12,7 @@ import { catsMock } from '@/app/mocks/cats';
  * @function catService
  * @returns { cats: Cat[] | null, loading: boolean, refresh: any, error: boolean }
  */
-export function catsService(adopted: boolean = false, numId?: string): { cats: Cat[] | null, loading: boolean, refresh: any, error: boolean } {
+export function catsService(adopted: boolean = false, numId?: string, year: number = 0): { cats: Cat[] | null, loading: boolean, refresh: any, error: boolean } {
     const [cats, setCats] = useState<Cat[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -36,7 +36,7 @@ export function catsService(adopted: boolean = false, numId?: string): { cats: C
             } else {
                 let url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats`;
                 if (adopted) {
-                    url+="Adopted";
+                    url+=`Adopted/${year}`;
                 }
                 const res: Response = await fetch(url, {
                     method: "GET",

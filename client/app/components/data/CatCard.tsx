@@ -11,6 +11,7 @@ import { IconButtonImages } from '@/app/enums/enums';
 import { Cat } from '@/app/interfaces/cat';
 import {
   dateAge,
+  hasRole,
   truncate,
 } from '@/app/lib/utils';
 
@@ -43,7 +44,7 @@ export default function CatCard({ cat }: PropsCC) {
 
     return (
         <div className="flex flex-col rounded-[10px] bg-(--white) w-full md:w-355 relative cursor-pointer" onClick={() => handleClick()}>
-            <IconButton
+            {!cat.isAdopted && user && hasRole(user.role, ["Admin", "HostFamily"]) && <IconButton
                 icon={IconButtonImages.Pen}
                 imgWidth={16}
                 imgHeight={16}
@@ -52,7 +53,7 @@ export default function CatCard({ cat }: PropsCC) {
                 url={`/admin/cat/${cat.slug}`}
                 onClick={(e) => {e.stopPropagation();}}
                 title="Éditer la fiche"
-            />
+            />}
             <div className="relative h-376 overflow-hidden rounded-t-[10px]">
                 <img src={cat.pictures?.[0]} alt="Image du chat" className="absolute h-376" width={355} height={376} />
             </div>

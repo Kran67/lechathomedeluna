@@ -6,9 +6,8 @@ function statusFromError(e) {
 }
 
 async function doRegister(req, res) {
-  const db = req.app.locals.db;
   try {
-    const result = await register(db, req.body || {});
+    const result = await register(req.body || {});
     res.status(201).json(result);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
@@ -16,9 +15,8 @@ async function doRegister(req, res) {
 }
 
 async function doLogin(req, res) {
-  const db = req.app.locals.db;
   try {
-    const result = await login(db, req.body || {});
+    const result = await login(req.body || {});
     res.status(200).json(result);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
@@ -26,9 +24,8 @@ async function doLogin(req, res) {
 }
 
 async function doRequestReset(req, res) {
-  const db = req.app.locals.db;
   try {
-    const result = await requestPasswordReset(db, req.body || {});
+    const result = await requestPasswordReset(req.body || {});
     res.status(200).json(result);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
@@ -36,9 +33,8 @@ async function doRequestReset(req, res) {
 }
 
 async function doResetPassword(req, res) {
-  const db = req.app.locals.db;
   try {
-    const result = await resetPassword(db, req.body || {});
+    const result = await resetPassword(req.body || {});
     res.status(200).json(result);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });

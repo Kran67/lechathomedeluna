@@ -1,3 +1,6 @@
+const { slugify } = require('../db/ensureDatabase');
+const pool = require("../db/pool");
+
 function mapCatRow(row) {
   if (!row) return null;
   if (!row.url) {
@@ -12,67 +15,67 @@ function mapCatRow(row) {
     sex: row.sex,
     dress: row.dress,
     race: row.race,
-    birthDate: row.birthDate,
+    birthDate: row.birthdate,
     pictures: [row.url],
-    hostFamily: row.hostFamily_id ? { id: row.hostFamily_id, name: row.hostFamily_name } : undefined,
+    hostFamily: row.hostfamily_id ? { id: row.hostfamily_id, name: row.hostfamily_name } : undefined,
   };
 }
 
-function slugify(input) {
-  const s = String(input || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  const slug = s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/-{2,}/g, '-');
-  return slug || 'cat';
-}
-
-async function ensureUniqueSlug(db, base, excludeId = null) {
+async function ensureUniqueSlug(base, excludeId = null) {
   let slug = base;
   let n = 2;
   // Loop until slug is unique
   while (true) {
-    const row = excludeId
-      ? await db.getAsync('SELECT id FROM cats WHERE slug = ? AND id != ?', [slug, excludeId])
-      : await db.getAsync('SELECT id FROM cats WHERE slug = ?', [slug]);
-    if (!row) return slug;
+    const res = excludeId
+      ? await pool.query('SELECT id FROM cats WHERE slug = $1 AND id != $2', [slug, excludeId])
+      : await pool.query('SELECT id FROM cats WHERE slug = $1', [slug]);
+    if (res.rows.length === 0) return slug;
     slug = `${base}-${n++}`;
   }
 }
 
-async function listCats(db, isAdopted = false) {
-  const rows = await db.allAsync(`
+async function listCats(isAdopted = false, year = 0) {
+  const sql = `
       SELECT DISTINCT c.id, c.slug, c.name, substr(c.description, 1, 210) AS description, c.status, c.sex, c.dress, c.race, c.birthDate, cp.url
       FROM cats c
-      LEFT JOIN cat_pictures cp ON cp.cat_id = c.id
-	    GROUP BY c.id, c.slug, c.name, c.description, c.status, c.sex, c.dress, c.race, c.birthDate
-      HAVING c.isAdopted = ${isAdopted ? '1' : '0 OR c.isAdopted IS NULL'}
-      ORDER BY c.name ASC
-    `);
-  return rows.map(mapCatRow);
+      LEFT JOIN LATERAL (
+        SELECT url
+        FROM cat_pictures
+        WHERE cat_id = c.id
+        ORDER BY id ASC
+        LIMIT 1
+      ) cp ON true
+      WHERE c.isAdopted = ${isAdopted ? 'true' : 'false OR c.isAdopted IS NULL'}`
+      + (isAdopted && year !== 0 ? ` AND DATE_PART('year',  c.adoptionDate) = ${year}` : "") +
+    `  ORDER BY c.name ASC
+    `;
+  const res = await pool.query(sql);
+  return res.rows.map(mapCatRow);
 }
 
-async function getCatDetails(db, slug) {
-  const row = await db.getAsync(`
+async function getCatDetails(slug) {
+  let res = await pool.query(`
     SELECT p.*, u.id AS hostFamily_id, u.name AS hostFamily_name
     FROM cats p
     LEFT JOIN users u ON u.id = p.hostfamily_id
-    WHERE p.slug = ?
+    WHERE p.slug = $1
   `, [slug]);
-  if (!row) return null;
-  const base = mapCatRow(row);
-  const pictures = await db.allAsync('SELECT url FROM cat_pictures WHERE cat_id = ?', [base.id]);
-  if (pictures.length === 0) {
-      pictures.push({ url:"/images/chat.png"});
+  if (!res.rows.length === 0) return null;
+  const base = mapCatRow(res.rows[0]);
+  res = await pool.query('SELECT url FROM cat_pictures WHERE cat_id = $1 ORDER BY scheduling ASC', [base.id]);
+  if (res.rows.length === 0) {
+      res.rows.push({ url:"/images/chat.png"});
   }
   //const vaccines = await db.allAsync('SELECT name FROM cat_equipments WHERE cat_id = ?', [id]);
   return {
     ...base,
-    pictures: pictures.map(r => r.url),
+    pictures: res.rows.map(r => r.url),
     //vaccines: equipments.map(r => r.name),
   };
 }
 
-async function createCat(db, payload) {
+async function createCat(payload) {
   const {
-    id,
     name,
     description = null,
     status = null,
@@ -95,31 +98,36 @@ async function createCat(db, payload) {
   if (!sex) throw new Error('Sexe est requis');
 
   const base = slugify(name);
-  const uniqueSlug = await ensureUniqueSlug(db, base);
-  const r = await db.runAsync(
-    `INSERT INTO cats(name, slug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdopted, adoptionDate, hostFamily_id)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+  const uniqueSlug = await ensureUniqueSlug(base);
+  const res = await pool.query(
+    `INSERT INTO cats(name, slug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdopted, adoptionDate, hostFamily_id) 
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING id`
     [name, uniqueSlug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdopted, adoptionDate, hostFamilyId]
   );
+  const lastId = res.rows[0].id;
 
   if (Array.isArray(pictures)) {
     for (const url of pictures) {
-      if (url) await db.runAsync('INSERT OR IGNORE INTO cat_pictures(cat_id, url) VALUES (?,?)', [r.lastID, url]);
+      if (url) await pool.query('INSERT INTO cat_pictures(cat_id, url) VALUES ($1,$2)', [lastId, url]);
     }
   }
 
-  return await getCatDetails(db, r.lastID);
+  return await getCatDetails(lastId);
 }
 
-async function updateCat(db, slug, changes) {
+async function updateCat(slug, changes) {
   const allowed = ['name', 'description', 'status', 'numIdentification', 'sex', 'dress', 'race', 'isSterilized', 'sterilizationDate', 'birthDate', 'isDuringVisit', 'isAdopted', 'adoptionDate', 'hostFamily_Id'];
   const fields = [];
   const params = [];
 
-  for (const k of allowed) {
-    if (k in (changes || {})) {
-      fields.push(`${k} = ?`);
-      params.push(changes[k]);
+  for (const key of allowed) {
+    if (key in (changes || {})) {
+      fields.push(`${key} = $${allowed.indexOf(key) + 1}`);
+      if (["sterilizationDate", "birthDate", "adoptionDate"].includes(key) && changes[key] === "") {
+        params.push(null);
+      } else {
+        params.push(changes[key]);
+      }
     }
   }
 
@@ -129,27 +137,27 @@ async function updateCat(db, slug, changes) {
     throw err;
   }
   params.push(slug);
-  const r = await db.runAsync(`UPDATE cats SET ${fields.join(', ')} WHERE slug = ?`, params);
-  if (r.changes === 0) {
+  const res = await pool.query(`UPDATE cats SET ${fields.join(', ')} WHERE slug = $${fields.length + 1}`, params);
+  if (r.rowCount === 0) {
     const err = new Error('Chat introuvable');
     err.status = 404;
     throw err;
   }
-  return await getCatDetails(db, slug);
+  return await getCatDetails(slug);
 }
 
-async function deleteCat(db, id) {
-  const r = await db.runAsync('DELETE FROM cats WHERE id = ?', [id]);
-  if (r.changes === 0) {
+async function deleteCat(id) {
+  const res = await lastId('DELETE FROM cats WHERE id = $1', [id]);
+  if (res.changes === 0) {
     const err = new Error('Chat introuvable');
     err.status = 404;
     throw err;
   }
 }
 
-async function getCatHostFamilyId(db, id) {
-  const row = await db.getAsync('SELECT hostfamily_id FROM cats WHERE id = ?', [id]);
-  return row ? row.hostfamily_id : null;
+async function getCatHostFamilyId(id) {
+  const res = await lastId('SELECT hostfamily_id FROM cats WHERE id = $1', [id]);
+  return res.rows.length > 0 ? res.rows[0] : null;
 }
 
 module.exports = {

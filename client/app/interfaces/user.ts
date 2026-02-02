@@ -7,6 +7,6 @@ export interface User {
     city: string;
     role: string;
     email: string;
-    blacklisted: number;
+    blacklisted: boolean;
     referrer_id?: string;
 }

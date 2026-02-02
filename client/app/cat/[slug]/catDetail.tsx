@@ -95,66 +95,33 @@ export default function Property({ cat }: CatProps) {
                                 height={827}
                                 onClick={() => viewCarouselAndActiveImage(true, 0)} />}
                         </div>
-                        <div className="flex h-109 lg:flex-col gap-10 justify-center lg:justify-normal">
-                            <div className="flex gap-10">
-                                <div className="rounded-[10px] w-65 lg:w-146 h-109 lg:h-174 overflow-hidden relative">
-                                    {cat?.pictures[1] && <Image
-                                        data-testid="property-image-2"
-                                        src={cat?.pictures[1]}
-                                        alt="Image du chat n°2"
+                        <div className="flex flex-wrap gap-10 justify-center lg:justify-normal" style={{ width: "460px" }}>
+                            {cat?.pictures.map((pic, idx) => idx > 1 && 
+                                <div key={idx} className="rounded-[10px] w-65 lg:w-146 overflow-hidden relative">
+                                    <Image
+                                        data-testid={"chat-image-" + idx}
+                                        src={pic}
+                                        alt={"Image du chat n°" + idx}
                                         className="cursor-pointer"
                                         fill
                                         style={{ objectFit: "cover" }}
-                                        onClick={() => viewCarouselAndActiveImage(true, 1)} />}
-                                </div>
-                                <div className="rounded-[10px] w-65 lg:w-146 lg:h-174 overflow-hidden relative">
-                                    {cat?.pictures[2] && <Image
-                                        data-testid="property-image-3"
-                                        src={cat?.pictures[2]}
-                                        alt="Image du chat n°3"
-                                        className="cursor-pointer"
-                                        fill
-                                        style={{ objectFit: "cover" }}
-                                        onClick={() => viewCarouselAndActiveImage(true, 2)} />}
-                                </div>
-                            </div>
-                            <div className="flex gap-10">
-                                <div className="rounded-[10px] w-65 lg:w-146 lg:h-174 overflow-hidden relative">
-                                    {cat?.pictures[3] && <Image
-                                        data-testid="property-image-4"
-                                        src={cat?.pictures[3]}
-                                        alt="Image du chat n°4"
-                                        className="cursor-pointer"
-                                        fill
-                                        style={{ objectFit: "cover" }}
-                                        onClick={() => viewCarouselAndActiveImage(true, 3)} />}
-                                </div>
-                                <div className="rounded-[10px] w-65 lg:w-146 lg:h-174 overflow-hidden relative">
-                                    {cat?.pictures[4] && <Image
-                                        data-testid="property-image-5"
-                                        src={cat?.pictures[4]}
-                                        alt="Image du chat n°5"
-                                        className="cursor-pointer"
-                                        fill
-                                        style={{ objectFit: "cover" }}
-                                        onClick={() => viewCarouselAndActiveImage(true, 4)} />}
-                                </div>
-                            </div>
+                                        onClick={() => viewCarouselAndActiveImage(true, 1)} />
+                                    </div>)}
                         </div>
                     </div>
                     { cat?.hostFamily && <div
-                        className="flex flex-col w-full lg:w-345 gap-8 lg:h-281 border border-solid border-(--pink) rounded-[10px] p-24 bg-(--white) order-1 lg:order-0">
+                        className="flex flex-col w-full lg:w-185 gap-8 border border-solid border-(--pink) rounded-[10px] p-24 bg-(--white) order-1 lg:order-0">
                         <span className="text-base text-(--text)">L'adoptant</span>
-                        <div className="flex gap-18 pt-16 pb-16 items-center">
+                        <div className="flex flex-1 gap-18 pt-16 pb-16 items-center">
                             <div className="rounded-[10px] w-81 h-82 overflow-hidden relative">
                                 {/* {cat?.host.picture && <Image src={cat?.host.picture} alt="Image de l'hôte" fill style={{ objectFit: "cover" }} />} */}
                             </div>
-                            <span className="text-base ext-(--text) font-normal">{cat?.hostFamily?.name}</span>
+                            <span className="text-base text-(--text) font-normal">{cat?.hostFamily?.name}</span>
                         </div>
                         <Button
                             url="/messenging"
                             text="Envoyer un message"
-                            className="text-sm text-(--white) bg-(--primary) rounded-[10px] py-8 px-32" />
+                            className="text-sm text-(--white) bg-(--primary) rounded-[10px] py-8 px-8" />
                     </div>}
                     <div className="flex flex-col gap-40 lg:w-full bg-(--white) rounded-[10px] border boder-solid border-(--pink) p-24 order-0 lg:order-1">
                         <div className="flex flex-col gap-32">

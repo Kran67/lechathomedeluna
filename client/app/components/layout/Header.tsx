@@ -2,11 +2,6 @@
 
 import { useState } from 'react';
 
-import {
-  Cookies,
-  useCookies,
-} from 'next-client-cookies';
-
 import IconButton from '@/app/components/ui/IconButton';
 import Link from '@/app/components/ui/Link';
 import Logo from '@/app/components/ui/Logo';
@@ -41,8 +36,7 @@ interface HeaderProps {
  */
 export default function Header({ activeMenu }: HeaderProps) {
     const [isMenuVisible, setIsMenuVisible] = useState(false);
-    const { user, clear } = useUser();
-    const cookies: Cookies = useCookies();
+    const { user } = useUser();
 
     return (
         <header

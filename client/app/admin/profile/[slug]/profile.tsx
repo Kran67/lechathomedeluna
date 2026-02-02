@@ -58,7 +58,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
     const token: string | undefined = cookies.get("token");
     const [city, setCity] = useState<string>(profile?.city || "");
     const [role, setRole] = useState<string>(profile?.role || "");
-    const [blacklisted, setBlacklisted] = useState<boolean>(profile?.blacklisted === 1 ? true : false);
+    const [blacklisted, setBlacklisted] = useState<boolean>(profile?.blacklisted ?? false);
     const [referrer, setReferrer] = useState<string>(profile?.referrer_id || "");
     const router = useRouter();
     
@@ -102,7 +102,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
             );
         }
         if (!res.error) {
-            redirectWithDelay(`/profile/${res.id}`, 1000);
+            redirectWithDelay(`${hasRole(user.role, ["Admin"]) ? "/admin" : ""}/profile/${res.id}`, 1000);
         } else {
             toast.error(res.error);
         }
@@ -189,7 +189,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                                         isSearchable={false}
                                         placeholder="Sur liste noire"
                                         value={YesNo.find(r => r.value === blacklisted)}
-                                        onChange={(e:any) => { console.log(e?.value); setBlacklisted(e?.value ?? false)}}
+                                        onChange={(e:any) => { setBlacklisted(e?.value ?? false)}}
                                     />
                                 </div>
                             }

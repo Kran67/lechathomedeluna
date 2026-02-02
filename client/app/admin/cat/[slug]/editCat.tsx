@@ -34,6 +34,7 @@ import {
 import { Cat } from '@/app/interfaces/cat';
 import { User } from '@/app/interfaces/user';
 import {
+  formatYDDMM,
   hasRole,
   redirectWithDelay,
 } from '@/app/lib/utils';
@@ -63,6 +64,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const [isAdopted, setIsAdopted] = useState<boolean | null>(cat?.isAdopted ?? null);
     const [hostFamilyId, setHostFamilyId] = useState<string | null>(cat?.hostFamily?.id ?? null);
     const router = useRouter();
+    console.log(cat, cat?.birthDate ? new Date(cat?.birthDate).toDateString() : '');
+    
 
     if (!user || (user && !hasRole(user.role, ["Admin", "HostFamily"]))) {
         redirect("/");
@@ -189,8 +192,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     onChange={(e:any) => setIsSterilized(e?.value as boolean ?? false)}
                                 />
                             </div>
-                            <Input name="sterilizationDate" label="Date de la stérilisation" type={InputTypes.Date} value={cat?.sterilizationDate} />
-                            <Input name="birthDate" label="Date anniversaire" type={InputTypes.Date} value={cat?.birthDate} />
+                            <Input name="sterilizationDate" label="Date de la stérilisation" type={InputTypes.Date} value={cat?.sterilizationDate ? formatYDDMM(new Date(cat?.sterilizationDate)) : ''} />
+                            <Input name="birthDate" label="Date anniversaire" type={InputTypes.Date} value={cat?.birthDate ? formatYDDMM(new Date(cat?.birthDate)) : ''} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="isDuringVisit">En cours de visite</label>
                                 <Select
@@ -223,7 +226,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     onChange={(e:any) => setIsAdopted(e?.value as boolean ?? "")}
                                 />
                             </div>
-                            <Input name="adoptionDate" label="Date d'adoption" type={InputTypes.Date}  />
+                            <Input name="adoptionDate" label="Date d'adoption" type={InputTypes.Date} value={cat?.adoptionDate ? formatYDDMM(new Date(cat?.adoptionDate)) : ''} />
                                 <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                     <label className="text-sm text-(--text) font-medium " htmlFor="hostFamilyId">Famille d'accueil</label>
                                     <Select

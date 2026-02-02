@@ -55,7 +55,7 @@ export default function UsersList({ users }: UsersListProps) {
             filteredUsersList = filteredUsersList?.filter((u) => u.role === role);
         }
         if (blacklisted) {
-            filteredUsersList = filteredUsersList?.filter((u) => u.blacklisted === (blacklisted ? 1 : 0));
+            filteredUsersList = filteredUsersList?.filter((u) => u.blacklisted === blacklisted);
         }
         setFilteredUsers(filteredUsersList);
     }, [search, role, blacklisted]);
@@ -111,7 +111,7 @@ export default function UsersList({ users }: UsersListProps) {
                             isClearable={true}
                             isSearchable={false}
                             placeholder="Sur liste noire"
-                            onChange={(e:any) => { console.log(e?.value); setBlacklisted(e?.value ?? false)}}
+                            onChange={(e:any) => { setBlacklisted(e?.value ?? false)}}
                             styles={{container: provided => ({
                                 ...provided,
                                 width: 150

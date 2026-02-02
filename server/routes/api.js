@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { requireRole, requireAdmin, requireSelfOrAdmin, requireAuth } = require('../middlewares/auth');
-const cats = require('../controllers/CatsController');
+const cats = require('../controllers/catsController');
 const users = require('../controllers/usersController');
 const uploads = require('../controllers/uploadsController');
 

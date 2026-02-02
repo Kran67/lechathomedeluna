@@ -70,7 +70,7 @@ export default function Profile() {
             formData.get("address") as string,
             formData.get("city") as string,
             profile!.role,
-            profile!.blacklisted === 1,
+            profile!.blacklisted,
             profile!.referrer_id ?? null
         );
         if (!res.error) {

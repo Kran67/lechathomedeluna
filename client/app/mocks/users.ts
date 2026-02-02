@@ -11,7 +11,7 @@ export const usersMock: User[] = [
         role: UserRole.Admin,
         lastName: '',
         address: '',
-        blacklisted: 0
+        blacklisted: false
     },
     {
         id: "2",
@@ -22,7 +22,7 @@ export const usersMock: User[] = [
         role: UserRole.Assistant,
         lastName: '',
         address: '',
-        blacklisted: 0
+        blacklisted: false
     },
     {
         id: "3",
@@ -33,7 +33,7 @@ export const usersMock: User[] = [
         role: UserRole.HostFamily,
         lastName: '',
         address: '',
-        blacklisted: 0
+        blacklisted: false
     },
     {
         id: "4",
@@ -45,7 +45,7 @@ export const usersMock: User[] = [
         role: UserRole.HostFamily,
         lastName: '',
         address: '',
-        blacklisted: 0
+        blacklisted: false
     },
     {
         id: "5",
@@ -56,6 +56,6 @@ export const usersMock: User[] = [
         role: UserRole.Volunteer,
         lastName: '',
         address: '',
-        blacklisted: 0
+        blacklisted: false
     }
 ];

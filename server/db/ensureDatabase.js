@@ -1,7 +1,6 @@
 const path = require('path');
 const fs = require('fs');
 const { Client } = require("pg");
-const { Pool } = require('pg');
 const pool = require("./pool");
 
 const PROPS_JSON_PATH = path.join(__dirname, '../data', 'cats.json');
@@ -14,7 +13,7 @@ const {
   PG_DATABASE
 } = process.env;
 
-async function initializeDb() {
+async function initializeDb(deleteAll = false) {
   // Connexion à la base "postgres" (admin)
   const client = new Client({
     host: PG_HOST,
@@ -30,9 +29,19 @@ async function initializeDb() {
   await client.connect();
   await checkDatabase(client);
   await initSchema(pool);
+  if (deleteAll) {
+    await dropAll(pool);
+  }
   await seedIfEmpty(pool);
 
   await client.end();
+}
+
+async function dropAll(client) {
+  await client.query('TRUNCATE TABLE cats CASCADE');
+  await client.query('TRUNCATE TABLE users CASCADE');
+  await client.query('ALTER SEQUENCE users_id_seq RESTART WITH 1');
+  await client.query('ALTER SEQUENCE cats_id_seq RESTART WITH 1');
 }
 
 async function checkDatabase(client) {

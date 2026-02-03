@@ -14,26 +14,17 @@ const { initializeDb } = require('./db/ensureDatabase');
 
 const app = express();
 
-const ensureDatabaseExists = require("./db/ensureDatabase");
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Initialize database and expose via app.locals
-//initialize().then((db) => {
-//  app.locals.db = db;
-//  console.log('Database initialized', hashPassword('Password123'));
-//}).catch((err) => {
-//  console.error('Database initialization failed:', err);
-//});
-
-app.use(cors(/*{
+app.use(cors(process.env.NODE_END === "production" ? {
   origin: "https://lechathomedeluna.vercel.app",
   credentials: true
-}*/));
+} : {}));
+
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Headers', '*');
   next();
@@ -53,5 +44,4 @@ app.use('/auth', authRouter);
   }
 })();
 
-//module.exports = serverless(app);
 module.exports = app;

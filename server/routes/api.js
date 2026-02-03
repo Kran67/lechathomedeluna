@@ -26,4 +26,13 @@ router.post('/uploads/image', requireRole(['Admin']), uploads.uploadImage);
 // Delete one or multiple uploaded images by filename or URL
 router.delete('/uploads/images', requireRole(['Admin']), uploads.deleteImages);
 
+router.get("/health", async (req, res) => {
+  try {
+    await pool.query("SELECT 1");
+    res.json({ status: "ok" });
+  } catch {
+    res.status(500).json({ status: "db down" });
+  }
+});
+
 module.exports = router;

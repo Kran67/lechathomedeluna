@@ -12,6 +12,7 @@ function mapCatRow(row) {
     name: row.name,
     description: row.description,
     status: row.status,
+    numIdentification: row.numidentification,
     sex: row.sex,
     dress: row.dress,
     race: row.race,
@@ -60,7 +61,7 @@ async function getCatDetails(slug) {
     LEFT JOIN users u ON u.id = p.hostfamily_id
     WHERE p.slug = $1
   `, [slug]);
-  if (!res.rows.length === 0) return null;
+  if (res.rows.length === 0) return null;
   const base = mapCatRow(res.rows[0]);
   res = await pool.query('SELECT url FROM cat_pictures WHERE cat_id = $1 ORDER BY scheduling ASC', [base.id]);
   if (res.rows.length === 0) {
@@ -101,7 +102,7 @@ async function createCat(payload) {
   const uniqueSlug = await ensureUniqueSlug(base);
   const res = await pool.query(
     `INSERT INTO cats(name, slug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdopted, adoptionDate, hostFamily_id) 
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING id`
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING id`,
     [name, uniqueSlug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdopted, adoptionDate, hostFamilyId]
   );
   const lastId = res.rows[0].id;
@@ -112,7 +113,7 @@ async function createCat(payload) {
     }
   }
 
-  return await getCatDetails(lastId);
+  return await getCatDetails(uniqueSlug);
 }
 
 async function updateCat(slug, changes) {
@@ -138,7 +139,7 @@ async function updateCat(slug, changes) {
   }
   params.push(slug);
   const res = await pool.query(`UPDATE cats SET ${fields.join(', ')} WHERE slug = $${fields.length + 1}`, params);
-  if (r.rowCount === 0) {
+  if (res.rowCount === 0) {
     const err = new Error('Chat introuvable');
     err.status = 404;
     throw err;
@@ -148,7 +149,7 @@ async function updateCat(slug, changes) {
 
 async function deleteCat(id) {
   const res = await lastId('DELETE FROM cats WHERE id = $1', [id]);
-  if (res.changes === 0) {
+  if (res.rowCount === 0) {
     const err = new Error('Chat introuvable');
     err.status = 404;
     throw err;

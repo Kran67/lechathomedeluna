@@ -53,7 +53,7 @@ export const create = async (token: string | undefined, email: string, name: str
             body: JSON.stringify({ name, lastName, email, phone, address, city, role, blacklisted, referrer_id }),
         });
 
-        return await res.json()
+        return await res.json();
     } catch (err) {
         console.error("Erreur lors de la création de l'utilisateur :", err);
         return null;
@@ -78,7 +78,7 @@ export const update = cache(async (token: string | undefined, id: string, name: 
             body: JSON.stringify({ name, lastName, phone, address, city, role, blacklisted, referrer_id }),
         });
 
-        return await res.json()
+        return await res.json();
     } catch (err) {
         console.error("Erreur lors de l'enregistrement' :", err);
         return null;

@@ -30,8 +30,8 @@ async function createUser({ email, name, lastName, phone, address, city, role, b
     throw err;
   }
   try {
-    const r = await pool.query('INSERT INTO users(email, name, lastName, role, phone, address, city, blacklisted, referrer_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)', [email, name, lastName, role, phone, address, city, blacklisted, referrer_id]);
-    return await getUser(r.lastID);
+    const r = await pool.query('INSERT INTO users(email, name, lastName, role, phone, address, city, blacklisted, referrer_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id', [email, name, lastName, role, phone, address, city, blacklisted, referrer_id]);
+    return await getUser(r.rows[0].id);
   } catch (e) {
     if (/UNIQUE/i.test(e.message)) {
       const err = new Error("L'utilisateur existe déjà");

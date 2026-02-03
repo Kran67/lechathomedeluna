@@ -71,6 +71,9 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
 
         const form: EventTarget & HTMLFormElement = e.currentTarget;
         const formData: FormData = new FormData(form);
+        const sterilizationDate: string | null = formData.get("sterilizationDate") as string !== '' ? formData.get("sterilizationDate") as string : null;
+        const birthDate: string | null = formData.get("birthDate") as string !== '' ? formData.get("birthDate") as string : null;
+        const adoptionDate: string | null = formData.get("adoptionDate") as string !== '' ? formData.get("adoptionDate") as string : null;
 
         const res = await create(
             token,
@@ -82,15 +85,15 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
             formData.get("dress") as string,
             formData.get("race") as string,
             isSterilized,
-            formData.get("sterilizationDate") as string,
-            formData.get("birthDate") as string,
+            sterilizationDate,
+            birthDate,
             isDuringVisit,
             isAdopted,
-            formData.get("adoptionDate") as string,
+            adoptionDate,
             hostFamilyId
         );
         if (!res.error) {
-            redirectWithDelay(`/admin/cat/${res.id}`, 1000);
+            redirectWithDelay(`/admin/cat/${res.slug}`, 1000);
         } else {
             toast.error(res.error);
         }

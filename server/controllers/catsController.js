@@ -33,7 +33,6 @@ async function listAdopted(req, res) {
 async function getById(req, res) {
   try {
     const prop = await getCatDetails(req.params.id);
-    console.log(prop);
     if (!prop) return res.status(404).json({ error: 'Chat introuvable' });
     res.json(prop);
   } catch (e) {

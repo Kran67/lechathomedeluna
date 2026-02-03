@@ -192,7 +192,7 @@ async function seedIfEmpty(pool) {
       }
 
       // Prepare slug
-      const base = slugify(p.name || p.id || 'cat');
+      const base = slugify(p.name || 'cat');
       let slug = base;
       let n = 2;
       while (usedSlugs.has(slug)) {
@@ -201,10 +201,9 @@ async function seedIfEmpty(pool) {
       usedSlugs.add(slug);
 
       // Insert cat
-      await pool.query(
-        'INSERT INTO cats(id, slug, name, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdopted, adoptionDate, hostfamily_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)  ON CONFLICT (id) DO NOTHING',
+      const res = await pool.query(
+        'INSERT INTO cats(slug, name, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdopted, adoptionDate, hostfamily_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) ON CONFLICT (id) DO NOTHING RETURNING id',
         [
-          p.id,
           slug,
           p.name,
           p.description || null,
@@ -222,7 +221,7 @@ async function seedIfEmpty(pool) {
           user && user.id || null
         ]
       );
-
+      p.id = res.rows[0].id;
       // Pictures
       //const pics = new Set();
       if (Array.isArray(p.pictures)) p.pictures.forEach(async (u, idx) => u && await pool.query('INSERT INTO cat_pictures(cat_id, url, scheduling) VALUES ($1,$2,$3)', [p.id, u, idx]));

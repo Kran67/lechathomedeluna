@@ -64,8 +64,6 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const [isAdopted, setIsAdopted] = useState<boolean | null>(cat?.isAdopted ?? null);
     const [hostFamilyId, setHostFamilyId] = useState<string | null>(cat?.hostFamily?.id ?? null);
     const router = useRouter();
-    console.log(cat, cat?.birthDate ? new Date(cat?.birthDate).toDateString() : '');
-    
 
     if (!user || (user && !hasRole(user.role, ["Admin", "HostFamily"]))) {
         redirect("/");
@@ -82,6 +80,9 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
 
         const form: EventTarget & HTMLFormElement = e.currentTarget;
         const formData: FormData = new FormData(form);
+        const sterilizationDate: string | null = formData.get("sterilizationDate") as string !== '' ? formData.get("sterilizationDate") as string : null;
+        const birthDate: string | null = formData.get("birthDate") as string !== '' ? formData.get("birthDate") as string : null;
+        const adoptionDate: string | null = formData.get("adoptionDate") as string !== '' ? formData.get("adoptionDate") as string : null;
 
         const res = await update(
             token,
@@ -94,11 +95,11 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
             formData.get("dress") as string,
             formData.get("race") as string,
             isSterilized,
-            formData.get("sterilizationDate") as string,
-            formData.get("birthDate") as string,
+            sterilizationDate,
+            birthDate,
             isDuringVisit,
             isAdopted,
-            formData.get("adoptionDate") as string,
+            adoptionDate,
             hostFamilyId
         );
         if (!res.error) {

@@ -1,7 +1,13 @@
 'use client'
 
-import { Dispatch, MouseEvent, SetStateAction, useCallback, useEffect, useState } from "react";
-import Image from "next/image";
+import {
+  Dispatch,
+  MouseEvent,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 
 /**
  * Interface pour les propriétés d'initialisation du carousel
@@ -102,8 +108,8 @@ export default function Carousel({ images, imageIndex = 0, closeCarousel }: Caro
                     style={{ transform: `translateX(-${currentIndex * 100}%)` }}
                 >
                     {images.map((image, index) => (
-                        <li key={index} className="relative" style={{ flex: "0 0 100%" }}>
-                            <Image src={image} alt={`Image ${index + 1} de ${total}`} fill style={{ objectFit: "contain" }} />
+                        <li key={index} className="relative flex justify-center" style={{ flex: "0 0 100%" }}>
+                            <img src={(image.includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + image} alt={`Image ${index + 1} de ${total}`} style={{ objectFit: "fill" }} />
                         </li>
                     ))}
                 </ul>

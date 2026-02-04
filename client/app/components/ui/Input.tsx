@@ -29,6 +29,7 @@ interface InputProps {
     showLabel?: boolean;
     readOnly?: boolean;
     hidden?: boolean;
+    multipleFile?: boolean;
 }
 
 /**
@@ -52,8 +53,10 @@ interface InputProps {
  * @param {boolean?} IconButtonProps.showLabel - Indique si le label du champ est visible ou non
  * @param {boolean?} IconButtonProps.readOnly - Indique si le champ est en lecteur seule ou non
  * @param {boolean?} IconButtonProps.hidden - Indique si le champ est visible ou non
+ * @param {boolean?} IconButtonProps.multipleFile - Indique si on peut sélectionner plusieurs fichiers ou non
  */
-export default function Input({ name, label, type, value, imageType, placeHolder, required, width, onChange, hasError, autoComplete = "on", maxLength, className, showLabel = true, readOnly = false, hidden = false }: InputProps) {
+export default function Input({ name, label, type, value, imageType, placeHolder, required, width, onChange, hasError, autoComplete = "on", maxLength, className, 
+    showLabel = true, readOnly = false, hidden = false, multipleFile = false }: InputProps) {
     const classNames: string = [
         "input",
         "flex",
@@ -105,6 +108,7 @@ export default function Input({ name, label, type, value, imageType, placeHolder
                         maxLength={maxLength}
                         aria-required={required}
                         readOnly={readOnly}
+                        multiple={multipleFile}
                     />
                     {imageType &&
                         <Image src={"/images/" + imageType + ".svg"} width={15} height={imgHeight} alt={" Image " + imageType} />

@@ -16,9 +16,14 @@ function mapCatRow(row) {
     sex: row.sex,
     dress: row.dress,
     race: row.race,
+    isSterilized: row.issterilized,
+    sterilizationDate: row.sterilizationdate,
     birthDate: row.birthdate,
-    pictures: [row.url],
+    isDuringVisit: row.isduringvisit,
+    isAdopted: row.isadopted,
+    adoptionDate: row.adoptiondate,
     hostFamily: row.hostfamily_id ? { id: row.hostfamily_id, name: row.hostfamily_name } : undefined,
+    pictures: [row.url],
   };
 }
 

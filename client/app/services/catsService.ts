@@ -102,7 +102,8 @@ export const create = async (
     isDuringVisit: boolean | null,
     isAdopted: boolean | null,
     adoptionDate: string | null,
-    hostFamilyId: string | null
+    hostFamilyId: string | null,
+    pictures: any
     ) => {
     try {
         const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats`, {
@@ -125,8 +126,22 @@ export const create = async (
                 hostFamilyId
             }),
         });
+        const result = await res.json();
 
-        return await res.json()
+        // upload des images
+        pictures?.map(async (picture: any, idx: number) => {
+            const formData = new FormData();
+            formData.append("file", picture);
+            formData.append("cat_id", result.id);
+            
+            await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/uploads/image`, {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}`, },
+                body: formData
+            });
+        });
+
+        return result;
     } catch (err) {
         console.error("Erreur lors de la création de la fiche du chat :", err);
         return null;
@@ -149,7 +164,9 @@ export const update = async (
     isDuringVisit: boolean | null,
     isAdopted: boolean | null,
     adoptionDate: string | null,
-    hostFamilyId: string | null
+    hostFamilyId: string | null,
+    newPictures: any,
+    picturesToDelete: string[] | null,
     ) => {
     try {
         const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats/${slug}`, {
@@ -172,8 +189,29 @@ export const update = async (
                 hostFamilyId
             }),
         });
+        const result = await res.json();
 
-        return await res.json()
+        // upload des images
+        if (picturesToDelete) {
+            await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/uploads/images`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+                body: JSON.stringify({ urls: picturesToDelete }),
+            });
+        }
+        newPictures?.map(async (picture: any, idx: number) => {
+            const formData = new FormData();
+            formData.append("file", picture);
+            formData.append("cat_id", result.id);
+            
+            await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/uploads/image`, {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}`, },
+                body: formData
+            });
+        });
+
+        return result;
     } catch (err) {
         console.error("Erreur lors de la modification de la fiche du chat :", err);
         return null;

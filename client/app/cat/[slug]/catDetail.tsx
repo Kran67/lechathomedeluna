@@ -6,8 +6,6 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 
-import Image from 'next/image';
-
 import Carousel from '@/app/components/data/Carousel';
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
@@ -45,6 +43,7 @@ export default function Property({ cat }: CatProps) {
         setViewCarousel(viewCarousel);
         setCarouselImageIndex(index);
     }
+    console.log(cat);
 
     const collapseElementContent: string[] = [];
     if (cat?.birthDate) {
@@ -84,45 +83,44 @@ export default function Property({ cat }: CatProps) {
                         className="text-sm text-(--text) gap-5 bg-(--white) rounded-[10px] py-8 px-16 w-189" />
                 </div>
                 <div className="flex flex-col lg:flex-row gap-10 w-full lg:flex-wrap">
-                    <div className="flex flex-col lg:flex-row gap-10">
-                        <div className="flex w-full lg:w-303 h-357 overflow-hidden md:justify-center rounded-[10px] ">
-                            {cat?.pictures[0] && <Image
+                    <div className="flex flex-col w-full lg:flex-row gap-10">
+                        <div className="flex w-full lg:w-302 h-302 overflow-hidden md:justify-center rounded-[10px] ">
+                            {cat?.pictures[0] && <img
                                 data-testid="property-image-1"
-                                src={cat?.pictures[0]}
+                                src={(cat?.pictures[0].includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + cat?.pictures[0]}
                                 alt="Image du chat n°1"
                                 className="h-357 w-635 lg:w-535 max-w-1240 cursor-pointer rounded-[10px] "
                                 width={1240}
                                 height={827}
                                 onClick={() => viewCarouselAndActiveImage(true, 0)} />}
                         </div>
-                        <div className="flex flex-wrap gap-10 justify-center lg:justify-normal" style={{ width: "460px" }}>
-                            {cat?.pictures.map((pic, idx) => idx > 1 && 
-                                <div key={idx} className="rounded-[10px] w-65 lg:w-146 overflow-hidden relative">
-                                    <Image
+                        <div className="flex flex-1 flex-wrap gap-10 justify-center lg:justify-normal" style={{ width: "460px" }}>
+                            {cat?.pictures.map((pic, idx) => idx > 0 && 
+                                <div key={idx} className="rounded-[10px] w-65 h-65 lg:w-146 lg:h-146 overflow-hidden relative">
+                                    <img
                                         data-testid={"chat-image-" + idx}
-                                        src={pic}
+                                        src={(pic.includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + pic}
                                         alt={"Image du chat n°" + idx}
                                         className="cursor-pointer"
-                                        fill
-                                        style={{ objectFit: "cover" }}
+                                        style={{ objectFit: "contain" }}
                                         onClick={() => viewCarouselAndActiveImage(true, 1)} />
                                     </div>)}
                         </div>
-                    </div>
-                    { cat?.hostFamily && <div
-                        className="flex flex-col w-full lg:w-185 gap-8 border border-solid border-(--pink) rounded-[10px] p-24 bg-(--white) order-1 lg:order-0">
-                        <span className="text-base text-(--text)">L'adoptant</span>
-                        <div className="flex flex-1 gap-18 pt-16 pb-16 items-center">
-                            <div className="rounded-[10px] w-81 h-82 overflow-hidden relative">
-                                {/* {cat?.host.picture && <Image src={cat?.host.picture} alt="Image de l'hôte" fill style={{ objectFit: "cover" }} />} */}
+                        { cat?.hostFamily && <div
+                            className="flex flex-col w-full lg:w-185 gap-8 border border-solid border-(--pink) rounded-[10px] p-24 bg-(--white) order-1 lg:order-0">
+                            <span className="text-base text-(--text)">L'adoptant</span>
+                            <div className="flex flex-1 gap-18 pt-16 pb-16 items-center">
+                                <div className="rounded-[10px] w-81 h-82 overflow-hidden relative">
+                                    {/* {cat?.host.picture && <Image src={cat?.host.picture} alt="Image de l'hôte" fill style={{ objectFit: "cover" }} />} */}
+                                </div>
+                                <span className="text-base text-(--text) font-normal">{cat?.hostFamily?.name}</span>
                             </div>
-                            <span className="text-base text-(--text) font-normal">{cat?.hostFamily?.name}</span>
-                        </div>
-                        <Button
-                            url="/messenging"
-                            text="Envoyer un message"
-                            className="text-sm text-(--white) bg-(--primary) rounded-[10px] py-8 px-8" />
-                    </div>}
+                            <Button
+                                url="/messenging"
+                                text="Envoyer un message"
+                                className="text-sm text-(--white) bg-(--primary) rounded-[10px] py-8 px-8" />
+                        </div>}
+                    </div>
                     <div className="flex flex-col gap-40 lg:w-full bg-(--white) rounded-[10px] border boder-solid border-(--pink) p-24 order-0 lg:order-1">
                         <div className="flex flex-col gap-32">
                             <div className="flex flex-col gap-16">

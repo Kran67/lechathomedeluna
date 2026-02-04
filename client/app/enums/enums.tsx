@@ -45,13 +45,14 @@ export enum InputTypes {
     Password = 'password',
     Email = 'email',
     Date = 'date',
-    Hidden = 'hidden'
+    Hidden = 'hidden',
+    File = "file"
 }
 
 export enum InputImageTypes {
     Calendar = "calendar",
     BottomArrow = "bottom_arrow",
-    Search = "search"
+    Search = "search",
 }
 
 export enum UserRole {

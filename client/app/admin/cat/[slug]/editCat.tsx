@@ -2,6 +2,7 @@
 
 import {
   FormEvent,
+  useEffect,
   useState,
 } from 'react';
 
@@ -34,7 +35,7 @@ import {
 import { Cat } from '@/app/interfaces/cat';
 import { User } from '@/app/interfaces/user';
 import {
-  formatYDDMM,
+  formatYMMDD,
   hasRole,
   redirectWithDelay,
 } from '@/app/lib/utils';
@@ -64,6 +65,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const [isAdopted, setIsAdopted] = useState<boolean | null>(cat?.isAdopted ?? null);
     const [hostFamilyId, setHostFamilyId] = useState<string | null>(cat?.hostFamily?.id ?? null);
     const router = useRouter();
+    const [pictures, setPictures] = useState<any>([...cat?.pictures ?? []]);
+    const [picturesPreview, setPicturesPreview] = useState<string[]>([]);
 
     if (!user || (user && !hasRole(user.role, ["Admin", "HostFamily"]))) {
         redirect("/");
@@ -83,6 +86,16 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         const sterilizationDate: string | null = formData.get("sterilizationDate") as string !== '' ? formData.get("sterilizationDate") as string : null;
         const birthDate: string | null = formData.get("birthDate") as string !== '' ? formData.get("birthDate") as string : null;
         const adoptionDate: string | null = formData.get("adoptionDate") as string !== '' ? formData.get("adoptionDate") as string : null;
+        let hasNewFiles: boolean = false;
+        const hasDeletedFiles: boolean = pictures.filter((picture: any) => typeof picture === "string").length === cat?.pictures.length;
+        pictures.map((picture: any) => {
+            if (typeof picture !== "string") {
+                hasNewFiles = true;
+            }
+        });
+        const newFiles: any[] = pictures.filter((picture: any) => typeof picture !== "string");
+        const strPictures: string[] = pictures.filter((picture: any) => typeof picture === "string");
+        const deletedFiles: string[] | null= cat?.pictures.filter(item => !strPictures.includes(item)) ?? null;
 
         const res = await update(
             token,
@@ -100,7 +113,9 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
             isDuringVisit,
             isAdopted,
             adoptionDate,
-            hostFamilyId
+            hostFamilyId,
+            newFiles,
+            deletedFiles
         );
         if (!res.error) {
             redirectWithDelay(`/admin/cat/${res.slug}`, 1000);
@@ -108,6 +123,26 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
             toast.error(res.error);
         }
     };
+
+    useEffect(() => {
+        const newImageUrls: any = [];
+        pictures.forEach((image:any) => newImageUrls.push(typeof image === "string" ? image : URL.createObjectURL(image)));
+        setPicturesPreview(newImageUrls);
+    }, [pictures]);
+
+    const picturesChange = (e: { target: { files: any; }; }) => {
+        let pics = [...pictures];
+        if (pictures.includes('/images/chat.png')) {
+            pics = pics.filter((picture:string) => picture !== '/images/chat.png');
+        }
+        setPictures([...pics, ...e.target.files]);
+    }
+
+    const removePicture = (e: { preventDefault: () => void; }, idx: number) => {
+        pictures.splice(idx, 1);
+        e.preventDefault();
+        setPictures([...pictures]);
+    }
 
     return (
         <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 lg:px-140 relative">
@@ -193,8 +228,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     onChange={(e:any) => setIsSterilized(e?.value as boolean ?? false)}
                                 />
                             </div>
-                            <Input name="sterilizationDate" label="Date de la stérilisation" type={InputTypes.Date} value={cat?.sterilizationDate ? formatYDDMM(new Date(cat?.sterilizationDate)) : ''} />
-                            <Input name="birthDate" label="Date anniversaire" type={InputTypes.Date} value={cat?.birthDate ? formatYDDMM(new Date(cat?.birthDate)) : ''} />
+                            <Input name="sterilizationDate" label="Date de la stérilisation" type={InputTypes.Date} value={cat?.sterilizationDate ? formatYMMDD(new Date(cat?.sterilizationDate)) : ''} />
+                            <Input name="birthDate" label="Date anniversaire" type={InputTypes.Date} value={cat?.birthDate ? formatYMMDD(new Date(cat?.birthDate)) : ''} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="isDuringVisit">En cours de visite</label>
                                 <Select
@@ -227,23 +262,38 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     onChange={(e:any) => setIsAdopted(e?.value as boolean ?? "")}
                                 />
                             </div>
-                            <Input name="adoptionDate" label="Date d'adoption" type={InputTypes.Date} value={cat?.adoptionDate ? formatYDDMM(new Date(cat?.adoptionDate)) : ''} />
-                                <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
-                                    <label className="text-sm text-(--text) font-medium " htmlFor="hostFamilyId">Famille d'accueil</label>
-                                    <Select
-                                        options={filteredHostFamilies}
-                                        className="select"
-                                        classNamePrefix="select"
-                                        name="hostFamilyId"
-                                        id="hostFamilyId"
-                                        isMulti={false}
-                                        isClearable={false}
-                                        isSearchable={false}
-                                        placeholder="Famille d'accueil"
-                                        value={filteredHostFamilies?.find(c => c.value === hostFamilyId)}
-                                        onChange={(e:any) => setHostFamilyId(e?.value ?? null)}
-                                    />
-                                </div>
+                            <Input name="adoptionDate" label="Date d'adoption" type={InputTypes.Date} value={cat?.adoptionDate ? formatYMMDD(new Date(cat?.adoptionDate)) : ''} />
+                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                                <label className="text-sm text-(--text) font-medium " htmlFor="hostFamilyId">Famille d'accueil</label>
+                                <Select
+                                    options={filteredHostFamilies}
+                                    className="select"
+                                    classNamePrefix="select"
+                                    name="hostFamilyId"
+                                    id="hostFamilyId"
+                                    isMulti={false}
+                                    isClearable={false}
+                                    isSearchable={false}
+                                    placeholder="Famille d'accueil"
+                                    value={filteredHostFamilies?.find(c => c.value === hostFamilyId)}
+                                    onChange={(e:any) => setHostFamilyId(e?.value ?? null)}
+                                />
+                            </div>
+                            <Input name="catPictures" label="Photos" type={InputTypes.File} multipleFile={true} onChange={picturesChange} />
+                            <div className='flex flex-wrap w-full gap-7' data-p={picturesPreview.length}>
+                                {picturesPreview.map((picture: string, idx: number) => (
+                                    <div key={idx} className="rounded-[10px] h-100 w-100 overflow-hidden relative">
+                                        <IconButton className='absolute right-3 top-3 w-16 h-16 z-1 bg-(--primary) flex justify-center items-center rounded-[5px]'
+                                            icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removePicture(e, idx)} />
+                                        <img
+                                            data-testid={"chat-image-" + (idx + 1)}
+                                            src={(picture.includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + picture}
+                                            alt={"Image du chat n°" + (idx + 1)}
+                                            style={{ objectFit: "contain" }}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                         <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
                             <Button text="Modifier la fiche" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />

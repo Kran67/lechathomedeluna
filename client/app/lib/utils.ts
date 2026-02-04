@@ -51,9 +51,9 @@ export const redirectWithDelay = (url: string, delay: number = 0): void => {
     setTimeout(() => window.location.href = url, delay);
 }
 
-export function formatYDDMM(date: Date) {
-  const y = date.getFullYear();
-  const d = String(date.getDate()).padStart(2, "0");
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  return `${y}-${d}-${m}`;
+export function formatYMMDD(date: Date) {
+    const y = date.getFullYear();
+    const d = String(date.getDate()).padStart(2, "0");
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    return `${y}-${m}-${d}`;
 }

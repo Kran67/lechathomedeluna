@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const pool = require('../db/pool');
 
 async function uploadImage(req, res) {
   let multer;
@@ -30,14 +31,14 @@ async function uploadImage(req, res) {
     if (!req.file) return res.status(400).json({ error: 'file is required (field name "file")' });
 
     // Optional metadata to clarify the intent of this image
-    const purpose = (req.body && String(req.body.purpose || '').toLowerCase()) || null; // property-cover | property-picture | user-picture | other
-    const propertyId = req.body && req.body.property_id ? String(req.body.property_id) : null;
+    const purpose = (req.body && String(req.body.purpose || '').toLowerCase()) || null; // cat-cover | cat-picture | user-picture | other
+    const catId = req.body && req.body.cat_id ? String(req.body.cat_id) : null;
 
-    // If a property_id is provided, ensure it exists (for better UX)
-    if (propertyId) {
+    // If a cat_id is provided, ensure it exists (for better UX)
+    if (catId) {
       try {
-        const p = await pool.query('SELECT id FROM properties WHERE id = $1', [propertyId]);
-        if (!p) return res.status(404).json({ error: 'Property not found for provided property_id' });
+        const p = await pool.query('SELECT id FROM cats WHERE id = $1', [catId]);
+        if (!p) return res.status(404).json({ error: 'Cat not found for provided cat_id' });
       } catch (e) {
         return res.status(500).json({ error: 'Validation failed: ' + e.message });
       }
@@ -46,18 +47,21 @@ async function uploadImage(req, res) {
     // Build a simple guidance message for the client
     const publicUrl = '/uploads/' + req.file.filename;
     let instructions = 'Upload successful. Use the returned URL where appropriate.';
-    if (purpose === 'property-cover') {
-      instructions = propertyId
-        ? `Set as cover: PATCH /api/properties/${propertyId} with { "cover": "${publicUrl}" }`
-        : 'Set as cover of a property by PATCH /api/properties/{id} with { "cover": "<url>" }';
-    } else if (purpose === 'property-picture') {
-      instructions = propertyId
-        ? 'Add to gallery when creating/updating property data. Currently, pictures are provided when creating a property: include the URL in the pictures array.'
-        : 'Include the URL in the "pictures" array when creating a property.';
-    } else if (purpose === 'user-picture') {
-      const userId = req.user && req.user.id ? String(req.user.id) : '{yourUserId}';
-      instructions = `Set as user picture: PATCH /api/users/${userId} with { "picture": "${publicUrl}" } (self or admin)`;
-    }
+    //if (purpose === 'property-cover') {
+    //  instructions = propertyId
+    //    ? `Set as cover: PATCH /api/properties/${propertyId} with { "cover": "${publicUrl}" }`
+    //    : 'Set as cover of a property by PATCH /api/properties/{id} with { "cover": "<url>" }';
+    //} else
+    // if (purpose === 'property-picture') {
+      instructions = catId
+        ? 'Add to gallery when creating/updating cat data. Currently, pictures are provided when creating a cat: include the URL in the pictures array.'
+        : 'Include the URL in the "pictures" array when creating a cat.';
+    //} else if (purpose === 'user-picture') {
+    //  const userId = req.user && req.user.id ? String(req.user.id) : '{yourUserId}';
+    //  instructions = `Set as user picture: PATCH /api/users/${userId} with { "picture": "${publicUrl}" } (self or admin)`;
+    //}
+
+    await pool.query('INSERT INTO cat_pictures (cat_id, url) VALUES ($1, $2)', [catId, publicUrl]);
 
     res.status(201).json({
       url: publicUrl,
@@ -65,7 +69,7 @@ async function uploadImage(req, res) {
       size: req.file.size,
       mimetype: req.file.mimetype,
       purpose: purpose,
-      property_id: propertyId || undefined,
+      cat_id: catId || undefined,
       instructions
     });
   });
@@ -123,7 +127,7 @@ async function deleteImages(req, res) {
       const url = '/uploads/' + name;
       // Clean references in DB (best-effort)
       try {
-        await pool.query('DELETE FROM cats_pictures WHERE url = $1', [url]);
+        await pool.query('DELETE FROM cat_pictures WHERE url = $1', [url]);
       } catch (_) {}
       //try {
       //  await db.runAsync('UPDATE properties SET cover = NULL WHERE cover = ?', [url]);

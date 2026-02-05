@@ -3,7 +3,10 @@ import {
   useState,
 } from 'react';
 
-import type { Cat } from '@/app/interfaces/cat';
+import type {
+  Cat,
+  Vaccine,
+} from '@/app/interfaces/cat';
 import { catsMock } from '@/app/mocks/cats';
 
 /**
@@ -167,6 +170,8 @@ export const update = async (
     hostFamilyId: string | null,
     newPictures: any,
     picturesToDelete: string[] | null,
+    newVaccines: Vaccine[],
+    vaccinesToDelete: string[] | null
     ) => {
     try {
         const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats/${slug}`, {
@@ -192,17 +197,40 @@ export const update = async (
         const result = await res.json();
 
         // upload des images
-        if (picturesToDelete) {
+        if (picturesToDelete && picturesToDelete.length > 0) {
             await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/uploads/images`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
-                body: JSON.stringify({ urls: picturesToDelete }),
+                body: JSON.stringify({ urls: picturesToDelete, context: "pictures" }),
             });
         }
         newPictures?.map(async (picture: any, idx: number) => {
             const formData = new FormData();
             formData.append("file", picture);
             formData.append("cat_id", result.id);
+            formData.append("context", "pictures");
+            
+            await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/uploads/image`, {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}`, },
+                body: formData
+            });
+        });
+
+        // upload des vaccins
+        if (vaccinesToDelete && vaccinesToDelete.length > 0) {
+            await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/uploads/images`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+                body: JSON.stringify({ urls: vaccinesToDelete, context: "vaccines" }),
+            });
+        }
+        newVaccines?.map(async (vaccine: Vaccine) => {
+            const formData = new FormData();
+            formData.append("file", vaccine.picture);
+            formData.append("cat_id", result.id);
+            formData.append("date", vaccine.date);
+            formData.append("context", "vaccines");
             
             await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/uploads/image`, {
                 method: "POST",

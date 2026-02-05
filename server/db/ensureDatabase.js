@@ -105,26 +105,31 @@ async function initSchema(pool) {
     CREATE TABLE IF NOT EXISTS cat_pictures (
       id SERIAL PRIMARY KEY,
       cat_id INTEGER NOT NULL REFERENCES cats(id) ON DELETE CASCADE,
-      url VARCHAR(512) NOT NULL,
+      url VARCHAR(50) NOT NULL,
       scheduling INTEGER DEFAULT 0,
       UNIQUE(cat_id, url)
     );`);
+
+  await pool.query('DROP TABLE IF EXISTS cat_vaccines');
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS cat_vaccines (
       id SERIAL PRIMARY KEY,
       cat_id INTEGER NOT NULL REFERENCES cats(id) ON DELETE CASCADE,
-      date VARCHAR(12) NOT NULL,
+      date DATE NOT NULL,
+      url VARCHAR(50) NOT NULL,
       UNIQUE(cat_id, date)
     );`);
 
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS cat_vaccine_pictures (
-      id SERIAL PRIMARY KEY,
-      cat_vaccine_id INTEGER NOT NULL REFERENCES cat_vaccines(id) ON DELETE CASCADE,
-      url VARCHAR(512) NOT NULL,
-      UNIQUE(cat_vaccine_id, url)
-    );`);
+  await pool.query('DROP TABLE IF EXISTS cat_vaccine_pictures');
+
+  // await pool.query(`
+  //   CREATE TABLE IF NOT EXISTS cat_vaccine_pictures (
+  //     id SERIAL PRIMARY KEY,
+  //     cat_vaccine_id INTEGER NOT NULL REFERENCES cat_vaccines(id) ON DELETE CASCADE,
+  //     url VARCHAR(512) NOT NULL,
+  //     UNIQUE(cat_vaccine_id, url)
+  //   );`);
 
   await pool.query(`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email);

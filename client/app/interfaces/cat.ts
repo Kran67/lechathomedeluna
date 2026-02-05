@@ -4,10 +4,10 @@ type catSex = "Mâle" | "Femelle";
 type catStatus = "negatif" | "positif" | "non testé";
 
 export interface Vaccine {
-    id: number;
-    cat_id: number;
-    date: Date;
-    pictures: string[]
+    id: string;
+    cat_id: string;
+    date: string;
+    picture: any;
 }
 
 export interface Cat {
@@ -28,5 +28,5 @@ export interface Cat {
     adoptionDate?: string;
     hostFamily?: HostFamily;
     vaccines: Vaccine[];
-    pictures: string[]
+    pictures: string[];
 }

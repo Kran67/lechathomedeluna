@@ -31,7 +31,8 @@ async function uploadImage(req, res) {
     if (!req.file) return res.status(400).json({ error: 'file is required (field name "file")' });
 
     // Optional metadata to clarify the intent of this image
-    const purpose = (req.body && String(req.body.purpose || '').toLowerCase()) || null; // cat-cover | cat-picture | user-picture | other
+    const context = (req.body && String(req.body.context || '').toLowerCase()) || null; // pictures | vaccines |  | other
+    const vaccineDate = req.body && req.body.date ? String(req.body.date) : null;
     const catId = req.body && req.body.cat_id ? String(req.body.cat_id) : null;
 
     // If a cat_id is provided, ensure it exists (for better UX)
@@ -60,15 +61,18 @@ async function uploadImage(req, res) {
     //  const userId = req.user && req.user.id ? String(req.user.id) : '{yourUserId}';
     //  instructions = `Set as user picture: PATCH /api/users/${userId} with { "picture": "${publicUrl}" } (self or admin)`;
     //}
-
-    await pool.query('INSERT INTO cat_pictures (cat_id, url) VALUES ($1, $2)', [catId, publicUrl]);
+    if (context === "pictures") {
+      await pool.query('INSERT INTO cat_pictures (cat_id, url) VALUES ($1, $2)', [catId, publicUrl]);
+    } else if (context === "vaccines") {
+      await pool.query('INSERT INTO cat_vaccines (cat_id, date, url) VALUES ($1, $2, $3)', [catId, vaccineDate, publicUrl]);
+    }
 
     res.status(201).json({
       url: publicUrl,
       filename: req.file.filename,
       size: req.file.size,
       mimetype: req.file.mimetype,
-      purpose: purpose,
+      //purpose: purpose,
       cat_id: catId || undefined,
       instructions
     });
@@ -100,6 +104,8 @@ async function deleteImages(req, res) {
   if (typeof req.query.urls === 'string') inputs = inputs.concat(req.query.urls.split(','));
   if (typeof req.query.url === 'string') inputs.push(req.query.url);
 
+  const context = (req.body && String(req.body.context || '').toLowerCase()) || null; // pictures | vaccines |  | other
+
   const set = new Set(inputs.map(toFilename).filter(Boolean));
   if (set.size === 0) {
     return res.status(400).json({ error: 'Provide filename(s) or url(s) to delete (filenames[], urls[], filename, url, or query params).' });
@@ -127,7 +133,11 @@ async function deleteImages(req, res) {
       const url = '/uploads/' + name;
       // Clean references in DB (best-effort)
       try {
-        await pool.query('DELETE FROM cat_pictures WHERE url = $1', [url]);
+        if (context === "pictures") {
+          await pool.query('DELETE FROM cat_pictures WHERE url = $1', [url]);
+        } else if (context === "vaccines") {
+          await pool.query('DELETE FROM cat_vaccines WHERE url = $1', [url]);
+        }
       } catch (_) {}
       //try {
       //  await db.runAsync('UPDATE properties SET cover = NULL WHERE cover = ?', [url]);

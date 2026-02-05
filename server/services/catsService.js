@@ -60,7 +60,7 @@ async function listCats(isAdopted = false, year = 0) {
 }
 
 async function getCatDetails(slug) {
-  let res = await pool.query(`
+  const res = await pool.query(`
     SELECT p.*, u.id AS hostFamily_id, u.name AS hostFamily_name
     FROM cats p
     LEFT JOIN users u ON u.id = p.hostfamily_id
@@ -68,15 +68,15 @@ async function getCatDetails(slug) {
   `, [slug]);
   if (res.rows.length === 0) return null;
   const base = mapCatRow(res.rows[0]);
-  res = await pool.query('SELECT url FROM cat_pictures WHERE cat_id = $1 ORDER BY scheduling ASC', [base.id]);
-  if (res.rows.length === 0) {
-      res.rows.push({ url:"/images/chat.png"});
+  const resPic = await pool.query('SELECT url FROM cat_pictures WHERE cat_id = $1 ORDER BY scheduling ASC', [base.id]);
+  if (resPic.rows.length === 0) {
+      resPic.rows.push({ url:"/images/chat.png"});
   }
-  //const vaccines = await db.allAsync('SELECT name FROM cat_equipments WHERE cat_id = ?', [id]);
+  const resVac = await pool.query('SELECT date, url FROM cat_vaccines WHERE cat_id = $1 ORDER BY date ASC', [base.id]);
   return {
     ...base,
-    pictures: res.rows.map(r => r.url),
-    //vaccines: equipments.map(r => r.name),
+    pictures: resPic.rows.map(p => p.url),
+    vaccines: resVac.rows.map(v => { return { date: v.date, picture: v.url } }),
   };
 }
 

@@ -3,6 +3,7 @@
 import {
   FormEvent,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 
@@ -32,9 +33,13 @@ import {
   InputTypes,
   YesNo,
 } from '@/app/enums/enums';
-import { Cat } from '@/app/interfaces/cat';
+import {
+  Cat,
+  Vaccine,
+} from '@/app/interfaces/cat';
 import { User } from '@/app/interfaces/user';
 import {
+  formatDDMMY,
   formatYMMDD,
   hasRole,
   redirectWithDelay,
@@ -67,6 +72,13 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const router = useRouter();
     const [pictures, setPictures] = useState<any>([...cat?.pictures ?? []]);
     const [picturesPreview, setPicturesPreview] = useState<string[]>([]);
+    const [vaccines, setVaccines] = useState<Vaccine[]>([...cat?.vaccines ?? []]);
+    const [vaccinesPreview, setVaccinesPreview] = useState<string[]>([]);
+    const [vaccineDate, setVaccineDate] = useState<string | undefined>(undefined);
+    const [vaccinePicture, setVaccinePicture] = useState<any | null>(null);
+    const inputVaccineFile = useRef(null);
+    const inputVaccineDate = useRef(null);
+    console.log(cat);
 
     if (!user || (user && !hasRole(user.role, ["Admin", "HostFamily"]))) {
         redirect("/");
@@ -87,15 +99,18 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         const birthDate: string | null = formData.get("birthDate") as string !== '' ? formData.get("birthDate") as string : null;
         const adoptionDate: string | null = formData.get("adoptionDate") as string !== '' ? formData.get("adoptionDate") as string : null;
         let hasNewFiles: boolean = false;
-        const hasDeletedFiles: boolean = pictures.filter((picture: any) => typeof picture === "string").length === cat?.pictures.length;
         pictures.map((picture: any) => {
             if (typeof picture !== "string") {
                 hasNewFiles = true;
             }
         });
-        const newFiles: any[] = pictures.filter((picture: any) => typeof picture !== "string");
+        const newPictureFiles: any[] = pictures.filter((picture: any) => typeof picture !== "string");
         const strPictures: string[] = pictures.filter((picture: any) => typeof picture === "string");
-        const deletedFiles: string[] | null= cat?.pictures.filter(item => !strPictures.includes(item)) ?? null;
+        const deletedPictureFiles: string[] | null= cat?.pictures.filter((item: string) => !strPictures.includes(item)) ?? null;
+
+        const newVaccineFiles: Vaccine[] = vaccines.filter((vaccine: Vaccine) => typeof vaccine.picture !== "string");
+        const strVaccinePictures: string[] = vaccines.filter((vaccine: Vaccine) => typeof vaccine.picture === "string").map((vaccine: Vaccine) => vaccine.picture);
+        const deletedVaccineFiles: string[] | null= cat?.vaccines.filter((vaccine: Vaccine) => !strVaccinePictures.includes(vaccine.picture)).map((vaccine: Vaccine) => vaccine.picture) ?? null;
 
         const res = await update(
             token,
@@ -114,8 +129,10 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
             isAdopted,
             adoptionDate,
             hostFamilyId,
-            newFiles,
-            deletedFiles
+            newPictureFiles,
+            deletedPictureFiles,
+            newVaccineFiles,
+            deletedVaccineFiles
         );
         if (!res.error) {
             redirectWithDelay(`/admin/cat/${res.slug}`, 1000);
@@ -142,6 +159,40 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         pictures.splice(idx, 1);
         e.preventDefault();
         setPictures([...pictures]);
+    }
+
+    useEffect(() => {
+        const newImageUrls: any = [];
+        vaccines.forEach((vaccine:any) => newImageUrls.push(typeof vaccine.picture === "string" ? vaccine.picture : URL.createObjectURL(vaccine.picture)));
+        setVaccinesPreview(newImageUrls);
+    }, [vaccines]);
+
+    const vaccinePictureChange = (e: any) => {
+        setVaccinePicture(e.target.files[0]);
+    }
+    const addVaccine = () => {
+        if (vaccineDate && vaccinePicture) {
+            setVaccines([...vaccines, { id: '', cat_id: cat?.id ?? '', date: vaccineDate ?? '', picture: vaccinePicture }]);
+            setVaccinePicture(undefined);
+            setVaccineDate(undefined);
+            handleReset();
+        }
+    }
+    const removeVaccine = (e: { preventDefault: () => void; }, idx: number ) => {
+        vaccines.splice(idx, 1);
+        e.preventDefault();
+        setVaccines([...vaccines]);
+    }
+
+    const handleReset = () => {
+        if (inputVaccineFile.current) {
+            (inputVaccineFile.current as HTMLInputElement).value = "";
+            (inputVaccineFile.current as HTMLInputElement).type = "text";
+            (inputVaccineFile.current as HTMLInputElement).type = "file";
+        }
+        if (inputVaccineDate.current) {
+            (inputVaccineDate.current as HTMLInputElement).value = "";
+        }
     }
 
     return (
@@ -280,7 +331,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 />
                             </div>
                             <Input name="catPictures" label="Photos" type={InputTypes.File} multipleFile={true} onChange={picturesChange} />
-                            <div className='flex flex-wrap w-full gap-7' data-p={picturesPreview.length}>
+                            <div className='flex flex-wrap w-full gap-7'>
                                 {picturesPreview.map((picture: string, idx: number) => (
                                     <div key={idx} className="rounded-[10px] h-100 w-100 overflow-hidden relative">
                                         <IconButton className='absolute right-3 top-3 w-16 h-16 z-1 bg-(--primary) flex justify-center items-center rounded-[5px]'
@@ -293,6 +344,52 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                         />
                                     </div>
                                 ))}
+                            </div>
+                            <div className="select flex flex-col flex-1 justify-start h-77">
+                                <label className="text-sm text-(--text) font-medium " htmlFor="">Vaccins</label>
+                                <div className='flex gap-10 items-center'>
+                                    <Input
+                                        name="vaccineDate"
+                                        label="Date du vaccin"
+                                        type={InputTypes.Date}
+                                        showLabel={false}
+                                        className='max-w-150'
+                                        value={vaccineDate}
+                                        onChange={(e) => setVaccineDate(e.target.value)}
+                                        ref={inputVaccineDate} />
+                                    <Input
+                                        name="vaccinePicture"
+                                        label="Photos du vaccin"
+                                        type={InputTypes.File}
+                                        onChange={vaccinePictureChange}
+                                        showLabel={false}
+                                        className='max-w-44'
+                                        ref={inputVaccineFile} />
+                                    <span className='text-sm text-(--primary)'>{vaccinePicture?.name}</span>
+                                    <Button className="flex text-sm p-10 h-40 bg-(--primary) items-center justify-center rounded-[10px] text-lg text-(--white) cursor-pointer"
+                                         onClick={(e:any) => { addVaccine(); e.preventDefault(); }}
+                                         text="Ajouter le vaccin"
+                                         disabled={!vaccineDate || !vaccinePicture}
+                                         />
+                                </div>
+                                <div className='flex flex-wrap w-full gap-7 mt-24'>
+                                    {vaccinesPreview.map((picture: string, idx: number) => (
+                                        <div key={idx} className="rounded-[10px] h-124 w-100 overflow-hidden relative border border-1 border-solid border-(--pink)">
+                                            <IconButton className='absolute right-3 top-3 w-16 h-16 z-1 bg-(--primary) flex justify-center items-center rounded-[5px]'
+                                                icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removeVaccine(e, idx)} />
+                                            <figcaption className='flex flex-col p-5'>
+                                                <img
+                                                    data-testid={"chat-image-" + (idx + 1)}
+                                                    src={(picture.includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + picture}
+                                                    alt={"Image du chat n°" + (idx + 1)}
+                                                    style={{ objectFit: "contain" }}
+                                                    className=' max-h-150'
+                                                />
+                                                <figcaption className='text-(--primary) text-sm p-3 text-center'>{ formatDDMMY(new Date(vaccines[idx]?.date)) }</figcaption>
+                                            </figcaption>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                         <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>

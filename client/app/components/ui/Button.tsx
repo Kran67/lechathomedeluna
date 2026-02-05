@@ -1,9 +1,12 @@
 // À cause de l'événement onClick
 'use client'
 
-import { useRouter } from "next/navigation";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import { ButtonTypes } from "@/app/enums/enums";
+import {
+  AppRouterInstance,
+} from 'next/dist/shared/lib/app-router-context.shared-runtime';
+import { useRouter } from 'next/navigation';
+
+import { ButtonTypes } from '@/app/enums/enums';
 
 /**
  * Interface pour les propriétés d'initialisation du bouton
@@ -15,7 +18,7 @@ interface ButtonProps {
     disabled?: boolean;
     className?: string;
     url?: string
-    clickFunc?: string;
+    onClick?: (e: any) => void;
     buttonType?: ButtonTypes;
 }
 
@@ -31,11 +34,11 @@ interface ButtonProps {
  * @param {string?} ButtonProps.clickFunc - Function à executer sur le clique du bouton avant redirection si elle est passée
  * @param {ButtonTypes?} ButtonProps.buttonType - Type de bouton (Button / Submit)
  */
-export default function Button({ text, disabled, className, url, clickFunc, buttonType = ButtonTypes.Submit }: ButtonProps) {
+export default function Button({ text, disabled, className, url, onClick, buttonType = ButtonTypes.Submit }: ButtonProps) {
     const router: AppRouterInstance = useRouter();
 
     const handleClick = (e: any) => {
-        new Function(clickFunc ?? "")(e);
+        onClick?.(e);
         if (url) router.push(url);
     };
 

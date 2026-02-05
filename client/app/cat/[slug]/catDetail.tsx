@@ -6,13 +6,18 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 
+import { useRouter } from 'next/navigation';
+
 import Carousel from '@/app/components/data/Carousel';
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
 import Button from '@/app/components/ui/Button';
 import CollapseElement from '@/app/components/ui/CollapseElement';
 import IconButton from '@/app/components/ui/IconButton';
-import { IconButtonImages } from '@/app/enums/enums';
+import {
+  HeaderMenuItems,
+  IconButtonImages,
+} from '@/app/enums/enums';
 import { Cat } from '@/app/interfaces/cat';
 import {
   dateAge,
@@ -38,12 +43,12 @@ interface CatProps {
 export default function Property({ cat }: CatProps) {
     const [viewCarousel, setViewCarousel] = useState(false);
     const [carouselImageIndex, setCarouselImageIndex] = useState(0);
+    const router = useRouter();
 
     const viewCarouselAndActiveImage = (viewCarousel: boolean, index: number) => {
         setViewCarousel(viewCarousel);
         setCarouselImageIndex(index);
     }
-    console.log(cat);
 
     const collapseElementContent: string[] = [];
     if (cat?.birthDate) {
@@ -70,7 +75,7 @@ export default function Property({ cat }: CatProps) {
                     <Carousel images={cat?.pictures ?? []} imageIndex={carouselImageIndex} closeCarousel={() => setViewCarousel(false)} onIndexChange={setCarouselImageIndex} />,
                     document.body
                 )}
-            <Header />
+            <Header activeMenu={cat?.isAdopted ? HeaderMenuItems.AdoptedCats : HeaderMenuItems.Home} />
             <div className="flex flex-col w-full gap-10 lg:gap-24 lg:w-970 px-16 pb-80 lg:px-0 lg:pb-0">
                 <div className="lg:flex lg:flex-row lg:gap-10 w-full lg:py-16 lg:px-7 border-b-0 lg:border-b-1 border-solid border-b-(--pink)">
                     <IconButton
@@ -78,20 +83,20 @@ export default function Property({ cat }: CatProps) {
                         imgWidth={8}
                         imgHeight={6}
                         text="Retour aux chats"
-                        url="/"
+                        url="#"
+                        onClick={() => router.back()}
                         svgFill="#902677"
                         className="text-sm text-(--text) gap-5 bg-(--white) rounded-[10px] py-8 px-16 w-189" />
                 </div>
                 <div className="flex flex-col lg:flex-row gap-10 w-full lg:flex-wrap">
                     <div className="flex flex-col w-full lg:flex-row gap-10">
-                        <div className="flex w-full lg:w-302 h-302 overflow-hidden md:justify-center rounded-[10px] ">
+                        <div className="flex h-302 overflow-hidden md:justify-center rounded-[10px] ">
                             {cat?.pictures[0] && <img
                                 data-testid="property-image-1"
                                 src={(cat?.pictures[0].includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + cat?.pictures[0]}
                                 alt="Image du chat n°1"
-                                className="h-357 w-635 lg:w-535 max-w-1240 cursor-pointer rounded-[10px] "
-                                width={1240}
-                                height={827}
+                                className="cursor-pointer rounded-[10px] "
+                                style={{ objectFit: "contain" }}
                                 onClick={() => viewCarouselAndActiveImage(true, 0)} />}
                         </div>
                         <div className="flex flex-1 flex-wrap gap-10 justify-center lg:justify-normal" style={{ width: "460px" }}>

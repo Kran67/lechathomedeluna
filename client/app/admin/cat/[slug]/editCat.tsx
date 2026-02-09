@@ -172,15 +172,27 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     }
 
     useEffect(() => {
-        const newImageUrls: { url:any, index: number}[] = [];
-        catDocuments.filter((d) => d.type === "vaccin" ).map((document:any, index: number) => newImageUrls.push({ url: typeof document.picture === "string" ? document.picture : URL.createObjectURL(document.picture), index }));
-        setVaccinesPreview([...newImageUrls]);
-        newImageUrls.length = 0;
-        catDocuments.filter((d) => d.type === "antiparasitaire" ).map((document:any, index: number) => newImageUrls.push({url: typeof document.picture === "string" ? document.picture : URL.createObjectURL(document.picture), index }));
-        setPestControlsPreview([...newImageUrls]);
-        newImageUrls.length = 0;
-        catDocuments.filter((d) => d.type === "examen" ).map((document:any, index: number) => newImageUrls.push({url: typeof document.picture === "string" ? document.picture : URL.createObjectURL(document.picture), index }));
-        setExamsPreview([...newImageUrls]);
+        const newVaccineUrls: { url:any, index: number}[] = [];
+        const newPestControlUrls: { url:any, index: number}[] = [];
+        const newExamenUrls: { url:any, index: number}[] = [];
+        catDocuments.map((document:CatDocument, index: number) => {
+            let array = null;
+            switch (document.type) {
+                case "vaccin":
+                    array = newVaccineUrls;
+                    break;
+                case 'antiparasitaire':
+                    array = newPestControlUrls;
+                    break;
+                case 'examen':
+                    array = newExamenUrls;
+                    break;
+            }
+            array.push({ url: typeof document.picture === "string" ? document.picture : URL.createObjectURL(document.picture), index });
+        });
+        setVaccinesPreview(newVaccineUrls);
+        setPestControlsPreview(newPestControlUrls);
+        setExamsPreview(newExamenUrls);
     }, [catDocuments]);
 
     const documentPictureChange = (e: any, type: "vaccin" | "antiparasitaire" | "examen") => {

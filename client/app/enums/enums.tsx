@@ -35,6 +35,11 @@ export enum IconButtonImages {
     ChangePassword = "changepassword"
 }
 
+export enum IconButtonImagePositions {
+    Left = "left",
+    Right = "right"
+}
+
 export enum ButtonTypes {
     Submit = "submit",
     Button = "button"

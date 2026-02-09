@@ -15,6 +15,7 @@ import CollapseElement from '@/app/components/ui/CollapseElement';
 import IconButton from '@/app/components/ui/IconButton';
 import {
   HeaderMenuItems,
+  IconButtonImagePositions,
   IconButtonImages,
 } from '@/app/enums/enums';
 import { Cat } from '@/app/interfaces/cat';
@@ -66,6 +67,38 @@ export default function Property({ cat }: CatProps) {
     useEffect(() => {
         prepareBodyToShowModal(viewCarousel ? "hidden" : "");
     }, [viewCarousel]);
+
+    const animateHearts = (e: { target: { getBoundingClientRect: () => any; offsetTop: any; }; }, url: string) => {
+        const getRandom = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+        const colors: string[] = ["text-(--primary)", "text-(--primary-dark)", "text-(--pink)", "text-(--light-pink)"];
+        for (let i = 0; i < 40; i++) {
+            const paw = document.createElement('i');
+            const colorIdx = getRandom(0, 3);
+            paw.className = `cat-paw ${colors[colorIdx]} fa fa-paw`;
+            
+            // Position de départ au centre du bouton
+            const rect = e.target.getBoundingClientRect();
+            paw.style.left = (rect.left + rect.width / 2) + 'px';
+            paw.style.top = (e.target.offsetTop - rect.height / 2) + 'px';
+            const max = getRandom(50, 256);
+            paw.style.fontSize = `${max}px`;
+            paw.style.setProperty('--tx', `${getRandom(-480, 200)}px`);
+            paw.style.setProperty('--ty', `${getRandom(-920, 0)}px`);
+            paw.style.setProperty('--rotation', `${getRandom(-360, 360)}deg`);
+            
+            document.getElementById("pawsContainer")?.appendChild(paw);
+            
+            // Déclencher l'animation après un court délai
+            setTimeout(() => {
+                paw.classList.add('active');
+            }, 10);
+            
+            setTimeout(() => {
+                paw.remove();
+                //router.push(url);
+            }, 2100);
+        }
+    }
 
     return (
         <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 lg:px-140 relative">
@@ -119,16 +152,22 @@ export default function Property({ cat }: CatProps) {
                             <p className="text-sm text-(--text) font-normal whitespace-break-spaces">{cat?.description}</p>
                         </div>
                         <CollapseElement title="Informations" content={collapseElementContent} />
-                        { !cat?.isAdopted && <IconButton
-                                url="/send"
-                                icon={IconButtonImages.Heart}
-                                text="J'ai un coup de "
-                                svgFill='#fff'
-                                svgBgFill='#fff'
-                                svgStroke='#fff'
-                                imgWidth={32}
-                                imgHeight={32}
-                                className="text-lg text-(--white) bg-(--primary) rounded-[10px] py-8 px-8 justify-center" />
+                        { !cat?.isAdopted && 
+                            <>
+                                <IconButton
+                                    icon={IconButtonImages.Heart}
+                                    text="J'ai un coup de "
+                                    svgFill='#fff'
+                                    svgBgFill='#fff'
+                                    svgStroke='#fff'
+                                    imgWidth={32}
+                                    imgHeight={32}
+                                    className="text-lg text-(--white) bg-(--primary) rounded-[10px] py-8 px-8 justify-center"
+                                    position={IconButtonImagePositions.Right}
+                                    onClick={ (e) => animateHearts(e, "/send") }
+                                />
+                                <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-1" id="pawsContainer"></div>
+                            </>
                         }
                     </div>
                 </div>

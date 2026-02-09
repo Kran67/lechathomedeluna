@@ -47,3 +47,34 @@ body {
   font-size: var(--text-sm);
   color: var(--text);
 }
+
+.cat-paw {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  animation-delay: .02s;
+}
+
+/* Animation active */
+.cat-paw.active { 
+    animation: swirl 2s ease-out forwards;
+}
+
+@keyframes swirl {
+    0% {
+        opacity: 0;
+        transform: translate(0, 0) rotate(0deg) scale(0);
+    }
+    10% {
+        opacity: 0;
+        transform: translate(0, -20px) rotate(45deg) scale(1);
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--tx), var(--ty)) rotate(var(--rotation)) scale(0.5);
+    }
+}
+

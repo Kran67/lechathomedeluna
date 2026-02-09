@@ -5,7 +5,10 @@ import {
 } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { useRouter } from 'next/navigation';
 
-import { IconButtonImages } from '@/app/enums/enums';
+import {
+  IconButtonImagePositions,
+  IconButtonImages,
+} from '@/app/enums/enums';
 
 /**
  * Interface pour les propriétés d'initialisation du IconButton
@@ -25,6 +28,7 @@ export interface IconButtonProps {
     svgStroke?: string;
     title?: string;
     disabled?: boolean;
+    position?: IconButtonImagePositions
 }
 
 /**
@@ -44,8 +48,10 @@ export interface IconButtonProps {
  * @param {string?} IconButtonProps.svgStroke - Couleur à appliquer comme trait de l'icône
  * @param {string?} IconButtonProps.title - Texte à afficher comme bulle d'information
  * @param {boolean?} IconButtonProps.disabled - Statut du bouton actif ou non actif
+ * @param {IconButtonImagePositions} IconButtonProps.position - position de l'icon, gauche ou droite
  */
-export default function IconButton({ icon, className, onClick, url, imgWidth, imgHeight, text, svgFill, svgBgFill, svgStroke, title, disabled = false }: IconButtonProps) {
+export default function IconButton({ icon, className, onClick, url, imgWidth, imgHeight, text, svgFill, svgBgFill, svgStroke, title, disabled = false, 
+        position = IconButtonImagePositions.Left }: IconButtonProps) {
     const router: AppRouterInstance = useRouter();
 
     const handleClick: (e:any) => void = (e) => {
@@ -135,7 +141,7 @@ export default function IconButton({ icon, className, onClick, url, imgWidth, im
             onClick={handleClick}
             role="button"
             title={title}>
-            {renderSwitch()}{text}
+            {position === IconButtonImagePositions.Left ? <>{renderSwitch()}{text}</> : <>{text}&nbsp;{renderSwitch()}</>}
         </button>
     );
 }

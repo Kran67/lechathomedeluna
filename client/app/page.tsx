@@ -53,18 +53,20 @@ export default function HomePage() {
         <div className="flex flex-col gap-8 w-full xl:w-1115 lg:w-800 items-center text-center">
           <span className="text-[32px] text-(--primary) w-full">Association de protection des animaux</span>
           <span className="text-lg text-(--text) font-normal w-full">​Ensemble, écrivons un avenir meilleur pour nos amis les chats !</span>
-          {user && hasRole(user.role, [UserRole.Admin, UserRole.HostFamily]) &&
             <div className="flex w-full items-center justify-center gap-10">
-                  <Input
-                    name="search"
-                    placeHolder="Rechercher un chat par son numéro d'identification"
-                    imageType={InputImageTypes.Search}
-                    className="lg:max-w-357 w-full"
-                    value={search}
-                    showLabel={false}
-                    onChange={(e) => setSearch(e.target.value)} />
-            <Button text='Ajouter une fiche chat' url='/admin/cat' className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-16 text-(--white) md:w-170' />
-          </div>}
+              {user && hasRole(user.role, [UserRole.Admin, UserRole.HostFamily]) &&
+                    <Input
+                      name="search"
+                      placeHolder="Rechercher un chat par son numéro d'identification"
+                      imageType={InputImageTypes.Search}
+                      className="lg:max-w-357 w-full"
+                      value={search}
+                      showLabel={false}
+                      onChange={(e) => setSearch(e.target.value)} />
+            }
+            {user && hasRole(user.role, [UserRole.Admin]) && 
+              <Button text='Ajouter une fiche chat' url='/admin/cat' className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-16 text-(--white) md:w-170' /> }
+          </div>
         </div>
       </div>
       <Gallery cats={service.cats ?? []} />

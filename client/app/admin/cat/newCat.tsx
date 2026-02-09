@@ -28,6 +28,7 @@ import {
   HeaderMenuItems,
   IconButtonImages,
   InputTypes,
+  UserRole,
   YesNo,
 } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
@@ -128,13 +129,28 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                 <div className="flex flex-col flex-1 gap-20 md:gap-41 rounded-[10px] border border-solid border-(--pink) bg-(--white) py-20 px-30 md:py-40 md:px-59">
                     <form onSubmit={handleSubmit} className="flex flex-col gap-20 md:gap-41" role="form" aria-label="Information du compte" encType='multipart/form-data'>
                         <div className="flex flex-col gap-4 md:gap-8">
-                            <h5 className="text-(--grey-800)">Nouvelle fiche chat</h5>
+                            <h5 className="text-(--primary)">Nouvelle fiche chat</h5>
                         </div>
                         <div className="flex flex-col gap-12 md:gap-24">
+                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                                <label className="text-sm text-(--text) font-medium " htmlFor="hostFamilyId">Famille d'accueil</label>
+                                <Select
+                                    options={filteredHostFamilies}
+                                    className="select"
+                                    classNamePrefix="select"
+                                    name="hostFamilyId"
+                                    id="hostFamilyId"
+                                    isMulti={false}
+                                    isClearable={false}
+                                    isSearchable={false}
+                                    placeholder="Famille d'accueil"
+                                    onChange={(e:any) => setHostFamilyId(e?.value ?? null)}
+                                />
+                            </div>
                             <Input name="name" label="Nom" required={true} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
-                                <label className="text-sm text-(--text) font-medium " htmlFor="status">Description *</label>
-                                <textarea className='text-sm text-(--text) w-full outline-0 border border-(--pink) px-10 py-5' name="description" required={true} rows={5} />
+                                <label className="text-sm text-(--text) font-medium " htmlFor="status">Description</label>
+                                <textarea className='text-sm text-(--text) w-full outline-0 border border-(--pink) px-10 py-5' name="description" rows={5} />
                             </div>
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="status">Statut (FIV & FELV)</label>
@@ -186,8 +202,8 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                                     onChange={(e:any) => setIsSterilized(e?.value as boolean ?? false)}
                                 />
                             </div>
-                            <Input name="sterilizationDate" label="Date de la stérilisation" type={InputTypes.Date}  />
-                            <Input name="birthDate" label="Date anniversaire" type={InputTypes.Date}  />
+                            <Input name="sterilizationDate" label="Date de la stérilisation / castration" type={InputTypes.Date}  />
+                            <Input name="birthDate" label="Date de naissance" type={InputTypes.Date}  />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="isDuringVisit">En cours de visite</label>
                                 <Select
@@ -203,37 +219,26 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                                     onChange={(e:any) => setIsDuringVisit(e?.value as boolean ?? "")}
                                 />
                             </div>
-                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
-                                <label className="text-sm text-(--text) font-medium " htmlFor="isAdopted">Est adopté</label>
-                                <Select
-                                    options={YesNo}
-                                    className="select"
-                                    classNamePrefix="select"
-                                    name="isAdopted"
-                                    id="isAdopted"
-                                    isMulti={false}
-                                    isClearable={false}
-                                    isSearchable={false}
-                                    placeholder="Est adopté ?"
-                                    onChange={(e:any) => setIsAdopted(e?.value as boolean ?? "")}
-                                />
-                            </div>
-                            <Input name="adoptionDate" label="Date d'adoption" type={InputTypes.Date}  />
-                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
-                                <label className="text-sm text-(--text) font-medium " htmlFor="hostFamilyId">Famille d'accueil</label>
-                                <Select
-                                    options={filteredHostFamilies}
-                                    className="select"
-                                    classNamePrefix="select"
-                                    name="hostFamilyId"
-                                    id="hostFamilyId"
-                                    isMulti={false}
-                                    isClearable={false}
-                                    isSearchable={false}
-                                    placeholder="Famille d'accueil"
-                                    onChange={(e:any) => setHostFamilyId(e?.value ?? null)}
-                                />
-                            </div>
+                            { user && hasRole(user.role, [UserRole.Admin]) &&
+                            <>
+                                <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                                    <label className="text-sm text-(--text) font-medium " htmlFor="isAdopted">Est adopté</label>
+                                    <Select
+                                        options={YesNo}
+                                        className="select"
+                                        classNamePrefix="select"
+                                        name="isAdopted"
+                                        id="isAdopted"
+                                        isMulti={false}
+                                        isClearable={false}
+                                        isSearchable={false}
+                                        placeholder="Est adopté ?"
+                                        onChange={(e:any) => setIsAdopted(e?.value as boolean ?? "")}
+                                    />
+                                </div>
+                                <Input name="adoptionDate" label="Date d'adoption" type={InputTypes.Date} />
+                                </>
+                            }
                             <Input name="catPictures" label="Photos" type={InputTypes.File} multipleFile={true} onChange={picturesChange} />
                             <div className='flex flex-wrap w-full gap-7' data-p={picturesPreview.length}>
                                 {picturesPreview.map((picture: string, idx: number) => (

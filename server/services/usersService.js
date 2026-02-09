@@ -75,9 +75,14 @@ async function updateUser(id, changes = {}) {
   return await getUser(id);
 }
 
+async function resetMyPassword(id, token) {
+  await pool.query(`UPDATE users SET reset_token = $2 WHERE id = $1`, [id, token]);
+}
+
 module.exports = {
   listUsers,
   getUser,
   createUser,
   updateUser,
+  resetMyPassword
 };

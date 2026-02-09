@@ -28,6 +28,7 @@ import { User } from '@/app/interfaces/user';
 import { redirectWithDelay } from '@/app/lib/utils';
 import {
   getById,
+  resetPassword,
   update,
 } from '@/app/services/userService';
 
@@ -85,6 +86,15 @@ export default function Profile() {
         cookies.remove("userId");
         clear();
     }
+
+    const resetMyPassword = async () => {
+        const result = await resetPassword(token, user!.id);
+        if (result.error) {
+            toast.error(`Une erreur est survenue lors de l'envoi de l'email pour la réinitialisation du mot de passe : ${result.error.message}`);
+        } else {
+            toast.info(`L'email de réinitialisation du mot de passe du mot de passe à bien été envoyé.`);
+        }
+    }
     
     return (
         <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 lg:px-140 relative">
@@ -93,7 +103,7 @@ export default function Profile() {
                 <div className="flex flex-col flex-1 gap-20 md:gap-41 rounded-[10px] border border-solid border-(--pink) bg-(--white) py-20 px-30 md:py-40 md:px-59">
                     <form onSubmit={handleSubmit} className="flex flex-col gap-20 md:gap-41" role="form" aria-label="Information du compte">
                         <div className="flex flex-col gap-4 md:gap-8">
-                            <h5 className="text-(--grey-800)">Mon compte ({profile?.name + " " + profile?.lastName})</h5>
+                            <h5 className="text-(--primary)">Mon compte ({profile?.name + " " + profile?.lastName})</h5>
                         </div>
                         <div className="flex flex-col gap-12 md:gap-24">
                             <Input name="id" label="Identifiant" value={profile?.id} hidden={true} />
@@ -121,14 +131,23 @@ export default function Profile() {
                         </div>
                         <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
                             <Button text="Modifier les informations" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />
-                            <Link text="Réinitialiser mon mot de passe" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)' />
+                            <Link
+                                text="Réinitialiser mon mot de passe"
+                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)'
+                                onClick={() => resetMyPassword() }/>
                         </div>
                         {user?.role === "Admin" && <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
-                            <Link text="Administrer les utilisateurs" url="/admin/users" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-250' />
-                            {/* <Link text="Réinitialiser mon mot de passe" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)' /> */}
+                            <Link
+                                text="Administrer les utilisateurs"
+                                url="/admin/users"
+                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-250' />
                         </div>}
                     </form>
-                    <Link text="Se déconnecter" url="/" onClick={() => handleLogout()} className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230 self-center' />
+                    <Link 
+                        text="Se déconnecter"
+                        url="/"
+                        onClick={() => handleLogout()}
+                        className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230 self-center' />
                 </div>
             </div>
             <Footer />

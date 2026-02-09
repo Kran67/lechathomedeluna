@@ -110,26 +110,17 @@ async function initSchema(pool) {
       UNIQUE(cat_id, url)
     );`);
 
-  await pool.query('DROP TABLE IF EXISTS cat_vaccines');
-
+  await pool.query(`DROP TABLE IF EXISTS cat_vaccines`);
+  
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS cat_vaccines (
+    CREATE TABLE IF NOT EXISTS cat_documents (
       id SERIAL PRIMARY KEY,
       cat_id INTEGER NOT NULL REFERENCES cats(id) ON DELETE CASCADE,
       date DATE NOT NULL,
       url VARCHAR(50) NOT NULL,
-      UNIQUE(cat_id, date)
+      type VARCHAR(15) NOT NULL CHECK (type IN ('vaccin','antiparasitaire', 'examen')),
+      UNIQUE(cat_id, date, type)
     );`);
-
-  await pool.query('DROP TABLE IF EXISTS cat_vaccine_pictures');
-
-  // await pool.query(`
-  //   CREATE TABLE IF NOT EXISTS cat_vaccine_pictures (
-  //     id SERIAL PRIMARY KEY,
-  //     cat_vaccine_id INTEGER NOT NULL REFERENCES cat_vaccines(id) ON DELETE CASCADE,
-  //     url VARCHAR(512) NOT NULL,
-  //     UNIQUE(cat_vaccine_id, url)
-  //   );`);
 
   await pool.query(`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email);
@@ -170,6 +161,17 @@ async function seedIfEmpty(pool) {
 
   try {
     const usedSlugs = new Set();
+    await pool.query('INSERT INTO users(name, lastname, phone, address, city, role, email, password_hash) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (email) DO NOTHING', 
+            [
+              'super',
+              'admin',
+              '----------',
+              '-',
+              '-',
+              'Admin',
+              'superadmin@exemple.com',
+              'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba'
+            ]);
     await pool.query('INSERT INTO users(name, lastname, phone, address, city, role, email, password_hash) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (email) DO NOTHING', 
             [
               'Sylvie',

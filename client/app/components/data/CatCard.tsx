@@ -44,7 +44,7 @@ export default function CatCard({ cat }: PropsCC) {
 
     return (
         <div className="flex flex-col rounded-[10px] bg-(--white) w-full md:w-355 relative cursor-pointer" onClick={() => handleClick()}>
-            {!cat.isAdopted && user && hasRole(user.role, ["Admin", "HostFamily"]) && <IconButton
+            {!cat.isAdopted && user && hasRole(user.role, ["Admin"]) && <IconButton
                 icon={IconButtonImages.Pen}
                 imgWidth={16}
                 imgHeight={16}

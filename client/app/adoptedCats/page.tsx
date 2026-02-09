@@ -14,8 +14,12 @@ import Input from '@/app/components/ui/Input';
 import {
   HeaderMenuItems,
   InputImageTypes,
+  UserRole,
 } from '@/app/enums/enums';
 import { catsService } from '@/app/services/catsService';
+
+import { useUser } from '../contexts/userContext';
+import { hasRole } from '../lib/utils';
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 
@@ -39,12 +43,13 @@ export default function AdoptedCats() {
   const [search, setSearch] = useState<string>("");
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const service = catsService(true, search, year);
+  const { user } = useUser();
 
   const Years: {
     value: number;
     label: number;
   }[] = [];
-  for (let i = 2022; i <= new Date().getFullYear(); i++) {
+  for (let i = 2026; i <= new Date().getFullYear(); i++) {
     Years.push({ value: i, label: i});
   }
 
@@ -59,14 +64,16 @@ export default function AdoptedCats() {
         <div className="flex flex-col gap-8 w-full xl:w-1115 lg:w-800 items-center text-center">
           <span className="text-[32px] text-(--primary) w-full">Les chats qui ont été adoptés</span>
           <div className="flex gap-5 w-full items-center justify-center">
-            <Input
-              name="search"
-              placeHolder="Rechercher un chat par son numéro d'identification"
-              imageType={InputImageTypes.Search}
-              className="lg:max-w-357 w-full"
-              value={search}
-              showLabel={false}
-              onChange={(e) => setSearch(e.target.value)} />
+            {user && hasRole(user.role, [UserRole.Admin, UserRole.Assistant]) &&
+              <Input
+                name="search"
+                placeHolder="Rechercher un chat par son numéro d'identification"
+                imageType={InputImageTypes.Search}
+                className="lg:max-w-357 w-full"
+                value={search}
+                showLabel={false}
+                onChange={(e) => setSearch(e.target.value)} />
+            }
             <Select
                 options={Years}
                 className="select"

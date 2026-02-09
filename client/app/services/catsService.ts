@@ -5,7 +5,7 @@ import {
 
 import type {
   Cat,
-  Vaccine,
+  CatDocument,
 } from '@/app/interfaces/cat';
 import { catsMock } from '@/app/mocks/cats';
 
@@ -170,8 +170,8 @@ export const update = async (
     hostFamilyId: string | null,
     newPictures: any,
     picturesToDelete: string[] | null,
-    newVaccines: Vaccine[],
-    vaccinesToDelete: string[] | null
+    newDocuments: CatDocument[],
+    documentsToDelete: string[] | null
     ) => {
     try {
         const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats/${slug}`, {
@@ -218,19 +218,20 @@ export const update = async (
         });
 
         // upload des vaccins
-        if (vaccinesToDelete && vaccinesToDelete.length > 0) {
+        if (documentsToDelete && documentsToDelete.length > 0) {
             await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/uploads/images`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
-                body: JSON.stringify({ urls: vaccinesToDelete, context: "vaccines" }),
+                body: JSON.stringify({ urls: documentsToDelete, context: "documents" }),
             });
         }
-        newVaccines?.map(async (vaccine: Vaccine) => {
+        newDocuments?.map(async (document: CatDocument) => {
             const formData = new FormData();
-            formData.append("file", vaccine.picture);
+            formData.append("file", document.picture);
             formData.append("cat_id", result.id);
-            formData.append("date", vaccine.date);
-            formData.append("context", "vaccines");
+            formData.append("date", document.date);
+            formData.append("type", document.type);
+            formData.append("context", "documents");
             
             await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/uploads/image`, {
                 method: "POST",

@@ -54,9 +54,7 @@ export default function UsersList({ users }: UsersListProps) {
         if (role !== "") {
             filteredUsersList = filteredUsersList?.filter((u) => u.role === role);
         }
-        if (blacklisted) {
             filteredUsersList = filteredUsersList?.filter((u) => u.blacklisted === blacklisted);
-        }
         setFilteredUsers(filteredUsersList);
     }, [search, role, blacklisted]);
 
@@ -122,9 +120,10 @@ export default function UsersList({ users }: UsersListProps) {
                     <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
                         <span className="text-(--white) w-20 px-5"></span>
                         <span className="text-(--white) w-150 px-5">Prénom Nom</span>
+                        <span className="text-(--white) border-l w-150 px-5">N° sécurité sociale</span>
                         <span className="text-(--white) border-l w-200 px-5">Email</span>
                         <span className="text-(--white) border-l w-100 px-5 text-center">Téléphone</span>
-                        <span className="text-(--white) border-l flex-1  px-5">Adresse</span>
+                        <span className="text-(--white) border-l flex-1 px-5">Adresse</span>
                         <span className="text-(--white) border-l w-150 px-5">Ville</span>
                         <span className="text-(--white) border-l w-90 px-5">Role</span>
                         <span className="text-(--white) border-l w-70 px-5">Actions</span>
@@ -134,12 +133,13 @@ export default function UsersList({ users }: UsersListProps) {
                             <span className="flex justify-center items-center px-5 w-20">
                                 {user.blacklisted ? <IconButton url="#" icon={IconButtonImages.BlackListed} svgFill="#CE25A6" imgWidth={20} title="Sur la liste noire" /> : null}
                             </span>
-                            <span className="text-(--text) w-150 px-5">{user.name} {user.lastName}</span>
-                            <span className="text-(--text) border-l w-200 px-5">{user.email}</span>
-                            <span className="text-(--text) border-l w-100 px-5 text-center">{user.phone}</span>
-                            <span className="text-(--text) border-l flex-1 px-5">{user.address}</span>
-                            <span className="text-(--text) border-l w-150 px-5">{user.city}</span>
-                            <span className="text-(--text) border-l w-90 px-5">{user.role}</span>
+                            <span className={"w-150 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.name} {user.lastName}</span>
+                            <span className={"border-l w-150 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}></span>
+                            <span className={"border-l w-200 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.email}</span>
+                            <span className={"border-l w-100 px-5 text-center" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.phone}</span>
+                            <span className={"border-l flex-1 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.address}</span>
+                            <span className={"border-l w-150 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.city}</span>
+                            <span className={"border-l w-90 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.role}</span>
                             <span className="flex justify-center gap-5 border-(--pink) border-l w-70 px-5">
                                 {user && !hasRole(user.role, ["Admin"]) &&
                                     <>

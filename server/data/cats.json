@@ -30,7 +30,7 @@
             "/images/chats/calypso/calypso-4.jpg",
             "/images/chats/calypso/calypso-5.jpg"
         ],
-        "vaccines": []
+        "documents": []
     },
     {
         "slug": "0979876d",
@@ -60,7 +60,7 @@
             "/images/chats/réglisse/reglisse-3.jpg",
             "/images/chats/réglisse/reglisse-4.jpg"
         ],
-        "vaccines": []
+        "documents": []
     },
     {
         "slug": "d60ca600",
@@ -81,7 +81,7 @@
             "/images/chats/choupinette/choupinette-6.jpg",
             "/images/chats/choupinette/choupinette-7.jpg"
         ],
-        "vaccines": []
+        "documents": []
     },
     {
         "slug": "af6d2d48",
@@ -100,7 +100,7 @@
             "/images/chats/thimotée/thimotee-2.jpg",
             "/images/chats/thimotée/thimotee-3.jpg"
         ],
-        "vaccines": []
+        "documents": []
     },
     {
         "slug": "1e180563",
@@ -119,7 +119,7 @@
             "/images/chats/stocky/stocky-4.jpg",
             "/images/chats/stocky/stocky-5.jpg"
         ],
-        "vaccines": []
+        "documents": []
     },
     {
         "slug": "6ff132c6",
@@ -136,6 +136,6 @@
             "/images/chats/salem/salem-2.jpg",
             "/images/chats/salem/salem-3.jpg"
         ],
-        "vaccines": []
+        "documents": []
     }
 ]

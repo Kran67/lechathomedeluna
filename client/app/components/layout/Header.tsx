@@ -49,9 +49,9 @@ export default function Header({ activeMenu }: HeaderProps) {
                 url="/"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />
             {user && hasRole(user.role, [UserRole.Admin, UserRole.Assistant]) && <MenuItem
-                text="Registre sanitaire"
-                isActive={activeMenu === HeaderMenuItems.HealthRegister}
-                url="/healthRegister"
+                text="Mes alertes"
+                isActive={activeMenu === HeaderMenuItems.Alerts}
+                url="/myalerts"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
             {user && hasRole(user.role, [UserRole.Admin, UserRole.Assistant]) && <MenuItem
                 text="Bons vétérinaires"

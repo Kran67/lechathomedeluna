@@ -131,7 +131,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                 <div className="flex flex-col flex-1 gap-20 md:gap-41 rounded-[10px] border border-solid border-(--pink) bg-(--white) py-20 px-30 md:py-40 md:px-59">
                     <form onSubmit={handleSubmit} className="flex flex-col gap-20 md:gap-41" role="form" aria-label="Information du compte">
                         <div className="flex flex-col gap-4 md:gap-8">
-                            <h5 className="text-(--grey-800)">{ isNew ? "Création d'un utilisateur" : "Compte de " +  profile?.name + " " + profile?.lastName}</h5>
+                            <h5 className="text-(--primary)">{ isNew ? "Création d'un utilisateur" : "Compte de " +  profile?.name + " " + profile?.lastName}</h5>
                         </div>
                         <div className="flex flex-col gap-12 md:gap-24">
                             <Input name="id" label="Identifiant" value={profile?.id} hidden={true} />
@@ -175,7 +175,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                                     />
                                 </div>
                             }
-                            {user?.role === "Admin" && 
+                            {user?.role === "Admin" && !isNew && 
                                 <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                     <label className="text-sm text-(--text) font-medium " htmlFor="blacklisted">Sur liste noire</label>
                                     <Select
@@ -212,7 +212,9 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                                 </div>}
                         </div>
                         <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
-                            <Button text={ isNew ? "Créer l'utilisateur" : "Modifier les informations"} className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />
+                            <Button 
+                                text={ isNew ? "Créer l'utilisateur" : "Modifier les informations"}
+                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />
                         </div>
                     </form>
                 </div>

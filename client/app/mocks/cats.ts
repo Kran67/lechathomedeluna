@@ -32,7 +32,7 @@ Calypso a simplement besoin de temps, de douceur et de stabilité pour continuer
             "/images/chats/calypso/calypso-4.jpg",
             "/images/chats/calypso/calypso-5.jpg"
         ],
-        vaccines: [],
+        documents: [],
     },
     {
         id: "2",
@@ -61,7 +61,7 @@ Cette petite sauvageonne a droit à sa chance et rêve d’un foyer doux et aima
             "/images/chats/réglisse/reglisse-3.jpg",
             "/images/chats/réglisse/reglisse-4.jpg"
         ],
-        vaccines: [],
+        documents: [],
     },
     {
         id: "3",
@@ -91,7 +91,7 @@ Un cœur tendre qui ne demande qu’un foyer calme, patient et aimant pour s’�
             "/images/chats/choupinette/choupinette-6.jpg",
             "/images/chats/choupinette/choupinette-7.jpg",
         ],
-        vaccines: [],
+        documents: [],
     },
     {
         id: "4",
@@ -120,7 +120,7 @@ Thimotée, c’est un amour de chat avec encore tant d’affection à offrir`,
             "/images/chats/thimotée/thimotee-2.jpg",
             "/images/chats/thimotée/thimotee-3.jpg"
         ],
-        vaccines: [],
+        documents: [],
     },
     {
         id: "5",
@@ -150,7 +150,7 @@ Un compagnon doux, discret et attachant, qui cherche une famille prête à respe
             "/images/chats/stocky/stocky-4.jpg",
             "/images/chats/stocky/stocky-5.jpg",
         ],
-        vaccines: [],
+        documents: [],
     },
     {
         id: "6",
@@ -177,6 +177,6 @@ C’est le papy parfait, sociable, câlin et facile à vivre. Un compagnon idéa
             "/images/chats/salem/salem-2.jpg",
             "/images/chats/salem/salem-3.jpg",
         ],
-        vaccines: [],
+        documents: [],
     },
 ];

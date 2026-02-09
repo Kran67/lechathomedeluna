@@ -35,4 +35,6 @@ router.get("/health", async (req, res) => {
   }
 });
 
+router.get('/profile/resetpassword/:id', users.resetPassword);
+
 module.exports = router;

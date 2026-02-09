@@ -84,3 +84,25 @@ export const update = cache(async (token: string | undefined, id: string, name: 
         return null;
     }
 });
+
+/**
+ * Permet de récupèrer un utilisateur depuis la base de données
+ * 
+ * @async
+ * @function resetPassword
+ * @param { string } id - identifiant de l'utilisateur
+ * @returns { Promise<any> } Un object contenant l'utilisateur ou un object contenant une erreur
+ */
+export const resetPassword = cache(async (token: string | undefined, id: string) => {
+    try {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/resetpassword/${id}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+        });
+
+        return await res.json();
+    } catch (err) {
+        console.error("Erreur lors de l'envoi de l'email : ", err);
+        return null;
+    }
+});

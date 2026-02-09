@@ -32,8 +32,9 @@ async function uploadImage(req, res) {
 
     // Optional metadata to clarify the intent of this image
     const context = (req.body && String(req.body.context || '').toLowerCase()) || null; // pictures | vaccines |  | other
-    const vaccineDate = req.body && req.body.date ? String(req.body.date) : null;
+    const documentDate = req.body && req.body.date ? String(req.body.date) : null;
     const catId = req.body && req.body.cat_id ? String(req.body.cat_id) : null;
+    const type = req.body && req.body.type ? String(req.body.type) : null;
 
     // If a cat_id is provided, ensure it exists (for better UX)
     if (catId) {
@@ -63,8 +64,8 @@ async function uploadImage(req, res) {
     //}
     if (context === "pictures") {
       await pool.query('INSERT INTO cat_pictures (cat_id, url) VALUES ($1, $2)', [catId, publicUrl]);
-    } else if (context === "vaccines") {
-      await pool.query('INSERT INTO cat_vaccines (cat_id, date, url) VALUES ($1, $2, $3)', [catId, vaccineDate, publicUrl]);
+    } else if (context === "documents") {
+      await pool.query('INSERT INTO cat_documents (cat_id, date, url, type) VALUES ($1, $2, $3, $4)', [catId, documentDate, publicUrl, type]);
     }
 
     res.status(201).json({
@@ -135,8 +136,8 @@ async function deleteImages(req, res) {
       try {
         if (context === "pictures") {
           await pool.query('DELETE FROM cat_pictures WHERE url = $1', [url]);
-        } else if (context === "vaccines") {
-          await pool.query('DELETE FROM cat_vaccines WHERE url = $1', [url]);
+        } else if (context === "documents") {
+          await pool.query('DELETE FROM cat_documents WHERE url = $1', [url]);
         }
       } catch (_) {}
       //try {

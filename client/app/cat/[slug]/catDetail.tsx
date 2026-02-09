@@ -11,7 +11,6 @@ import { useRouter } from 'next/navigation';
 import Carousel from '@/app/components/data/Carousel';
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
-import Button from '@/app/components/ui/Button';
 import CollapseElement from '@/app/components/ui/CollapseElement';
 import IconButton from '@/app/components/ui/IconButton';
 import {
@@ -111,20 +110,6 @@ export default function Property({ cat }: CatProps) {
                                         onClick={() => viewCarouselAndActiveImage(true, 1)} />
                                     </div>)}
                         </div>
-                        { cat?.hostFamily && <div
-                            className="flex flex-col w-full lg:w-185 gap-8 border border-solid border-(--pink) rounded-[10px] p-24 bg-(--white) order-1 lg:order-0">
-                            <span className="text-base text-(--text)">L'adoptant</span>
-                            <div className="flex flex-1 gap-18 pt-16 pb-16 items-center">
-                                <div className="rounded-[10px] w-81 h-82 overflow-hidden relative">
-                                    {/* {cat?.host.picture && <Image src={cat?.host.picture} alt="Image de l'hôte" fill style={{ objectFit: "cover" }} />} */}
-                                </div>
-                                <span className="text-base text-(--text) font-normal">{cat?.hostFamily?.name}</span>
-                            </div>
-                            <Button
-                                url="/messenging"
-                                text="Envoyer un message"
-                                className="text-sm text-(--white) bg-(--primary) rounded-[10px] py-8 px-8" />
-                        </div>}
                     </div>
                     <div className="flex flex-col gap-40 lg:w-full bg-(--white) rounded-[10px] border boder-solid border-(--pink) p-24 order-0 lg:order-1">
                         <div className="flex flex-col gap-32">
@@ -134,6 +119,17 @@ export default function Property({ cat }: CatProps) {
                             <p className="text-sm text-(--text) font-normal whitespace-break-spaces">{cat?.description}</p>
                         </div>
                         <CollapseElement title="Informations" content={collapseElementContent} />
+                        { !cat?.isAdopted && <IconButton
+                                url="/send"
+                                icon={IconButtonImages.Heart}
+                                text="J'ai un coup de "
+                                svgFill='#fff'
+                                svgBgFill='#fff'
+                                svgStroke='#fff'
+                                imgWidth={32}
+                                imgHeight={32}
+                                className="text-lg text-(--white) bg-(--primary) rounded-[10px] py-8 px-8 justify-center" />
+                        }
                     </div>
                 </div>
             </div>

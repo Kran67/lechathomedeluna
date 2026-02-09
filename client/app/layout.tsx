@@ -5,6 +5,10 @@ import { CookiesProvider } from 'next-client-cookies/server';
 import { NextFontWithVariable } from 'next/dist/compiled/@next/font';
 import { Roboto_Condensed } from 'next/font/google';
 import { cookies } from 'next/headers';
+import {
+  Bounce,
+  ToastContainer,
+} from 'react-toastify';
 
 import { getProfile } from '@/app/api/api';
 import { UserProvider } from '@/app/contexts/userContext';
@@ -46,6 +50,19 @@ export default async function RootLayout({
             {children}
           </CookiesProvider>
         </UserProvider>
+        <ToastContainer
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable={false}
+          pauseOnHover
+          theme="colored"
+          transition={Bounce}
+        />
       </body>
     </html>
   );

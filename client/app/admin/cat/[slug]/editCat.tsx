@@ -18,7 +18,6 @@ import {
 } from 'next/navigation';
 import { toast } from 'react-toastify';
 
-//import { toast } from 'react-toastify';
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
 import Button from '@/app/components/ui/Button';
@@ -35,7 +34,7 @@ import {
 } from '@/app/enums/enums';
 import {
   Cat,
-  Vaccine,
+  CatDocument,
 } from '@/app/interfaces/cat';
 import { User } from '@/app/interfaces/user';
 import {
@@ -72,12 +71,23 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const router = useRouter();
     const [pictures, setPictures] = useState<any>([...cat?.pictures ?? []]);
     const [picturesPreview, setPicturesPreview] = useState<string[]>([]);
-    const [vaccines, setVaccines] = useState<Vaccine[]>([...cat?.vaccines ?? []]);
-    const [vaccinesPreview, setVaccinesPreview] = useState<string[]>([]);
+
+    const [catDocuments, setCatDocuments] = useState<CatDocument[]>([...cat?.documents ?? []]);
+    const [vaccinesPreview, setVaccinesPreview] = useState<{ url:any, index: number}[]>([]);
     const [vaccineDate, setVaccineDate] = useState<string | undefined>(undefined);
     const [vaccinePicture, setVaccinePicture] = useState<any | null>(null);
     const inputVaccineFile = useRef(null);
     const inputVaccineDate = useRef(null);
+    const [pestControlsPreview, setPestControlsPreview] = useState<{ url:any, index: number}[]>([]);
+    const [pestControlDate, setPestControlDate] = useState<string | undefined>(undefined);
+    const [pestControlPicture, setPestControlPicture] = useState<any | null>(null);
+    const inputPestControlFile = useRef(null);
+    const inputPestControlDate = useRef(null);
+    const [examsPreview, setExamsPreview] = useState<{ url:any, index: number}[]>([]);
+    const [examDate, setExamDate] = useState<string | undefined>(undefined);
+    const [examPicture, setExamPicture] = useState<any | null>(null);
+    const inputExamFile = useRef(null);
+    const inputExamDate = useRef(null);
     console.log(cat);
 
     if (!user || (user && !hasRole(user.role, ["Admin", "HostFamily"]))) {
@@ -108,9 +118,9 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         const strPictures: string[] = pictures.filter((picture: any) => typeof picture === "string");
         const deletedPictureFiles: string[] | null= cat?.pictures.filter((item: string) => !strPictures.includes(item)) ?? null;
 
-        const newVaccineFiles: Vaccine[] = vaccines.filter((vaccine: Vaccine) => typeof vaccine.picture !== "string");
-        const strVaccinePictures: string[] = vaccines.filter((vaccine: Vaccine) => typeof vaccine.picture === "string").map((vaccine: Vaccine) => vaccine.picture);
-        const deletedVaccineFiles: string[] | null= cat?.vaccines.filter((vaccine: Vaccine) => !strVaccinePictures.includes(vaccine.picture)).map((vaccine: Vaccine) => vaccine.picture) ?? null;
+        const newCatDocumentFiles: CatDocument[] = catDocuments.filter((document: CatDocument) => typeof document.picture !== "string");
+        const strCatDocumentPictures: string[] = catDocuments.filter((document: CatDocument) => typeof document.picture === "string").map((document: CatDocument) => document.picture);
+        const deletedCatDocumentFiles: string[] | null= cat?.documents.filter((document: CatDocument) => !strCatDocumentPictures.includes(document.picture)).map((document: CatDocument) => document.picture) ?? null;
 
         const res = await update(
             token,
@@ -131,8 +141,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
             hostFamilyId,
             newPictureFiles,
             deletedPictureFiles,
-            newVaccineFiles,
-            deletedVaccineFiles
+            newCatDocumentFiles,
+            deletedCatDocumentFiles
         );
         if (!res.error) {
             redirectWithDelay(`/admin/cat/${res.slug}`, 1000);
@@ -162,36 +172,94 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     }
 
     useEffect(() => {
-        const newImageUrls: any = [];
-        vaccines.forEach((vaccine:any) => newImageUrls.push(typeof vaccine.picture === "string" ? vaccine.picture : URL.createObjectURL(vaccine.picture)));
-        setVaccinesPreview(newImageUrls);
-    }, [vaccines]);
+        const newImageUrls: { url:any, index: number}[] = [];
+        catDocuments.filter((d) => d.type === "vaccin" ).map((document:any, index: number) => newImageUrls.push({ url: typeof document.picture === "string" ? document.picture : URL.createObjectURL(document.picture), index }));
+        setVaccinesPreview([...newImageUrls]);
+        newImageUrls.length = 0;
+        catDocuments.filter((d) => d.type === "antiparasitaire" ).map((document:any, index: number) => newImageUrls.push({url: typeof document.picture === "string" ? document.picture : URL.createObjectURL(document.picture), index }));
+        setPestControlsPreview([...newImageUrls]);
+        newImageUrls.length = 0;
+        catDocuments.filter((d) => d.type === "examen" ).map((document:any, index: number) => newImageUrls.push({url: typeof document.picture === "string" ? document.picture : URL.createObjectURL(document.picture), index }));
+        setExamsPreview([...newImageUrls]);
+    }, [catDocuments]);
 
-    const vaccinePictureChange = (e: any) => {
-        setVaccinePicture(e.target.files[0]);
-    }
-    const addVaccine = () => {
-        if (vaccineDate && vaccinePicture) {
-            setVaccines([...vaccines, { id: '', cat_id: cat?.id ?? '', date: vaccineDate ?? '', picture: vaccinePicture }]);
-            setVaccinePicture(undefined);
-            setVaccineDate(undefined);
-            handleReset();
+    const documentPictureChange = (e: any, type: "vaccin" | "antiparasitaire" | "examen") => {
+        switch (type)  {
+            case "vaccin":
+                setVaccinePicture(e.target.files[0]);
+                break;
+            case "antiparasitaire":
+                setPestControlPicture(e.target.files[0]);
+                break;
+            case "examen":
+                setExamPicture(e.target.files[0]);
+                break;
         }
     }
-    const removeVaccine = (e: { preventDefault: () => void; }, idx: number ) => {
-        vaccines.splice(idx, 1);
+    const addDocument = (type: "vaccin" | "antiparasitaire" | "examen") => {
+        switch (type)  {
+            case "vaccin":
+                if (vaccineDate && vaccinePicture) {
+                    setCatDocuments([...catDocuments, { id: '', cat_id: cat?.id ?? '', date: vaccineDate ?? '', picture: vaccinePicture, type }]);
+                    setVaccinePicture(undefined);
+                    setVaccineDate(undefined);
+                }
+                break;
+            case "antiparasitaire":
+                if (pestControlDate && pestControlPicture) {
+                    setCatDocuments([...catDocuments, { id: '', cat_id: cat?.id ?? '', date: pestControlDate ?? '', picture: pestControlPicture, type }]);
+                    setPestControlPicture(undefined);
+                    setPestControlDate(undefined);
+                }
+                break;
+            case "examen":
+                if (examDate && examPicture) {
+                    setCatDocuments([...catDocuments, { id: '', cat_id: cat?.id ?? '', date: examDate ?? '', picture: examPicture, type }]);
+                    setExamPicture(undefined);
+                    setExamDate(undefined);
+                }
+                break;
+        }
+        handleReset(type);
+    }
+    const removeDocument = (e: { preventDefault: () => void; }, idx: number) => {
+        catDocuments.splice(idx, 1);
         e.preventDefault();
-        setVaccines([...vaccines]);
+        setCatDocuments([...catDocuments]);
     }
 
-    const handleReset = () => {
-        if (inputVaccineFile.current) {
-            (inputVaccineFile.current as HTMLInputElement).value = "";
-            (inputVaccineFile.current as HTMLInputElement).type = "text";
-            (inputVaccineFile.current as HTMLInputElement).type = "file";
-        }
-        if (inputVaccineDate.current) {
-            (inputVaccineDate.current as HTMLInputElement).value = "";
+    const handleReset = (type: "vaccin" | "antiparasitaire" | "examen") => {
+        switch (type)  {
+            case "vaccin":
+                if (inputVaccineFile.current) {
+                    (inputVaccineFile.current as HTMLInputElement).value = "";
+                    (inputVaccineFile.current as HTMLInputElement).type = "text";
+                    (inputVaccineFile.current as HTMLInputElement).type = "file";
+                }
+                if (inputVaccineDate.current) {
+                    (inputVaccineDate.current as HTMLInputElement).value = "";
+                }
+                break;
+            case "antiparasitaire":
+                if (inputPestControlFile.current) {
+                    (inputPestControlFile.current as HTMLInputElement).value = "";
+                    (inputPestControlFile.current as HTMLInputElement).type = "text";
+                    (inputPestControlFile.current as HTMLInputElement).type = "file";
+                }
+                if (inputPestControlDate.current) {
+                    (inputPestControlDate.current as HTMLInputElement).value = "";
+                }
+                break;
+            case "examen":
+                if (inputExamFile.current) {
+                    (inputExamFile.current as HTMLInputElement).value = "";
+                    (inputExamFile.current as HTMLInputElement).type = "text";
+                    (inputExamFile.current as HTMLInputElement).type = "file";
+                }
+                if (inputExamDate.current) {
+                    (inputExamDate.current as HTMLInputElement).value = "";
+                }
+                break;
         }
     }
 
@@ -213,16 +281,31 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                 <div className="flex flex-col flex-1 gap-20 md:gap-41 rounded-[10px] border border-solid border-(--pink) bg-(--white) py-20 px-30 md:py-40 md:px-59">
                     <form onSubmit={handleSubmit} className="flex flex-col gap-20 md:gap-41" role="form" aria-label="Information du compte">
                         <div className="flex flex-col gap-4 md:gap-8">
-                            <h5 className="text-(--grey-800)">Modification fiche chat</h5>
+                            <h5 className="text-(--primary)">Modification fiche chat</h5>
                         </div>
                         <div className="flex flex-col gap-12 md:gap-24">
+                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                                <label className="text-sm text-(--text) font-medium " htmlFor="hostFamilyId">Famille d'accueil</label>
+                                <Select
+                                    options={filteredHostFamilies}
+                                    className="select"
+                                    classNamePrefix="select"
+                                    name="hostFamilyId"
+                                    id="hostFamilyId"
+                                    isMulti={false}
+                                    isClearable={false}
+                                    isSearchable={false}
+                                    placeholder="Famille d'accueil"
+                                    value={filteredHostFamilies?.find(c => c.value === hostFamilyId)}
+                                    onChange={(e:any) => setHostFamilyId(e?.value ?? null)}
+                                />
+                            </div>
                             <Input name="name" label="Nom" required={true} value={cat?.name} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
-                                <label className="text-sm text-(--text) font-medium " htmlFor="status">Description *</label>
+                                <label className="text-sm text-(--text) font-medium " htmlFor="status">Description</label>
                                 <textarea
                                     className='text-sm text-(--text) w-full outline-0 border border-(--pink) px-10 py-5'
                                     name="description"
-                                    required={true}
                                     rows={5}
                                     defaultValue={cat?.description}
                                 />
@@ -279,8 +362,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     onChange={(e:any) => setIsSterilized(e?.value as boolean ?? false)}
                                 />
                             </div>
-                            <Input name="sterilizationDate" label="Date de la stérilisation" type={InputTypes.Date} value={cat?.sterilizationDate ? formatYMMDD(new Date(cat?.sterilizationDate)) : ''} />
-                            <Input name="birthDate" label="Date anniversaire" type={InputTypes.Date} value={cat?.birthDate ? formatYMMDD(new Date(cat?.birthDate)) : ''} />
+                            <Input name="sterilizationDate" label="Date de la stérilisation  / castration" type={InputTypes.Date} value={cat?.sterilizationDate ? formatYMMDD(new Date(cat?.sterilizationDate)) : ''} />
+                            <Input name="birthDate" label="Date de naissance" type={InputTypes.Date} value={cat?.birthDate ? formatYMMDD(new Date(cat?.birthDate)) : ''} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="isDuringVisit">En cours de visite</label>
                                 <Select
@@ -314,22 +397,6 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 />
                             </div>
                             <Input name="adoptionDate" label="Date d'adoption" type={InputTypes.Date} value={cat?.adoptionDate ? formatYMMDD(new Date(cat?.adoptionDate)) : ''} />
-                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
-                                <label className="text-sm text-(--text) font-medium " htmlFor="hostFamilyId">Famille d'accueil</label>
-                                <Select
-                                    options={filteredHostFamilies}
-                                    className="select"
-                                    classNamePrefix="select"
-                                    name="hostFamilyId"
-                                    id="hostFamilyId"
-                                    isMulti={false}
-                                    isClearable={false}
-                                    isSearchable={false}
-                                    placeholder="Famille d'accueil"
-                                    value={filteredHostFamilies?.find(c => c.value === hostFamilyId)}
-                                    onChange={(e:any) => setHostFamilyId(e?.value ?? null)}
-                                />
-                            </div>
                             <Input name="catPictures" label="Photos" type={InputTypes.File} multipleFile={true} onChange={picturesChange} />
                             <div className='flex flex-wrap w-full gap-7'>
                                 {picturesPreview.map((picture: string, idx: number) => (
@@ -361,31 +428,123 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                         name="vaccinePicture"
                                         label="Photos du vaccin"
                                         type={InputTypes.File}
-                                        onChange={vaccinePictureChange}
+                                        onChange={(e) => documentPictureChange(e, "vaccin")}
                                         showLabel={false}
                                         className='max-w-44'
                                         ref={inputVaccineFile} />
                                     <span className='text-sm text-(--primary)'>{vaccinePicture?.name}</span>
                                     <Button className="flex text-sm p-10 h-40 bg-(--primary) items-center justify-center rounded-[10px] text-lg text-(--white) cursor-pointer"
-                                         onClick={(e:any) => { addVaccine(); e.preventDefault(); }}
+                                         onClick={(e:any) => { addDocument("vaccin"); e.preventDefault(); }}
                                          text="Ajouter le vaccin"
                                          disabled={!vaccineDate || !vaccinePicture}
                                          />
                                 </div>
                                 <div className='flex flex-wrap w-full gap-7 mt-24'>
-                                    {vaccinesPreview.map((picture: string, idx: number) => (
+                                    {vaccinesPreview.map((value: { url: string, index: number}, idx: number) => (
                                         <div key={idx} className="rounded-[10px] h-124 w-100 overflow-hidden relative border border-1 border-solid border-(--pink)">
                                             <IconButton className='absolute right-3 top-3 w-16 h-16 z-1 bg-(--primary) flex justify-center items-center rounded-[5px]'
-                                                icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removeVaccine(e, idx)} />
+                                                icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removeDocument(e, idx)} />
                                             <figcaption className='flex flex-col p-5'>
                                                 <img
-                                                    data-testid={"chat-image-" + (idx + 1)}
-                                                    src={(picture.includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + picture}
-                                                    alt={"Image du chat n°" + (idx + 1)}
+                                                    data-testid={"vaccin-image-" + (idx + 1)}
+                                                    src={(value.url.includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + value.url}
+                                                    alt={"Image du vaccin n°" + (idx + 1)}
                                                     style={{ objectFit: "contain" }}
                                                     className=' max-h-150'
                                                 />
-                                                <figcaption className='text-(--primary) text-sm p-3 text-center'>{ formatDDMMY(new Date(vaccines[idx]?.date)) }</figcaption>
+                                                <figcaption className='text-(--primary) text-sm p-3 text-center'>{ formatDDMMY(new Date(catDocuments[value.index]?.date)) }</figcaption>
+                                            </figcaption>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="select flex flex-col flex-1 justify-start h-77">
+                                <label className="text-sm text-(--text) font-medium " htmlFor="">Antiparasitaires</label>
+                                <div className='flex gap-10 items-center'>
+                                    <Input
+                                        name="antiparasiticDate"
+                                        label="Date de l'antiparasitaire"
+                                        type={InputTypes.Date}
+                                        showLabel={false}
+                                        className='max-w-150'
+                                        value={pestControlDate}
+                                        onChange={(e) => setPestControlDate(e.target.value)}
+                                        ref={inputPestControlDate} />
+                                    <Input
+                                        name="antiparasiticsPicture"
+                                        label="Photos de l'antiparasitaire"
+                                        type={InputTypes.File}
+                                        onChange={(e) => documentPictureChange(e, "antiparasitaire")}
+                                        showLabel={false}
+                                        className='max-w-44'
+                                        ref={inputPestControlFile} />
+                                    <span className='text-sm text-(--primary)'>{pestControlPicture?.name}</span>
+                                    <Button className="flex text-sm p-10 h-40 bg-(--primary) items-center justify-center rounded-[10px] text-lg text-(--white) cursor-pointer"
+                                         onClick={(e:any) => { addDocument("antiparasitaire"); e.preventDefault(); }}
+                                         text="Ajouter l'antiparasitaire"
+                                         disabled={!pestControlDate || !pestControlPicture}
+                                         />
+                                </div>
+                                <div className='flex flex-wrap w-full gap-7 mt-24'>
+                                    {pestControlsPreview.map((value: { url: string, index: number}, idx: number) => (
+                                        <div key={idx} className="rounded-[10px] h-124 w-100 overflow-hidden relative border border-1 border-solid border-(--pink)">
+                                            <IconButton className='absolute right-3 top-3 w-16 h-16 z-1 bg-(--primary) flex justify-center items-center rounded-[5px]'
+                                                icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removeDocument(e, value.index)} />
+                                            <figcaption className='flex flex-col p-5'>
+                                                <img
+                                                    data-testid={"antiparasitaire-image-" + (idx + 1)}
+                                                    src={(value.url.includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + value.url}
+                                                    alt={"Image de l'antiparasitaire n°" + (idx + 1)}
+                                                    style={{ objectFit: "contain" }}
+                                                    className=' max-h-150'
+                                                />
+                                                <figcaption className='text-(--primary) text-sm p-3 text-center'>{ formatDDMMY(new Date(catDocuments[value.index]?.date)) }</figcaption>
+                                            </figcaption>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="select flex flex-col flex-1 justify-start h-77">
+                                <label className="text-sm text-(--text) font-medium " htmlFor="">CR interventions / résultats PS / Examens</label>
+                                <div className='flex gap-10 items-center'>
+                                    <Input
+                                        name="examDate"
+                                        label="Date"
+                                        type={InputTypes.Date}
+                                        showLabel={false}
+                                        className='max-w-150'
+                                        value={examDate}
+                                        onChange={(e) => setExamDate(e.target.value)}
+                                        ref={inputExamDate} />
+                                    <Input
+                                        name="examPicture"
+                                        label="Photos"
+                                        type={InputTypes.File}
+                                        onChange={(e) => documentPictureChange(e, "examen")}
+                                        showLabel={false}
+                                        className='max-w-44'
+                                        ref={inputExamFile} />
+                                    <span className='text-sm text-(--primary)'>{examPicture?.name}</span>
+                                    <Button className="flex text-sm p-10 h-40 bg-(--primary) items-center justify-center rounded-[10px] text-lg text-(--white) cursor-pointer"
+                                         onClick={(e:any) => { addDocument("examen"); e.preventDefault(); }}
+                                         text="Ajouter le CR/ PS / Examens"
+                                         disabled={!examDate || !examPicture}
+                                         />
+                                </div>
+                                <div className='flex flex-wrap w-full gap-7 mt-24'>
+                                    {examsPreview.map((value: { url: string, index: number}, idx: number) => (
+                                        <div key={idx} className="rounded-[10px] h-124 w-100 overflow-hidden relative border border-1 border-solid border-(--pink)">
+                                            <IconButton className='absolute right-3 top-3 w-16 h-16 z-1 bg-(--primary) flex justify-center items-center rounded-[5px]'
+                                                icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removeDocument(e, value.index)} />
+                                            <figcaption className='flex flex-col p-5'>
+                                                <img
+                                                    data-testid={"examen-image-" + (idx + 1)}
+                                                    src={(value.url.includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + value.url}
+                                                    alt={"Image de l'examen n°" + (idx + 1)}
+                                                    style={{ objectFit: "contain" }}
+                                                    className=' max-h-150'
+                                                />
+                                                <figcaption className='text-(--primary) text-sm p-3 text-center'>{ formatDDMMY(new Date(catDocuments[value.index]?.date)) }</figcaption>
                                             </figcaption>
                                         </div>
                                     ))}

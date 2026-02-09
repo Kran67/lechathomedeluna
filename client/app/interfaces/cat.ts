@@ -3,11 +3,12 @@ import { HostFamily } from '@/app/interfaces/hostFamily';
 type catSex = "Mâle" | "Femelle";
 type catStatus = "negatif" | "positif" | "non testé";
 
-export interface Vaccine {
+export interface CatDocument {
     id: string;
     cat_id: string;
     date: string;
     picture: any;
+    type: "vaccin" | "antiparasitaire" | "examen";
 }
 
 export interface Cat {
@@ -27,6 +28,6 @@ export interface Cat {
     isAdopted?: boolean;
     adoptionDate?: string;
     hostFamily?: HostFamily;
-    vaccines: Vaccine[];
+    documents: CatDocument[];
     pictures: string[];
 }

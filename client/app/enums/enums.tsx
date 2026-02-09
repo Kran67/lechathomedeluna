@@ -6,7 +6,7 @@ export enum HeaderMenuItems {
     Login,
     Logout,
     AdoptedCats,
-    HealthRegister,
+    Alerts,
     VeterinaryVouchers,
     Events,
     Volunteers,
@@ -57,7 +57,7 @@ export enum InputImageTypes {
 
 export enum UserRole {
     Admin = "Admin",
-    Assistant = "Assistant",
+    Assistant = "Membre du comité",
     HostFamily = "HostFamily",
     Volunteer = "Volunteer"
 }

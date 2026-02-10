@@ -14,7 +14,7 @@ import {
   UserRole,
 } from '@/app/enums/enums';
 import {
-  hasRole,
+  hasRoles,
   prepareBodyToShowModal,
 } from '@/app/lib/utils';
 
@@ -48,17 +48,17 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.Home}
                 url="/"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />
-            {user && hasRole(user.role, [UserRole.Admin, UserRole.Assistant]) && <MenuItem
+            {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant]) && <MenuItem
                 text="Mes alertes"
                 isActive={activeMenu === HeaderMenuItems.Alerts}
                 url="/myalerts"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
-            {user && hasRole(user.role, [UserRole.Admin, UserRole.Assistant]) && <MenuItem
+            {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant]) && <MenuItem
                 text="Bons vétérinaires"
                 isActive={activeMenu === HeaderMenuItems.VeterinaryVouchers}
                 url="/veterinary"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
-            {user && hasRole(user.role, [UserRole.Admin, UserRole.Volunteer]) && <MenuItem
+            {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Volunteer]) && <MenuItem
                 text="Evénements"
                 isActive={activeMenu === HeaderMenuItems.Events}
                 url="/events"
@@ -68,7 +68,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.Adoption}
                 url="/adoption"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />
-            {user && hasRole(user.role, [UserRole.Admin, UserRole.Assistant, UserRole.Volunteer]) && <MenuItem
+            {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant, UserRole.Volunteer]) && <MenuItem
                 text="Bénévoles"
                 isActive={activeMenu === HeaderMenuItems.Volunteers}
                 url="/"
@@ -78,7 +78,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.AdoptedCats}
                 url="/adoptedCats"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />
-            {user && hasRole(user.role, [UserRole.Admin, UserRole.Assistant, UserRole.HostFamily]) && <MenuItem
+            {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant, UserRole.HostFamily]) && <MenuItem
                 text="Messagerie"
                 isActive={activeMenu === HeaderMenuItems.Messaging}
                 url="/messaging"

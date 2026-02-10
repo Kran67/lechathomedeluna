@@ -40,7 +40,7 @@ import { User } from '@/app/interfaces/user';
 import {
   formatDDMMY,
   formatYMMDD,
-  hasRole,
+  hasRoles,
   redirectWithDelay,
 } from '@/app/lib/utils';
 import { update } from '@/app/services/catsService';
@@ -90,7 +90,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const inputExamDate = useRef(null);
     console.log(cat);
 
-    if (!user || (user && !hasRole(user.role, ["Admin", "HostFamily"]))) {
+    if (!user || (user && !hasRoles(user.roles, ["Admin", "HostFamily"]))) {
         redirect("/");
     }
 
@@ -312,7 +312,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     onChange={(e:any) => setHostFamilyId(e?.value ?? null)}
                                 />
                             </div>
-                            <Input name="name" label="Nom" required={true} value={cat?.name} />
+                            <Input name="name" label="Nom" required={true} value={cat?.name} maxLength={20} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="status">Description</label>
                                 <textarea
@@ -338,7 +338,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     onChange={(e:any) => setStatus(e?.value as string ?? "")}
                                 />
                             </div>
-                            <Input name="numIdentification" label="N° d'identification" value={cat?.numIdentification} />
+                            <Input name="numIdentification" label="N° d'identification" value={cat?.numIdentification} maxLength={20} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="sex">Sexe *</label>
                                 <Select
@@ -356,8 +356,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     required={true}
                                 />
                             </div>
-                            <Input name="dress" label="Robe" value={cat?.dress} />
-                            <Input name="race" label="Race" value={cat?.race} />
+                            <Input name="dress" label="Robe" value={cat?.dress} maxLength={10} />
+                            <Input name="race" label="Race" value={cat?.race} maxLength={10} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="isSterilized">Est stérilisé</label>
                                 <Select

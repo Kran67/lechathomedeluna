@@ -28,20 +28,22 @@ async function initializeDb(deleteAll = false) {
 
   await client.connect();
   await checkDatabase(client);
-  await initSchema(pool);
   if (deleteAll) {
     await dropAll(pool);
   }
+  await initSchema(pool);
   await seedIfEmpty(pool);
 
   await client.end();
 }
 
 async function dropAll(client) {
-  await client.query('TRUNCATE TABLE cats CASCADE');
-  await client.query('TRUNCATE TABLE users CASCADE');
-  await client.query('ALTER SEQUENCE users_id_seq RESTART WITH 1');
-  await client.query('ALTER SEQUENCE cats_id_seq RESTART WITH 1');
+  await client.query('DROP TABLE IF EXISTS cat_documents CASCADE');
+  await client.query('DROP TABLE IF EXISTS cat_pictures CASCADE');
+  await client.query('DROP TABLE IF EXISTS cats CASCADE');
+  await client.query('DROP TABLE IF EXISTS users CASCADE');
+  //await client.query('ALTER SEQUENCE users_id_seq RESTART WITH 1');
+  //await client.query('ALTER SEQUENCE cats_id_seq RESTART WITH 1');
 }
 
 async function checkDatabase(client) {
@@ -68,16 +70,17 @@ async function initSchema(pool) {
         id SERIAL PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
         lastName VARCHAR(100) NOT NULL,
+        social_number VARCHAR(13),
         phone VARCHAR(10) NOT NULL,
         address VARCHAR(255) NOT NULL,
         city VARCHAR(30) NOT NULL,
-        role VARCHAR(20) NOT NULL CHECK (role IN ('Admin', 'Assistant', 'HostFamily', 'Volunteer')),
+        roles VARCHAR(40) NOT NULL,
         email VARCHAR(100),
         password_hash VARCHAR(255),
         blacklisted BOOLEAN DEFAULT false,
         referrer_id INTEGER REFERENCES users(id) ON DELETE RESTRICT,
         reset_token VARCHAR(255),
-        reset_expires BOOLEAN,
+        reset_expires DATE,
         UNIQUE(email)
     );`);
 
@@ -161,7 +164,7 @@ async function seedIfEmpty(pool) {
 
   try {
     const usedSlugs = new Set();
-    await pool.query('INSERT INTO users(name, lastname, phone, address, city, role, email, password_hash) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (email) DO NOTHING', 
+    await pool.query('INSERT INTO users(name, lastname, phone, address, city, roles, email, password_hash) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (email) DO NOTHING', 
             [
               'super',
               'admin',
@@ -172,7 +175,7 @@ async function seedIfEmpty(pool) {
               'superadmin@exemple.com',
               'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba'
             ]);
-    await pool.query('INSERT INTO users(name, lastname, phone, address, city, role, email, password_hash) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (email) DO NOTHING', 
+    await pool.query('INSERT INTO users(name, lastname, phone, address, city, roles, email, password_hash) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (email) DO NOTHING', 
             [
               'Sylvie',
               '',
@@ -192,14 +195,14 @@ async function seedIfEmpty(pool) {
           user = { id: rows[0].id };
         }
         if (!user) {
-          const ins = await pool.query('INSERT INTO users(name, lastname, phone, address, city, role, email, referrer_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id',
+          const ins = await pool.query('INSERT INTO users(name, lastname, phone, address, city, roles, email, referrer_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id',
             [
               p.hostFamily && p.hostFamily.name,
               p.hostFamily && p.hostFamily.lastName,
               p.hostFamily && p.hostFamily.phone ? p.hostFamily.phone : '0000000000',
               p.hostFamily && p.hostFamily.address ? p.hostFamily.address : null,
               p.hostFamily && p.hostFamily.city ? p.hostFamily.city : null,
-              p.hostFamily && p.hostFamily.role ? p.hostFamily.role : 'hostfamily',
+              p.hostFamily && p.hostFamily.roles ? p.hostFamily.roles : 'hostfamily',
               p.hostFamily && p.hostFamily.email ? p.hostFamily.email : `unknown${Date.now()}@example.com`,
               p.hostFamily && p.hostFamily.referrerId ? p.hostFamily.referrerId : null
             ]);

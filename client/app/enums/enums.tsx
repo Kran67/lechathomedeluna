@@ -62,7 +62,7 @@ export enum InputImageTypes {
 
 export enum UserRole {
     Admin = "Admin",
-    Assistant = "Membre du comité",
+    Assistant = "Assistant",
     HostFamily = "HostFamily",
     Volunteer = "Volunteer"
 }
@@ -73,7 +73,7 @@ export const Roles: {
 }[] = [
         {
             value: UserRole.Assistant,
-            label: UserRole.Assistant,
+            label: "Membre du comité",
         },
         {
             value: UserRole.HostFamily,

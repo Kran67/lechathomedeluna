@@ -11,10 +11,11 @@ function mapUserRow(row) {
     id: row.id,
     name: row.name,
     lastName: row.lastname ?? "",
+    social_number: row.social_number ?? "",
     phone: row.phone ?? "",
     address: row.address ?? "",
     city: row.city ?? "",
-    role: row.role,
+    roles: row.roles,
     email: row.email,
     blacklisted: row.blacklisted ?? false,
     referrer_id: row.referrer_id ?? null,
@@ -38,11 +39,11 @@ function verifyPassword(password, stored) {
 }
 
 function signToken(user) {
-  const payload = { id: user.id, role: user.role, name: user.name, email: user.email || null };
+  const payload = { id: user.id, roles: user.roles, name: user.name, email: user.email || null };
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 }
 
-async function register({ name, email, password, role = 'HostFamily' }) {
+async function register({ name, email, password, roles = 'HostFamily' }) {
   if (!name) {
     const err = new Error('Nom est requis'); err.status = 400; throw err;
   }
@@ -52,12 +53,12 @@ async function register({ name, email, password, role = 'HostFamily' }) {
   if (!password || String(password).length < 8) {
     const err = new Error('Le mot de passe doit comporter au moins 8 caractères.'); err.status = 400; throw err;
   }
-  if (!['HostFamily'].includes(role)) role = 'HostFamily';
+  if (!['HostFamily'].includes(roles)) roles = 'HostFamily';
   const password_hash = hashPassword(String(password));
   try {
-    const r = await pool.query('INSERT INTO users(name, email, password_hash, role) VALUES ($1,$2,$3,$4) RETURNING id', [name, email, password_hash, role]);
+    const r = await pool.query('INSERT INTO users(name, email, password_hash, roles) VALUES ($1,$2,$3,$4) RETURNING id', [name, email, password_hash, roles]);
     const lastId = r.rows[0].id;
-    const res = await pool.query('SELECT id, name, email, role FROM users WHERE id = $1', [lastId]);
+    const res = await pool.query('SELECT id, name, email, roles FROM users WHERE id = $1', [lastId]);
     const user = mapUserRow(res.rows[0]);
     const token = signToken(user);
     return { token, user };
@@ -69,7 +70,7 @@ async function register({ name, email, password, role = 'HostFamily' }) {
 
 async function login({ email, password }) {
   if (!email || !password) { const err = new Error('Un email et un mot de passe sont requis.'); err.status = 400; throw err; }
-  const res = await pool.query('SELECT id, name, lastName, email, role, password_hash FROM users WHERE email = $1', [email]);
+  const res = await pool.query('SELECT id, name, lastName, email, roles, password_hash FROM users WHERE email = $1', [email]);
   if (res.rowCount === 0 || !res.rows[0].password_hash || !verifyPassword(String(password), res.rows[0].password_hash)) {
     const err = new Error("informations d'identification invalides"); err.status = 401; throw err;
   }

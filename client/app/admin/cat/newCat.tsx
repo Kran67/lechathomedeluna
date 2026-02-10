@@ -33,7 +33,7 @@ import {
 } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
 import {
-  hasRole,
+  hasRoles,
   redirectWithDelay,
 } from '@/app/lib/utils';
 import { create } from '@/app/services/catsService';
@@ -62,7 +62,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
     const [pictures, setPictures] = useState<any>([]);
     const [picturesPreview, setPicturesPreview] = useState<string[]>([]);
 
-    if (!user || (user && !hasRole(user.role, ["Admin", "HostFamily"]))) {
+    if (!user || (user && !hasRoles(user.roles, ["Admin", "HostFamily"]))) {
         redirect("/");
     }
 
@@ -147,7 +147,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                                     onChange={(e:any) => setHostFamilyId(e?.value ?? null)}
                                 />
                             </div>
-                            <Input name="name" label="Nom" required={true} />
+                            <Input name="name" label="Nom" required={true} maxLength={20} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="status">Description</label>
                                 <textarea className='text-sm text-(--text) w-full outline-0 border border-(--pink) px-10 py-5' name="description" rows={5} />
@@ -168,7 +168,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                                     onChange={(e:any) => setStatus(e?.value as string ?? "")}
                                 />
                             </div>
-                            <Input name="numIdentification" label="N° d'identification" />
+                            <Input name="numIdentification" label="N° d'identification" maxLength={20} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="sex">Sexe *</label>
                                 <Select
@@ -185,8 +185,8 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                                     required={true}
                                 />
                             </div>
-                            <Input name="dress" label="Robe"  />
-                            <Input name="race" label="Race" value='Européen' />
+                            <Input name="dress" label="Robe" maxLength={10} />
+                            <Input name="race" label="Race" value='Européen' maxLength={10} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="isSterilized">Est stérilisé</label>
                                 <Select
@@ -219,7 +219,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                                     onChange={(e:any) => setIsDuringVisit(e?.value as boolean ?? "")}
                                 />
                             </div>
-                            { user && hasRole(user.role, [UserRole.Admin]) &&
+                            { user && hasRoles(user.roles, [UserRole.Admin]) &&
                             <>
                                 <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                     <label className="text-sm text-(--text) font-medium " htmlFor="isAdopted">Est adopté</label>

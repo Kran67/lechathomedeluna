@@ -31,6 +31,7 @@ interface InputProps {
     hidden?: boolean;
     multipleFile?: boolean;
     ref?: any
+    pattern?: string;
 }
 
 /**
@@ -38,27 +39,28 @@ interface InputProps {
  * 
  * @function Input
  * @param { name, label, type, value, imageType, placeHolder, required, width, onChange, hasError, autoComplete = "on", maxLength, className } InputProps - Les proriétés du champ de saisie
- * @param {string} IconButtonProps.name - Nom du champ de saisie
- * @param {string?} IconButtonProps.label - Label du champ de saisie
- * @param {InputTypes?} IconButtonProps.type - Type du champ de saisie
- * @param {string?} IconButtonProps.value - Valeur du champ de saisie
- * @param {InputImageTypes?} IconButtonProps.imageType - Type d'image à afficher dans le champ de saisie
- * @param {string?} IconButtonProps.placeHolder - Espace réservé du champ de saisie
- * @param {boolean?} IconButtonProps.required - Indique si le champ de saisie doit être obligatoire ou non
- * @param {number?} IconButtonProps.width - Taille du champ de saisie
- * @param {function?} IconButtonProps.onChange - Function à éxecuter lors du changement du texte du champ de saisie
- * @param {boolean?} IconButtonProps.hasError - Indique si le champ de saisie et en erreur ou non
- * @param {string?} IconButtonProps.autoComplete - Indique si le champ de saisie doit gérer l'auto complétion
- * @param {number?} IconButtonProps.maxLength - Longeur maximale du texte du champ de saisie
- * @param {string?} IconButtonProps.className - Classes css du champ de saisie
- * @param {boolean?} IconButtonProps.showLabel - Indique si le label du champ est visible ou non
- * @param {boolean?} IconButtonProps.readOnly - Indique si le champ est en lecteur seule ou non
- * @param {boolean?} IconButtonProps.hidden - Indique si le champ est visible ou non
- * @param {boolean?} IconButtonProps.multipleFile - Indique si on peut sélectionner plusieurs fichiers ou non
- * @param {any?} IconButtonProps.ref - 
+ * @param {string} InputProps.name - Nom du champ de saisie
+ * @param {string?} InputProps.label - Label du champ de saisie
+ * @param {InputTypes?} InputProps.type - Type du champ de saisie
+ * @param {string?} InputProps.value - Valeur du champ de saisie
+ * @param {InputImageTypes?} InputProps.imageType - Type d'image à afficher dans le champ de saisie
+ * @param {string?} InputProps.placeHolder - Espace réservé du champ de saisie
+ * @param {boolean?} InputProps.required - Indique si le champ de saisie doit être obligatoire ou non
+ * @param {number?} InputProps.width - Taille du champ de saisie
+ * @param {function?} InputProps.onChange - Function à éxecuter lors du changement du texte du champ de saisie
+ * @param {boolean?} InputProps.hasError - Indique si le champ de saisie et en erreur ou non
+ * @param {string?} InputProps.autoComplete - Indique si le champ de saisie doit gérer l'auto complétion
+ * @param {number?} InputProps.maxLength - Longeur maximale du texte du champ de saisie
+ * @param {string?} InputProps.className - Classes css du champ de saisie
+ * @param {boolean?} InputProps.showLabel - Indique si le label du champ est visible ou non
+ * @param {boolean?} InputProps.readOnly - Indique si le champ est en lecteur seule ou non
+ * @param {boolean?} InputProps.hidden - Indique si le champ est visible ou non
+ * @param {boolean?} InputProps.multipleFile - Indique si on peut sélectionner plusieurs fichiers ou non
+ * @param {any?} InputProps.ref - 
+ * @param {string?} InputProps.pattern - 
  */
 export default function Input({ name, label, type, value, imageType, placeHolder, required, width, onChange, hasError, autoComplete = "on", maxLength, className, 
-    showLabel = true, readOnly = false, hidden = false, multipleFile = false, ref = undefined }: InputProps) {
+    showLabel = true, readOnly = false, hidden = false, multipleFile = false, ref = undefined, pattern = undefined }: InputProps) {
     const classNames: string = [
         "input",
         "flex",
@@ -95,10 +97,9 @@ export default function Input({ name, label, type, value, imageType, placeHolder
             />
         ) : (
             <div className={classNames} style={{ "minWidth": width, "maxWidth": width }}>
-                {showLabel && <label className="text-sm text-(--text) font-medium " htmlFor={name}>{label}{required ? " *" : ""}</label>}
                 {type === InputTypes.File && 
                     <label htmlFor={name} className="flex w-40 h-40 bg-(--primary) items-center justify-center rounded-[10px] text-lg text-(--white) cursor-pointer">+</label>}
-                <div className={"flex justify-between items-center bg-(--white) border " +
+                <div className={"flex justify-between items-center bg-(--white) border order-1 " +
                     (!hasError ? "border-(--pink)" : "border-(--primary-dark)") + " border-solid rounded-[4px]" + (showLabel ? "py-16" : "") + " px-10 gap-10 " +
                     (type === InputTypes.File ? " opacity-0 h-0" : " h-40") + (readOnly ? " bg-[#eee]" : "")}>
                     <input
@@ -116,11 +117,13 @@ export default function Input({ name, label, type, value, imageType, placeHolder
                         readOnly={readOnly}
                         multiple={multipleFile}
                         ref={ref}
+                        pattern={pattern}
                     />
                     {imageType &&
                         <Image src={"/images/" + imageType + ".svg"} width={15} height={imgHeight} alt={" Image " + imageType} />
                     }
                 </div>
+                {showLabel && <label className="text-sm text-(--text) font-medium order-0" htmlFor={name}>{label}</label>}
             </div>
         )
     );

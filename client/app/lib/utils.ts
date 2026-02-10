@@ -38,8 +38,9 @@ export const dateAge = (dateStr: string | undefined) => {
     return Math.abs((new Date(Date.now() - date.getTime()).getUTCFullYear()) - 1970);
 }
 
-export const hasRole = (userRole: string, rolesToCheck: string[]): boolean => {
-    return rolesToCheck.includes(userRole);
+export const hasRoles = (roles: string, rolesToCheck: string[]): boolean => {
+    const userRoles: string[] = roles.split("|");
+    return userRoles.some(role => rolesToCheck.includes(role));
 }
 
 /**

@@ -1,14 +1,14 @@
 const pool = require("../db/pool");
 
 async function listUsers() {
-  return await pool.query('SELECT * FROM users ORDER BY id DESC');
+  return await pool.query('SELECT * FROM users WHERE id > 1 ORDER BY id DESC');
 }
 
 async function getUser(id) {
   return await pool.query('SELECT * FROM users WHERE id = $1', [id]);
 }
 
-async function createUser({ email, name, lastName, phone, address, city, role, blacklisted, referrer_id }) {
+async function createUser({ email, name, lastName, social_number, phone, address, city, roles, blacklisted, referrer_id }) {
   if (!email) {
     const err = new Error("L'email est requis");
     err.status = 400;
@@ -24,13 +24,15 @@ async function createUser({ email, name, lastName, phone, address, city, role, b
     err.status = 400;
     throw err;
   }
-  if (!['Assistant', 'HostFamily', 'Volunteer'].includes(role)) {
-    const err = new Error('Rôle invalide');
+  const userRoles = roles.split("|");
+  if (!userRoles.some(role => ['Assistant', 'HostFamily', 'Volunteer'].includes(role))) {
+    const err = new Error('Rôles invalides');
     err.status = 400;
     throw err;
   }
   try {
-    const r = await pool.query('INSERT INTO users(email, name, lastName, role, phone, address, city, blacklisted, referrer_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id', [email, name, lastName, role, phone, address, city, blacklisted, referrer_id]);
+    const r = await pool.query('INSERT INTO users(email, name, lastName, social_number, roles, phone, address, city, blacklisted, referrer_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id',
+      [email, name, lastName, social_number , roles, phone, address, city, blacklisted, referrer_id]);
     return await getUser(r.rows[0].id);
   } catch (e) {
     if (/UNIQUE/i.test(e.message)) {
@@ -43,15 +45,15 @@ async function createUser({ email, name, lastName, phone, address, city, role, b
 }
 
 async function updateUser(id, changes = {}) {
-  const allowedFields = ['name', 'lastName', 'phone', 'address', 'city', 'role', 'blacklisted', 'referrer_id'];
+  const allowedFields = ['name', 'lastName', 'social_number', 'phone', 'address', 'city', 'roles', 'blacklisted', 'referrer_id'];
   const fields = [];
   const params = [];
   for (const key of allowedFields) {
     if (Object.prototype.hasOwnProperty.call(changes || {}, key)) {
-      if (key === 'role') {
-        const role = changes.role;
-        if (!['Admin', 'Assistant', 'HostFamily', 'Volunteer'].includes(role)) {
-          const err = new Error('Rôle invalide');
+      if (key === 'roles') {
+        const roles = changes.roles.split("|");
+        if (!roles.some(role => ['Admin', 'Assistant', 'HostFamily', 'Volunteer'].includes(role))) {
+          const err = new Error('Rôles invalides');
           err.status = 400;
           throw err;
         }

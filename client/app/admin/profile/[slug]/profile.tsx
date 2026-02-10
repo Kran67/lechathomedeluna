@@ -31,7 +31,7 @@ import {
 } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
 import {
-  hasRole,
+  hasRoles,
   redirectWithDelay,
 } from '@/app/lib/utils';
 import {
@@ -57,12 +57,12 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
     const cookies: Cookies = useCookies();
     const token: string | undefined = cookies.get("token");
     const [city, setCity] = useState<string>(profile?.city || "");
-    const [role, setRole] = useState<string>(profile?.role || "");
+    const [roles, setRoles] = useState<string>(profile?.roles || "");
     const [blacklisted, setBlacklisted] = useState<boolean>(profile?.blacklisted ?? false);
     const [referrer, setReferrer] = useState<string>(profile?.referrer_id || "");
     const router = useRouter();
     
-    if (!user || !hasRole(user?.role, ["Admin"])) {
+    if (!user || !hasRoles(user?.roles, ["Admin"])) {
         redirect("/");
     }
 
@@ -80,10 +80,11 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                 formData.get("email") as string,
                 formData.get("name") as string,
                 formData.get("lastname") as string,
+                formData.get("social_number") as string,
                 formData.get("phone") as string,
                 formData.get("address") as string,
                 city,
-                role,
+                roles,
                 blacklisted,
                 referrer !== "" ? referrer : null
             );
@@ -93,16 +94,17 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                 profile!.id,
                 formData.get("name") as string,
                 formData.get("lastname") as string,
+                formData.get("social_number") as string,
                 formData.get("phone") as string,
                 formData.get("address") as string,
                 city,
-                role,
+                roles,
                 blacklisted,
                 referrer !== "" ? referrer : null
             );
         }
         if (!res.error) {
-            redirectWithDelay(`${hasRole(user.role, ["Admin"]) ? "/admin" : ""}/profile/${res.id}`, 1000);
+            redirectWithDelay(`${hasRoles(user.roles, ["Admin"]) ? "/admin" : ""}/profile/${res.id}`, 1000);
         } else {
             toast.error(res.error);
         }
@@ -135,11 +137,12 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                         </div>
                         <div className="flex flex-col gap-12 md:gap-24">
                             <Input name="id" label="Identifiant" value={profile?.id} hidden={true} />
-                            <Input name="email" label="Email" value={profile?.email} readOnly={!isNew} required={isNew} />
-                            <Input name="name" label="Prénom" value={profile?.name} required={isNew} />
-                            <Input name="lastname" label="Nom" value={profile?.lastName} required={isNew} />
-                            <Input name="phone" label="Téléphone" value={profile?.phone} />
-                            <Input name="address" label="Adresse" value={profile?.address} />
+                            <Input name="email" label="Email" value={profile?.email} readOnly={!isNew} required={isNew} maxLength={100} />
+                            <Input name="name" label="Prénom" value={profile?.name} required={isNew} maxLength={100} />
+                            <Input name="lastname" label="Nom" value={profile?.lastName} required={isNew} maxLength={100} />
+                            <Input name="social_number" label="N° sécurité sociale" value={profile?.social_number} required={true} maxLength={13} pattern={"[0-9]{13}"} />
+                            <Input name="phone" label="Téléphone" value={profile?.phone} maxLength={10} />
+                            <Input name="address" label="Adresse" value={profile?.address} maxLength={255} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="city">Ville</label>
                                 <Select
@@ -156,26 +159,26 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                                     onChange={(e:any) => setCity(e?.value as string ?? "")}
                                 />
                             </div>
-                            {user?.role === "Admin" && 
+                            {hasRoles(user?.roles, ["Admin"]) && 
                                 <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
-                                    <label className="text-sm text-(--text) font-medium " htmlFor="role">Rôle {isNew ? "*": ""}</label>
+                                    <label className="text-sm text-(--text) font-medium " htmlFor="roles">Rôles {isNew ? "*": ""}</label>
                                     <Select
                                         options={Roles}
                                         className="select"
                                         classNamePrefix="select"
-                                        name="role"
-                                        id="role"
-                                        isMulti={false}
+                                        name="roles"
+                                        id="roles"
+                                        isMulti={true}
                                         isClearable={false}
                                         isSearchable={false}
-                                        placeholder="Rôle"
-                                        value={Roles.find(r => r.value === role)}
-                                        onChange={(e:any) => setRole(e?.value as string ?? "")}
+                                        placeholder="Rôles"
+                                        value={roles.split("|").map(r => { return Roles.find(rs => rs.value === r) })}
+                                        onChange={(e:any) => setRoles(e?.map((e: { value: any; }) => e.value).join("|") ?? "")}
                                         required={isNew}
                                     />
                                 </div>
                             }
-                            {user?.role === "Admin" && !isNew && 
+                            {hasRoles(user?.roles, ["Admin"]) && !isNew && 
                                 <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                     <label className="text-sm text-(--text) font-medium " htmlFor="blacklisted">Sur liste noire</label>
                                     <Select
@@ -193,7 +196,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                                     />
                                 </div>
                             }
-                            {user?.role === "Admin" && 
+                            {hasRoles(user?.roles, ["Admin"]) && 
                                 <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                     <label className="text-sm text-(--text) font-medium " htmlFor="referrer_id">Référent</label>
                                     <Select

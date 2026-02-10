@@ -78,3 +78,10 @@ body {
     }
 }
 
+div:has(>input:invalid) {
+  border: red solid 1px;
+}
+
+div:has(>input:required) ~ label:after {
+  content: " *"
+}

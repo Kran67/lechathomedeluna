@@ -22,7 +22,7 @@ import {
   YesNo,
 } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
-import { hasRole } from '@/app/lib/utils';
+import { hasRoles } from '@/app/lib/utils';
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 
@@ -39,10 +39,10 @@ export default function UsersList({ users }: UsersListProps) {
     const { user } = useUser();
     const [search, setSearch] = useState<string>("");
     const [filteredUsers, setFilteredUsers] = useState<User[] | undefined>(users);
-    const [role, setRole] = useState<string>("");
+    const [roles, setRoles] = useState<string>("");
     const [blacklisted, setBlacklisted] = useState<boolean>(false);
 
-    if (!user || !hasRole(user?.role, ["Admin"])) {
+    if (!user || !hasRoles(user?.roles, ["Admin"])) {
         redirect("/");
     }
 
@@ -51,12 +51,12 @@ export default function UsersList({ users }: UsersListProps) {
         if (search !== "") {
             filteredUsersList = users?.filter((u) => u.lastName.toLowerCase().indexOf(search.toLowerCase()) > -1 || u.name.toLowerCase().indexOf(search.toLowerCase()) > -1);
         }
-        if (role !== "") {
-            filteredUsersList = filteredUsersList?.filter((u) => u.role === role);
+        if (roles !== "") {
+            filteredUsersList = filteredUsersList?.filter((u) => u.roles.split("|").some(r => roles.split("|").includes(r)));
         }
             filteredUsersList = filteredUsersList?.filter((u) => u.blacklisted === blacklisted);
         setFilteredUsers(filteredUsersList);
-    }, [search, role, blacklisted]);
+    }, [search, roles, blacklisted]);
 
     return (
         <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 xl:px-140 relative">
@@ -87,16 +87,16 @@ export default function UsersList({ users }: UsersListProps) {
                             options={Roles}
                             className="select"
                             classNamePrefix="select"
-                            name="role"
-                            id="role"
-                            isMulti={false}
+                            name="roles"
+                            id="roles"
+                            isMulti={true}
                             isClearable={true}
                             isSearchable={false}
-                            placeholder="Rôle"
-                            onChange={(e:any) => setRole(e?.value as string ?? "")}
+                            placeholder="Rôles"
+                            onChange={(e:any) => setRoles(e?.map((e: { value: any; }) => e.value).join("|") ?? "")}
                             styles={{container: provided => ({
                                 ...provided,
-                                width: 160
+                                width: 460
                             })}}
                         />
                         <Select
@@ -125,7 +125,7 @@ export default function UsersList({ users }: UsersListProps) {
                         <span className="text-(--white) border-l w-100 px-5 text-center">Téléphone</span>
                         <span className="text-(--white) border-l flex-1 px-5">Adresse</span>
                         <span className="text-(--white) border-l w-150 px-5">Ville</span>
-                        <span className="text-(--white) border-l w-90 px-5">Role</span>
+                        <span className="text-(--white) border-l w-90 px-5">Roles</span>
                         <span className="text-(--white) border-l w-70 px-5">Actions</span>
                     </div>
                     {filteredUsers?.map((user, idx) => (
@@ -134,14 +134,14 @@ export default function UsersList({ users }: UsersListProps) {
                                 {user.blacklisted ? <IconButton url="#" icon={IconButtonImages.BlackListed} svgFill="#CE25A6" imgWidth={20} title="Sur la liste noire" /> : null}
                             </span>
                             <span className={"w-150 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.name} {user.lastName}</span>
-                            <span className={"border-l w-150 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}></span>
+                            <span className={"border-l w-150 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.social_number}</span>
                             <span className={"border-l w-200 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.email}</span>
                             <span className={"border-l w-100 px-5 text-center" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.phone}</span>
                             <span className={"border-l flex-1 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.address}</span>
                             <span className={"border-l w-150 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.city}</span>
-                            <span className={"border-l w-90 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.role}</span>
+                            <span className={"border-l w-90 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.roles.split("|").map(r => `${r}\n`)}</span>
                             <span className="flex justify-center gap-5 border-(--pink) border-l w-70 px-5">
-                                {user && !hasRole(user.role, ["Admin"]) &&
+                                {user && !hasRoles(user.roles, ["Admin"]) &&
                                     <>
                                         <IconButton url={`/admin/profile/${user.id}`} icon={IconButtonImages.Pen} svgFill="#CE25A6" imgWidth={20} title="Editer le profile" />
                                         <IconButton url={`/admin/resetpassword/${user.id}`} icon={IconButtonImages.ChangePassword} svgFill="#CE25A6" imgWidth={20} title="Changer le mot de passe" />

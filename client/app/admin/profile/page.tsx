@@ -25,7 +25,10 @@ import {
   HeaderMenuItems,
 } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
-import { redirectWithDelay } from '@/app/lib/utils';
+import {
+  hasRoles,
+  redirectWithDelay,
+} from '@/app/lib/utils';
 import {
   getById,
   resetPassword,
@@ -67,10 +70,11 @@ export default function Profile() {
             profile!.id,
             formData.get("name") as string,
             formData.get("lastname") as string,
+            formData.get("social_number") as string,
             formData.get("phone") as string,
             formData.get("address") as string,
             formData.get("city") as string,
-            profile!.role,
+            profile!.roles,
             profile!.blacklisted,
             profile!.referrer_id ?? null
         );
@@ -107,11 +111,12 @@ export default function Profile() {
                         </div>
                         <div className="flex flex-col gap-12 md:gap-24">
                             <Input name="id" label="Identifiant" value={profile?.id} hidden={true} />
-                            <Input name="email" label="Email" value={profile?.email} readOnly={true} />
-                            <Input name="name" label="Prénom" value={profile?.name} />
-                            <Input name="lastname" label="Nom" value={profile?.lastName} />
-                            <Input name="phone" label="Téléphone" value={profile?.phone} />
-                            <Input name="address" label="Adresse" value={profile?.address} />
+                            <Input name="email" label="Email" value={profile?.email} readOnly={true}maxLength={100} />
+                            <Input name="name" label="Prénom" value={profile?.name} maxLength={100} />
+                            <Input name="lastname" label="Nom" value={profile?.lastName} maxLength={100} />
+                            <Input name="social_number" label="N° sécurité sociale" value={profile?.social_number} required={true} maxLength={13} />
+                            <Input name="phone" label="Téléphone" value={profile?.phone} maxLength={10} />
+                            <Input name="address" label="Adresse" value={profile?.address} maxLength={255} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="city">Ville</label>
                                 <Select
@@ -136,7 +141,7 @@ export default function Profile() {
                                 className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)'
                                 onClick={() => resetMyPassword() }/>
                         </div>
-                        {user?.role === "Admin" && <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
+                        {hasRoles(user?.roles, ["Admin"]) && <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
                             <Link
                                 text="Administrer les utilisateurs"
                                 url="/admin/users"

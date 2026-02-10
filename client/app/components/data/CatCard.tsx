@@ -11,7 +11,7 @@ import { IconButtonImages } from '@/app/enums/enums';
 import { Cat } from '@/app/interfaces/cat';
 import {
   dateAge,
-  hasRole,
+  hasRoles,
   truncate,
 } from '@/app/lib/utils';
 
@@ -43,8 +43,8 @@ export default function CatCard({ cat }: PropsCC) {
     };
 
     return (
-        <div className="flex flex-col rounded-[10px] bg-(--white) w-full md:w-355 relative cursor-pointer" onClick={() => handleClick()}>
-            {!cat.isAdopted && user && hasRole(user.role, ["Admin"]) && <IconButton
+        <div className="flex flex-col rounded-[10px] bg-(--white) w-full md:w-355 relative cursor-pointer border border-(--primary) p-5" onClick={() => handleClick()}>
+            {!cat.isAdopted && user && hasRoles(user.roles, ["Admin"]) && <IconButton
                 icon={IconButtonImages.Pen}
                 imgWidth={16}
                 imgHeight={16}
@@ -54,8 +54,13 @@ export default function CatCard({ cat }: PropsCC) {
                 onClick={(e) => {e.stopPropagation();}}
                 title="Éditer la fiche"
             />}
-            <div className="relative h-376 overflow-hidden rounded-t-[10px]">
-                <img src={(cat.pictures?.[0].includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + cat.pictures?.[0]} alt="Image du chat" className="absolute h-376" width={355} height={376} />
+            <div className="relative h-376 overflow-hidden flex justify-center">
+                <img
+                    src={(cat.pictures?.[0].includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + cat.pictures?.[0]}
+                    alt="Image du chat"
+                    className="absolute h-376"
+                    style={{ objectFit: "contain" }}
+                />
             </div>
             <div className="flex flex-col justify-between pt-16 pb-24">
                 <div className="flex flex-col gap-8">

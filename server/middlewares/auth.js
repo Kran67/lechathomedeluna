@@ -8,7 +8,7 @@ function authenticate(req, res, next) {
   if (scheme === 'Bearer' && token) {
     try {
       const payload = jwt.verify(token, JWT_SECRET);
-      req.user = { id: payload.id, role: payload.role, name: payload.name, email: payload.email };
+      req.user = { id: payload.id, name: payload.name, email: payload.email, roles: payload.roles };
     } catch (e) {
       // invalid token -> ignore for authenticate(), but requireAuth will block
     }
@@ -25,7 +25,7 @@ function requireAuth(req, res, next) {
 
 function requireAdmin(req, res, next) {
   requireAuth(req, res, () => {
-    if (req.user.role !== 'Admin') return res.status(403).json({ error: 'admin required' });
+    if (!req.user.roles.includes('Admin')) return res.status(403).json({ error: 'admin required' });
     next();
   });
 }
@@ -34,7 +34,8 @@ function requireRole(roles = []) {
   const allowed = Array.isArray(roles) ? roles : [roles];
   return function (req, res, next) {
     requireAuth(req, res, () => {
-      if (!allowed.includes(req.user.role)) {
+      const userRoles = req.user.roles.split("|");
+      if (!userRoles.some(role => allowed.includes(role))) {
         return res.status(403).json({ error: 'insufficient role' });
       }
       next();
@@ -46,7 +47,8 @@ function requireSelfOrAdmin(param = 'id') {
   return function (req, res, next) {
     requireAuth(req, res, () => {
       const requestedId = String(req.params && req.params[param]);
-      if (req.user.role === 'Admin' || String(req.user.id) === requestedId) return next();
+      const userRoles = req.user.roles.split("|");      
+      if (userRoles.includes('Admin') || String(req.user.id) === requestedId) return next();
       return res.status(403).json({ error: 'forbidden' });
     });
   };

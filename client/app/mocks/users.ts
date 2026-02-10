@@ -8,7 +8,7 @@ export const usersMock: User[] = [
         email: "admin@exemple.com",
         phone: "",
         city: "",
-        role: UserRole.Admin,
+        roles: UserRole.Admin,
         lastName: '',
         address: '',
         blacklisted: false
@@ -19,7 +19,7 @@ export const usersMock: User[] = [
         email: "assistant@exemple.com",
         phone: "",
         city: "",
-        role: UserRole.Assistant,
+        roles: UserRole.Assistant,
         lastName: '',
         address: '',
         blacklisted: false
@@ -30,7 +30,7 @@ export const usersMock: User[] = [
         email: "faref@exemple.com",
         phone: "",
         city: "",
-        role: UserRole.HostFamily,
+        roles: UserRole.HostFamily,
         lastName: '',
         address: '',
         blacklisted: false
@@ -42,7 +42,7 @@ export const usersMock: User[] = [
         phone: "",
         city: "",
         referrer_id: "3",
-        role: UserRole.HostFamily,
+        roles: UserRole.HostFamily,
         lastName: '',
         address: '',
         blacklisted: false
@@ -53,7 +53,7 @@ export const usersMock: User[] = [
         email: "benevole@exemple.com",
         phone: "",
         city: "",
-        role: UserRole.Volunteer,
+        roles: UserRole.Volunteer,
         lastName: '',
         address: '',
         blacklisted: false

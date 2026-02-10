@@ -40,8 +40,8 @@ async function ensureUniqueSlug(base, excludeId = null) {
   }
 }
 
-async function listCats(isAdopted = false, year = 0) {
-  const sql = `
+async function listCats(isAdopted = false, year = 0, hostFamilyId = null) {
+  let sql = `
       SELECT DISTINCT c.id, c.slug, c.name, substr(c.description, 1, 210) AS description, c.status, c.sex, c.dress, c.race, c.birthDate, cp.url
       FROM cats c
       LEFT JOIN LATERAL (
@@ -50,11 +50,18 @@ async function listCats(isAdopted = false, year = 0) {
         WHERE cat_id = c.id
         ORDER BY id ASC
         LIMIT 1
-      ) cp ON true
-      WHERE c.isAdopted = ${isAdopted ? 'true' : 'false OR c.isAdopted IS NULL'}`
-      + (isAdopted && year !== 0 ? ` AND DATE_PART('year',  c.adoptionDate) = ${year}` : "") +
-    `  ORDER BY c.name ASC
-    `;
+      ) cp ON true`;
+    if (hostFamilyId) {
+      sql += ` WHERE c.hostfamily_id = ${hostFamilyId}`;
+    } else if (isAdopted) {
+      sql += ' WHERE c.isAdopted = true';
+      if (year > 0) {
+        sql += ` AND DATE_PART('year',  c.adoptionDate) = ${year}`;
+      }
+    } else {
+      sql += ' WHERE c.isAdopted = false OR c.isAdopted IS NULL ';
+    }
+    sql += ' ORDER BY c.name ASC';
   const res = await pool.query(sql);
   return res.rows.map(mapCatRow);
 }

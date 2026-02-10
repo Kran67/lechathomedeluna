@@ -9,6 +9,7 @@ const uploads = require('../controllers/uploadsController');
 // Properties
 router.get('/cats', cats.list);
 router.get('/catsAdopted/:year', cats.listAdopted);
+router.get('/catsMine/:id', cats.listMine);
 router.get('/cats/:id', cats.getById);
 router.post('/cats', requireRole(['Admin','Assistant', 'HostFamily']), cats.create);
 router.patch('/cats/:slug', requireRole(['Admin','Assistant', 'HostFamily']), cats.update);

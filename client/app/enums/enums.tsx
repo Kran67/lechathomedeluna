@@ -10,7 +10,8 @@ export enum HeaderMenuItems {
     VeterinaryVouchers,
     Events,
     Volunteers,
-    Profile
+    Profile,
+    MyCats
 }
 
 export enum LogoSizes {

@@ -30,6 +30,15 @@ async function listAdopted(req, res) {
   }
 }
 
+async function listMine(req, res) {
+  try {
+    const rows = await listCats(false, null, req.params.id);
+    res.json(rows);
+  } catch (e) {
+    res.status(statusFromError(e)).json({ error: e.message });
+  }
+}
+
 async function getById(req, res) {
   try {
     const prop = await getCatDetails(req.params.id);
@@ -82,4 +91,5 @@ module.exports = {
   create,
   update,
   remove,
+  listMine
 };

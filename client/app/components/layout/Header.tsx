@@ -43,6 +43,11 @@ export default function Header({ activeMenu }: HeaderProps) {
             className="flex w-full xl:w-1140 md:p-20 items-center justify-between font-normal">
             <Logo size={LogoSizes.Small} className="flex md:hidden" />
             <Logo size={LogoSizes.Large} className="hidden md:flex" />
+            {user && hasRoles(user.roles, [UserRole.HostFamily]) && <MenuItem
+                text="Mes chats"
+                isActive={activeMenu === HeaderMenuItems.MyCats}
+                url="/mycats"
+                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
             <MenuItem
                 text="Les chats à adopter"
                 isActive={activeMenu === HeaderMenuItems.Home}

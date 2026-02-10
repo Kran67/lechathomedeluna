@@ -45,12 +45,12 @@ export const getById = cache(async (token: string | undefined, id: string) => {
     }
 });
 
-export const create = async (token: string | undefined, email: string, name: string, lastName: string, phone: string, address: string, city: string, role: string, blacklisted: boolean, referrer_id: string | null) => {
+export const create = async (token: string | undefined, email: string, name: string, lastName: string, social_number: string, phone: string, address: string, city: string, role: string, blacklisted: boolean, referrer_id: string | null) => {
     try {
         const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users`, {
             method: "POST",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
-            body: JSON.stringify({ name, lastName, email, phone, address, city, role, blacklisted, referrer_id }),
+            body: JSON.stringify({ name, lastName, email, social_number, phone, address, city, role, blacklisted, referrer_id }),
         });
 
         return await res.json();
@@ -70,12 +70,12 @@ export const create = async (token: string | undefined, email: string, name: str
  * @param { string } email - L'email de l'utilisateur
  * @returns { Promise<any> } Un object contenant l'utilisateur ou un object contenant une erreur
  */
-export const update = cache(async (token: string | undefined, id: string, name: string, lastName: string, phone: string, address: string, city: string, role: string, blacklisted: boolean, referrer_id: string | null) => {
+export const update = cache(async (token: string | undefined, id: string, name: string, lastName: string, social_number: string, phone: string, address: string, city: string, roles: string, blacklisted: boolean, referrer_id: string | null) => {
     try {
         const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/${id}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
-            body: JSON.stringify({ name, lastName, phone, address, city, role, blacklisted, referrer_id }),
+            body: JSON.stringify({ name, lastName, social_number, phone, address, city, roles, blacklisted, referrer_id }),
         });
 
         return await res.json();

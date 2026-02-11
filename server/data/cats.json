@@ -12,7 +12,7 @@
         "sterilizationDate": "2026-03-15",
         "birthDate": "2023-01-01",
         "isDuringVisit": false,
-        "isAdopted": true,
+        "isAdoptable": true,
         "adoptionDate": "2026-01-06",
         "hostFamily": {
             "name": "Sandra",
@@ -42,7 +42,7 @@
         "dress": "Noire",
         "race": "Européen",
         "birthDate": "2015-01-01",
-        "isAdopted": true,
+        "isAdoptable": true,
         "adoptionDate": "2026-02-15",
         "hostFamily": {
             "name": "Sandra",
@@ -72,6 +72,7 @@
         "dress": "Tigré",
         "race": "Européen",
         "birthDate": "2019-01-01",
+        "isAdoptable": true,
         "pictures": [
             "/images/chats/choupinette/choupinette-1.jpg",
             "/images/chats/choupinette/choupinette-2.jpg",
@@ -93,7 +94,7 @@
         "dress": "Noir",
         "race": "Européen",
         "birthDate": "2018-01-01",
-        "isAdopted": true,
+        "isAdoptable": true,
         "adoptionDate": "2026-01-20",
         "pictures": [
             "/images/chats/thimotée/thimotee-1.jpg",
@@ -112,6 +113,7 @@
         "dress": "Gris",
         "race": "Européen",
         "birthDate": "2023-01-01",
+        "isAdoptable": true,
         "pictures": [
             "/images/chats/stocky/stocky-1.jpg",
             "/images/chats/stocky/stocky-2.jpg",
@@ -131,6 +133,7 @@
         "race": "Européen",
         "birthDate": "2016-01-01",
         "numIdentification": "250269609",
+        "isAdoptable": false,
         "pictures": [
             "/images/chats/salem/salem-1.jpg",
             "/images/chats/salem/salem-2.jpg",

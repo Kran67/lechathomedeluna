@@ -7,7 +7,8 @@ const users = require('../controllers/usersController');
 const uploads = require('../controllers/uploadsController');
 
 // Properties
-router.get('/cats', cats.list);
+router.get('/cats', cats.list); // non adoptable
+router.get('/catsAdoptable', cats.listAdoptable);
 router.get('/catsAdopted/:year', cats.listAdopted);
 router.get('/catsMine/:id', cats.listMine);
 router.get('/cats/:id', cats.getById);

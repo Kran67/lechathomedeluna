@@ -21,9 +21,18 @@ async function list(req, res) {
   }
 }
 
+async function listAdoptable(req, res) {
+  try {
+    const rows = await listCats(true);
+    res.json(rows);
+  } catch (e) {
+    res.status(statusFromError(e)).json({ error: e.message });
+  }
+}
+
 async function listAdopted(req, res) {
   try {
-    const rows = await listCats(true, req.params.year);
+    const rows = await listCats(false, req.params.year);
     res.json(rows);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
@@ -86,10 +95,11 @@ async function remove(req, res) {
 
 module.exports = {
   list,
+  listAdoptable,
   listAdopted,
+  listMine,
   getById,
   create,
   update,
   remove,
-  listMine
 };

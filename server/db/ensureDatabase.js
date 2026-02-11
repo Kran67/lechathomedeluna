@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const { Client } = require("pg");
 const pool = require("./pool");
+const tools = require("../utils/lib");
 
 const PROPS_JSON_PATH = path.join(__dirname, '../data', 'cats.json');
 
@@ -38,6 +39,7 @@ async function initializeDb(deleteAll = false) {
 }
 
 async function dropAll(client) {
+  await client.query('DROP TABLE IF EXISTS cat_vaccines CASCADE');
   await client.query('DROP TABLE IF EXISTS cat_documents CASCADE');
   await client.query('DROP TABLE IF EXISTS cat_pictures CASCADE');
   await client.query('DROP TABLE IF EXISTS cats CASCADE');
@@ -99,7 +101,7 @@ async function initSchema(pool) {
       sterilizationDate DATE,
       birthDate DATE,
       isDuringVisit BOOLEAN DEFAULT false,
-      isAdopted BOOLEAN DEFAULT false,
+      isAdoptable BOOLEAN DEFAULT false,
       adoptionDate DATE,
       hostfamily_id INTEGER REFERENCES users(id) ON DELETE RESTRICT
     );`);
@@ -142,11 +144,11 @@ async function initSchema(pool) {
   `);
 }
 
-function slugify(input) {
-  const s = String(input || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  const slug = s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/-{2,}/g, '-');
-  return slug || 'cat';
-}
+// function slugify(input) {
+//   const s = String(input || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+//   const slug = s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/-{2,}/g, '-');
+//   return slug || 'cat';
+// }
 
 async function seedIfEmpty(pool) {
   const res = await pool.query('SELECT COUNT(*)::int as c FROM cats');
@@ -211,7 +213,7 @@ async function seedIfEmpty(pool) {
       }
 
       // Prepare slug
-      const base = slugify(p.name || 'cat');
+      const base = tools.uuid();//slugify(p.name || 'cat');
       let slug = base;
       let n = 2;
       while (usedSlugs.has(slug)) {
@@ -221,7 +223,7 @@ async function seedIfEmpty(pool) {
 
       // Insert cat
       const res = await pool.query(
-        'INSERT INTO cats(slug, name, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdopted, adoptionDate, hostfamily_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) ON CONFLICT (id) DO NOTHING RETURNING id',
+        'INSERT INTO cats(slug, name, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdoptable, adoptionDate, hostfamily_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) ON CONFLICT (id) DO NOTHING RETURNING id',
         [
           slug,
           p.name,
@@ -235,7 +237,7 @@ async function seedIfEmpty(pool) {
           p.sterilizationDate || null,
           p.birthDate || null,
           p.isDuringVisit ? 1 : 0,
-          p.isAdopted ? 1 : 0,
+          p.isAdoptable ? 1 : 0,
           p.adoptionDate || null,
           user && user.id || null
         ]
@@ -264,5 +266,5 @@ async function seedIfEmpty(pool) {
 
 module.exports = {
     initializeDb,
-    slugify
+    //slugify
 }

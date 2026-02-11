@@ -1,5 +1,5 @@
-const { slugify } = require('../db/ensureDatabase');
 const pool = require("../db/pool");
+const tools = require("../utils/lib");
 
 function mapCatRow(row) {
   if (!row) return null;
@@ -20,7 +20,7 @@ function mapCatRow(row) {
     sterilizationDate: row.sterilizationdate,
     birthDate: row.birthdate,
     isDuringVisit: row.isduringvisit,
-    isAdopted: row.isadopted,
+    isAdoptable: row.isadoptable,
     adoptionDate: row.adoptiondate,
     hostFamily: row.hostfamily_id ? { id: row.hostfamily_id, name: row.hostfamily_name } : undefined,
     pictures: [row.url],
@@ -40,7 +40,7 @@ async function ensureUniqueSlug(base, excludeId = null) {
   }
 }
 
-async function listCats(isAdopted = false, year = 0, hostFamilyId = null) {
+async function listCats(isAdoptable = false, year = 0, hostFamilyId = null) {
   let sql = `
       SELECT DISTINCT c.id, c.slug, c.name, substr(c.description, 1, 210) AS description, c.status, c.sex, c.dress, c.race, c.birthDate, cp.url
       FROM cats c
@@ -53,13 +53,12 @@ async function listCats(isAdopted = false, year = 0, hostFamilyId = null) {
       ) cp ON true`;
     if (hostFamilyId) {
       sql += ` WHERE c.hostfamily_id = ${hostFamilyId}`;
-    } else if (isAdopted) {
-      sql += ' WHERE c.isAdopted = true';
-      if (year > 0) {
-        sql += ` AND DATE_PART('year',  c.adoptionDate) = ${year}`;
-      }
+    } else if (year > 0) {
+      sql += ` WHERE c.adoptionDate IS NOT NULL AND DATE_PART('year',  c.adoptionDate) = ${year}`;
+    } else if (isAdoptable) {
+      sql += ' WHERE isAdoptable = true';
     } else {
-      sql += ' WHERE c.isAdopted = false OR c.isAdopted IS NULL ';
+      sql += ' WHERE c.isAdoptable = false OR c.adoptionDate IS NULL ';
     }
     sql += ' ORDER BY c.name ASC';
   const res = await pool.query(sql);
@@ -100,7 +99,7 @@ async function createCat(payload) {
     sterilizationDate = null,
     birthDate = null,
     isDuringVisit = null,
-    isAdopted = null,
+    isAdoptable = false,
     adoptionDate = null,
     hostFamilyId = null,
     pictures = [],
@@ -110,12 +109,12 @@ async function createCat(payload) {
   if (!description) throw new Error('Description est requis');
   if (!sex) throw new Error('Sexe est requis');
 
-  const base = slugify(name);
+  const base = tools.uuid();
   const uniqueSlug = await ensureUniqueSlug(base);
   const res = await pool.query(
-    `INSERT INTO cats(name, slug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdopted, adoptionDate, hostFamily_id) 
+    `INSERT INTO cats(name, slug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdoptable, adoptionDate, hostFamily_id) 
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING id`,
-    [name, uniqueSlug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdopted, adoptionDate, hostFamilyId]
+    [name, uniqueSlug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdoptable, adoptionDate, hostFamilyId]
   );
   const lastId = res.rows[0].id;
 
@@ -129,7 +128,7 @@ async function createCat(payload) {
 }
 
 async function updateCat(slug, changes) {
-  const allowed = ['name', 'description', 'status', 'numIdentification', 'sex', 'dress', 'race', 'isSterilized', 'sterilizationDate', 'birthDate', 'isDuringVisit', 'isAdopted', 'adoptionDate', 'hostFamily_Id'];
+  const allowed = ['name', 'description', 'status', 'numIdentification', 'sex', 'dress', 'race', 'isSterilized', 'sterilizationDate', 'birthDate', 'isDuringVisit', 'isAdoptable', 'adoptionDate', 'hostFamily_Id'];
   const fields = [];
   const params = [];
 

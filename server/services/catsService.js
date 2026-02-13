@@ -42,7 +42,7 @@ async function ensureUniqueSlug(base, excludeId = null) {
 
 async function listCats(isAdoptable = false, year = 0, hostFamilyId = null) {
   let sql = `
-      SELECT DISTINCT c.id, c.slug, c.name, substr(c.description, 1, 210) AS description, c.status, c.sex, c.dress, c.race, c.birthDate, cp.url
+      SELECT DISTINCT c.*, cp.url
       FROM cats c
       LEFT JOIN LATERAL (
         SELECT url

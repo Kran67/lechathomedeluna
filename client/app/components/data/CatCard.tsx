@@ -41,7 +41,7 @@ export default function CatCard({ cat }: PropsCC) {
     const handleClick: () => void = () => {
         router.push(`/cat/${cat.slug}`);
     };
-
+console.log(cat);
     return (
         <div className="flex flex-col rounded-[10px] bg-(--white) w-full md:w-355 relative cursor-pointer border border-(--primary) p-5" onClick={() => handleClick()}>
             {!cat.adoptionDate && user && hasRoles(user.roles, ["Admin"]) && <IconButton

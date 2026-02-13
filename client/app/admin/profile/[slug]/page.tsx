@@ -1,7 +1,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { useUser } from '@/app/contexts/userContext';
 import { UserRole } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
 import { hasRoles } from '@/app/lib/utils';
@@ -13,11 +12,12 @@ import {
 import Profile from './profile';
 
 export default async function ProfilePage({ params }: { params: Promise<{ slug: string }> }) {
-    const { user } = useUser();
     // on récupère le paramétre slug (identifiant de la propriété)
     const slug: string = (await params).slug;
     const cookieStore = await cookies()
+    const userId: string | undefined = cookieStore.get("userId")?.value;
     const token: string | undefined = cookieStore.get("token")?.value;
+    const user = await getById(token, userId ?? '');
     let profile: User | null = null;
     let users: User[] = [];
     let res;

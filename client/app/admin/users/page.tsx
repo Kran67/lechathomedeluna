@@ -1,18 +1,21 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { useUser } from '@/app/contexts/userContext';
 import { UserRole } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
 import { hasRoles } from '@/app/lib/utils';
-import { getAll } from '@/app/services/server/usersService';
+import {
+  getAll,
+  getById,
+} from '@/app/services/server/usersService';
 
 import UsersList from './users';
 
 export default async function UsersPage() {
-    const { user } = useUser();
     const cookieStore = await cookies()
+    const userId: string | undefined = cookieStore.get("userId")?.value;
     const token: string | undefined = cookieStore.get("token")?.value;
+    const user = await getById(token, userId ?? '');
     let users: User[] = [];
 
     if (!user || (user && !hasRoles(user.roles, [UserRole.Admin]))) {

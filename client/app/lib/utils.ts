@@ -53,21 +53,24 @@ export const redirectWithDelay = (url: string, delay: number = 0): void => {
     setTimeout(() => window.location.href = url, delay);
 }
 
-export function formatYMMDD(date: Date) {
+export const formatYMMDD = (date: Date) => {
     const y = date.getFullYear();
     const d = String(date.getDate()).padStart(2, "0");
     const m = String(date.getMonth() + 1).padStart(2, "0");
     return `${y}-${m}-${d}`;
 }
 
-export function formatDDMMY(date: Date) {
-    const y = date.getFullYear();
-    const d = String(date.getDate()).padStart(2, "0");
-    const m = String(date.getMonth() + 1).padStart(2, "0");
-    return `${d}/${m}/${y}`;
+export const formatDDMMY = (date: Date) => {
+    const dateStr: string = new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" }).format(date);
+    return dateStr;
 }
 
-export function addMonthsSafe(date: Date, months: number) {
+export const formatHHMMSS = (date: Date) => {
+    const dateStr: string = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }).format(date);
+    return dateStr;
+}
+
+export const addMonthsSafe = (date: Date, months: number) => {
     const d = new Date(date);
     const day = d.getDate();
 
@@ -81,7 +84,7 @@ export function addMonthsSafe(date: Date, months: number) {
     return d;
 }
 
-export function isTodayGreaterThanDatePlus6Months(dateString: string | null) {
+export const isTodayGreaterThanDatePlus6Months = (dateString: string | null) => {
     if (!dateString) return false;
     const inputDate = new Date(dateString);
     const datePlus6Months = addMonthsSafe(inputDate, 6);
@@ -92,3 +95,12 @@ export function isTodayGreaterThanDatePlus6Months(dateString: string | null) {
 
     return today > datePlus6Months;
 }
+
+export const getInitials = (name?: string) =>
+    name
+        ? name
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .toUpperCase()
+        : "?";

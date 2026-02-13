@@ -1,5 +1,4 @@
 const pool = require("../db/pool");
-const tools = require("../utils/lib");
 
 function mapVetVoucherRow(row) {
   if (!row) return null;

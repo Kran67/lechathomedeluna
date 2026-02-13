@@ -42,6 +42,8 @@ async function dropAll(client) {
   await client.query('DROP TABLE IF EXISTS cats CASCADE');
   await client.query('DROP TABLE IF EXISTS users CASCADE');
   await client.query('DROP TABLE IF EXISTS vet_vouchers CASCADE');
+  await client.query('DROP TABLE IF EXISTS message_threads CASCADE');
+  await client.query('DROP TABLE IF EXISTS messages CASCADE');
   //await client.query('ALTER SEQUENCE users_id_seq RESTART WITH 1');
   //await client.query('ALTER SEQUENCE cats_id_seq RESTART WITH 1');
 }
@@ -136,6 +138,24 @@ async function initSchema(pool) {
     );`);
 
   await pool.query(`
+    CREATE TABLE IF NOT EXISTS message_threads (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id),
+      from_user_id INTEGER NOT NULL REFERENCES users(id),
+      created_at TIMESTAMPTZ NOT NULL
+    );`);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS messages (
+      id SERIAL PRIMARY KEY,
+      thread_id INTEGER NOT NULL REFERENCES message_threads(id) ON DELETE CASCADE,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      content TEXT NOT NULL,
+      sent_at TIMESTAMPTZ NOT NULL,
+      is_readed INTEGER DEFAULT 0
+    );`);
+
+  await pool.query(`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email);
   `);
 
@@ -149,6 +169,20 @@ async function initSchema(pool) {
 
   await pool.query(`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_cats_slug ON cats(slug);
+  `);
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_message_thread_id ON message_threads(id);
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_message_user_id ON users(id);
+  `);
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_message_thread_from_user_id ON users(id);
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_message_thread_user_id ON users(id);
   `);
 }
 

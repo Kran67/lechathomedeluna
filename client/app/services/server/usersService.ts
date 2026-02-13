@@ -1,29 +1,6 @@
 import { cache } from 'react';
 
 /**
- * Permet de récupèrer les utilisateurs
- * 
- * @async
- * @function getUsers
- * @param { string } token - identifiant de l'utilisateur
- * @returns { Promise<any> } Un object contenant les utilisateurs ou un object contenant une erreur
- */
-export const getAll = cache(async (token: string | undefined) => {
-    try {
-        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
-        });
-
-        return await res.json();
-    } catch (err) {
-        console.error("Erreur lors de la récupération de l'utilisateur' :", err);
-        return null;
-    }
-});
-
-
-/**
  * Permet de récupèrer un utilisateur depuis la base de données
  * 
  * @async
@@ -41,6 +18,28 @@ export const getById = cache(async (token: string | undefined, id: string) => {
         return await res.json();
     } catch (err) {
         console.error("Erreur lors de la récupération de l'utilisateur' :", err);
+        return null;
+    }
+});
+
+/**
+ * Permet de récupèrer les utilisateurs
+ * 
+ * @async
+ * @function getUsers
+ * @param { string } token - identifiant de l'utilisateur
+ * @returns { Promise<any> } Un object contenant les utilisateurs ou un object contenant une erreur
+ */
+export const getAll = cache(async (token: string | undefined) => {
+    try {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+        });
+
+        return await res.json();
+    } catch (err) {
+        console.error("Erreur lors de la récupération des utilisateurs' :", err);
         return null;
     }
 });

@@ -12,7 +12,6 @@ import {
 } from 'next-client-cookies';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
-import { redirect } from 'next/navigation';
 import { toast } from 'react-toastify';
 
 //import { toast } from 'react-toastify';
@@ -23,20 +22,22 @@ import IconButton from '@/app/components/ui/IconButton';
 import Input from '@/app/components/ui/Input';
 import { useUser } from '@/app/contexts/userContext';
 import {
-  CatSexes,
-  CatStatus,
   HeaderMenuItems,
   IconButtonImages,
   InputTypes,
   UserRole,
-  YesNo,
 } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
 import {
   hasRoles,
   redirectWithDelay,
 } from '@/app/lib/utils';
-import { create } from '@/app/services/catsService';
+import { create } from '@/app/services/server/catsService';
+import {
+  CatSexes,
+  CatStatus,
+  YesNo,
+} from '@/app/staticLists/staticLists';
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 
@@ -61,10 +62,6 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
     const [hostFamilyId, setHostFamilyId] = useState<string | null>(null);
     const [pictures, setPictures] = useState<any>([]);
     const [picturesPreview, setPicturesPreview] = useState<string[]>([]);
-
-    if (!user || (user && !hasRoles(user.roles, ["Admin", "HostFamily"]))) {
-        redirect("/");
-    }
 
     const filteredHostFamilies = hostFamilies?.map(u => ({
         value: u.id,
@@ -221,7 +218,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                             </div>
                             { user && hasRoles(user.roles, [UserRole.Admin]) &&
                             <>
-                                <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                                {/* <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                     <label className="text-sm text-(--text) font-medium " htmlFor="isAdopted">Est adopté</label>
                                     <Select
                                         options={YesNo}
@@ -235,7 +232,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                                         placeholder="Est adopté ?"
                                         onChange={(e:any) => setIsAdopted(e?.value as boolean ?? "")}
                                     />
-                                </div>
+                                </div> */}
                                 <Input name="adoptionDate" label="Date d'adoption" type={InputTypes.Date} />
                                 </>
                             }

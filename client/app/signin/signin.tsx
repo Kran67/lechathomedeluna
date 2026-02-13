@@ -1,16 +1,24 @@
 'use client'
 
-import Header from "@/app/components/layout/Header";
-import Footer from "@/app/components/layout/Footer";
-import { InputTypes } from "@/app/enums/enums";
-import Input from "@/app/components/ui/Input";
-import Button from "@/app/components/ui/Button";
-import Link from "@/app/components/ui/Link";
-import Checkbox from "@/app/components/ui/Checkbox";
-import { FormEvent, useState } from "react";
-import { Cookies, useCookies } from "next-client-cookies";
-import { validatePassword } from "@/app/lib/utils";
-import { signin } from "@/app/services/authService";
+import {
+  FormEvent,
+  useState,
+} from 'react';
+
+import {
+  Cookies,
+  useCookies,
+} from 'next-client-cookies';
+
+import Footer from '@/app/components/layout/Footer';
+import Header from '@/app/components/layout/Header';
+import Button from '@/app/components/ui/Button';
+import Checkbox from '@/app/components/ui/Checkbox';
+import Input from '@/app/components/ui/Input';
+import Link from '@/app/components/ui/Link';
+import { InputTypes } from '@/app/enums/enums';
+import { validatePassword } from '@/app/lib/utils';
+import { signin } from '@/app/services/server/authService';
 
 /**
  * Affiche la page création de compte

@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
+const pool = require("../db/pool");
 
 const { requireRole, requireAdmin, requireSelfOrAdmin, requireAuth } = require('../middlewares/auth');
 const cats = require('../controllers/catsController');
 const users = require('../controllers/usersController');
 const uploads = require('../controllers/uploadsController');
+const vetVouchers = require('../controllers/vetVouchersController');
 
 // Properties
 router.get('/cats', cats.list); // non adoptable
@@ -22,6 +24,13 @@ router.get('/users/:id', requireSelfOrAdmin('id'), users.getById);
 router.post('/users', requireAdmin, users.create);
 router.patch('/users/:id', requireSelfOrAdmin('id'), users.update);
 
+// Vet vouchers
+router.get('/vetvouchers', requireRole(['Admin', 'Assistant']), vetVouchers.list);
+router.get('/vetvouchers/:year/:clinic/:object', requireRole(['Admin', 'Assistant']), vetVouchers.listByParams);
+router.post('/vetvouchers', requireRole(['Admin', 'Assistant']), vetVouchers.create);
+router.patch('/vetvouchers/:id', requireRole(['Admin', 'Assistant']), vetVouchers.update);
+router.delete('/vetvouchers/:id', requireRole(['Admin', 'Assistant']), vetVouchers.remove);
+
 // Uploads
 router.post('/uploads/image', requireRole(['Admin']), uploads.uploadImage);
 
@@ -33,7 +42,7 @@ router.get("/health", async (req, res) => {
     await pool.query("SELECT 1");
     res.json({ status: "ok" });
   } catch {
-    res.status(500).json({ status: "db down" });
+    res.status(500).json({ status: "Db down" });
   }
 });
 

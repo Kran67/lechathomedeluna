@@ -1,6 +1,7 @@
-import { cache } from "react";
-import { usersMock } from "../mocks/users";
-import { User } from "../interfaces/user";
+import { cache } from 'react';
+
+import { User } from '../../interfaces/user';
+import { usersMock } from '../../mocks/users';
 
 /**
  * Permet de connecter un utilisateur

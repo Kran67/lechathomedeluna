@@ -16,7 +16,7 @@ import Button from '@/app/components/ui/Button';
 import Input from '@/app/components/ui/Input';
 import Link from '@/app/components/ui/Link';
 import { InputTypes } from '@/app/enums/enums';
-import { login } from '@/app/services/authService';
+import { login } from '@/app/services/server/authService';
 
 /**
  * Affiche la page de connexion

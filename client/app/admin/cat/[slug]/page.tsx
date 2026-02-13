@@ -4,25 +4,29 @@ import {
   RedirectType,
 } from 'next/navigation';
 
-import { getCat } from '@/app/api/api';
+import { useUser } from '@/app/contexts/userContext';
+import { UserRole } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
-import { getAll } from '@/app/services/userService';
+import { hasRoles } from '@/app/lib/utils';
+import { getBySlug } from '@/app/services/server/catsService';
+import { getAll } from '@/app/services/server/usersService';
 
 import EditCat from './editCat';
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+    const { user } = useUser();
     const cookieStore = await cookies()
     const token: string | undefined = cookieStore.get("token")?.value;
     let hostFamilies: User[] = [];
 
-    if (!token || token === "") {
+    if (!user || (user && !hasRoles(user.roles, [UserRole.Admin, UserRole.HostFamily]))) {
         redirect("/");
     }
 
     // on récupère le paramétre slug (identifiant du chat)
     const slug = (await params).slug;
     // on va chercher le chat
-    const cat = await getCat(slug);
+    const cat = await getBySlug(slug);
     // si le chat n'a pas été trouvée, on redirige vers la page 404
     if (cat?.error) {
         redirect("/404", RedirectType.push);

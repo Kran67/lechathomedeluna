@@ -18,11 +18,13 @@ import {
   HeaderMenuItems,
   IconButtonImages,
   InputImageTypes,
-  Roles,
-  YesNo,
 } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
 import { hasRoles } from '@/app/lib/utils';
+import {
+  Roles,
+  YesNo,
+} from '@/app/staticLists/staticLists';
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 

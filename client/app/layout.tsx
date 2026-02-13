@@ -10,9 +10,9 @@ import {
   ToastContainer,
 } from 'react-toastify';
 
-import { getProfile } from '@/app/api/api';
 import { UserProvider } from '@/app/contexts/userContext';
 import { User } from '@/app/interfaces/user';
+import { getById } from '@/app/services/server/usersService';
 
 /**
  * Ajout de la police de caractère utilisée sur le site
@@ -38,7 +38,8 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies();
   const userId: string | undefined = cookieStore.get("userId")?.value;
-  const user: User | null = await getProfile(userId ?? "");
+  const token: string | undefined = cookieStore.get("token")?.value;
+  const user: User | null = token ? await getById(token, userId ?? "") : null;
 
   return (
     <html lang="fr">

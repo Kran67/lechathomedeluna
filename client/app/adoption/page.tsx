@@ -1,12 +1,24 @@
-import { Metadata } from 'next';
-import Image from 'next/image';
+'use client';
 
-import AdoptionReady from '@/app/assets/images/adoption-ready.jpg';
-import AdoptionTarifs from '@/app/assets/images/adoption-tarifs.jpg';
-import Adoption from '@/app/assets/images/adoption.jpg';
+import {
+  SetStateAction,
+  useEffect,
+  useState,
+} from 'react';
+
+//import { Metadata } from 'next';
+import Gallery from '@/app/components/data/Gallery';
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
-import { HeaderMenuItems } from '@/app/enums/enums';
+import Input from '@/app/components/ui/Input';
+import { useUser } from '@/app/contexts/userContext';
+import {
+  HeaderMenuItems,
+  InputImageTypes,
+  UserRole,
+} from '@/app/enums/enums';
+import { hasRoles } from '@/app/lib/utils';
+import { catsService } from '@/app/services/client/catsService';
 
 /**
  * Ajout les métadata à la page
@@ -14,10 +26,10 @@ import { HeaderMenuItems } from '@/app/enums/enums';
  * @function metadata
  * @returns { Metadata } - Les méta data à ajouter
  */
-export const metadata: Metadata = {
-    title: "Le Chat'Home de Luna - À propos",
-    description: "À propos Le Chat'Home de Luna"
-};
+//export const metadata: Metadata = {
+//  title: "Le Chat'Home de Luna - Accueil",
+//  description: "Affichage de la page d'accueil avec la listes des chats"
+//};
 
 /**
  * Affiche la page Adoption
@@ -25,10 +37,37 @@ export const metadata: Metadata = {
  * @function AdoptionPage
  */
 export default function AdoptionPage() {
-    return (
+  const [search, setSearch] = useState<string>("");
+  const { user } = useUser();
+  const service = catsService(false, search);
+
+  useEffect(() => {
+    service.refresh(search);
+  }, [search]);
+
+  return (
         <main className="flex flex-col gap-20 w-full items-center md:pt-20 md:px-140">
             <Header activeMenu={HeaderMenuItems.Adoption} />
-            <div className="flex flex-col gap-51 md:gap-20 w-full xl:w-1115 items-center px-16 md:pb-20 ">
+            <div className="flex flex-col gap-51 md:gap-20 px-16 md:p-0 w-full xl:w-1115">
+                <div className="flex flex-col gap-8 w-full xl:w-1115 lg:w-800 items-center text-center">
+                <span className="text-[32px] text-(--primary) w-full">Les chats nouvellement accuillis</span>
+                <span className="text-lg text-(--text) font-normal w-full">Fiches de chats en attente de validation</span>
+                    <div className="flex w-full items-center justify-center gap-10">
+                    {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant]) &&
+                            <Input
+                            name="search"
+                            placeHolder="Rechercher un chat par son numéro d'identification"
+                            imageType={InputImageTypes.Search}
+                            className="lg:max-w-357 w-full"
+                            value={search}
+                            showLabel={false}
+                            onChange={(e: { target: { value: SetStateAction<string>; }; }) => setSearch(e.target.value)} />
+                    }
+                </div>
+                </div>
+            </div>
+            <Gallery cats={service.cats ?? []} />
+            {/* <div className="flex flex-col gap-51 md:gap-20 w-full xl:w-1115 items-center px-16 md:pb-20 ">
                 <span className="text-[32px] font-bold text-(--primary)">Pourquoi adopter ?</span>
                 <span className="text-lg font-bold text-(--primary)">Pourquoi adopter auprès d’une association ?</span>
                 <Image src={Adoption} width={707} height={426} alt="Photo d'adoption" />
@@ -51,7 +90,7 @@ export default function AdoptionPage() {
             <div className="flex flex-col gap-51 md:gap-20 w-full xl:w-1115 items-center px-16 md:pb-20 ">
                 <span className="text-[32px] font-bold text-(--primary)">Êtes-vous prêt pour l'adoption ?</span>
                 <Image src={AdoptionReady} width={576} height={576} alt="Photo êtes-vous prêt pour l'adoption" />
-            </div>
+            </div> */}
             <Footer />
         </main>
     );

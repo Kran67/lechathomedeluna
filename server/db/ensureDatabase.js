@@ -24,9 +24,6 @@ async function initializeDb(deleteAll = false) {
     database: "postgres"
   });
 
-  // Create a pool of database connections
-  //const pool = new Pool();
-
   await client.connect();
   await checkDatabase(client);
   if (deleteAll) {
@@ -44,6 +41,7 @@ async function dropAll(client) {
   await client.query('DROP TABLE IF EXISTS cat_pictures CASCADE');
   await client.query('DROP TABLE IF EXISTS cats CASCADE');
   await client.query('DROP TABLE IF EXISTS users CASCADE');
+  await client.query('DROP TABLE IF EXISTS vet_vouchers CASCADE');
   //await client.query('ALTER SEQUENCE users_id_seq RESTART WITH 1');
   //await client.query('ALTER SEQUENCE cats_id_seq RESTART WITH 1');
 }
@@ -70,8 +68,8 @@ async function initSchema(pool) {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
-        name VARCHAR(100) NOT NULL,
-        lastName VARCHAR(100) NOT NULL,
+        name VARCHAR(50) NOT NULL,
+        lastName VARCHAR(50) NOT NULL,
         social_number VARCHAR(13),
         phone VARCHAR(10) NOT NULL,
         address VARCHAR(255) NOT NULL,
@@ -115,8 +113,6 @@ async function initSchema(pool) {
       UNIQUE(cat_id, url)
     );`);
 
-  await pool.query(`DROP TABLE IF EXISTS cat_vaccines`);
-  
   await pool.query(`
     CREATE TABLE IF NOT EXISTS cat_documents (
       id SERIAL PRIMARY KEY,
@@ -125,6 +121,18 @@ async function initSchema(pool) {
       url VARCHAR(50) NOT NULL,
       type VARCHAR(15) NOT NULL CHECK (type IN ('vaccin','antiparasitaire', 'examen')),
       UNIQUE(cat_id, date, type)
+    );`);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS vet_vouchers (
+      id SERIAL PRIMARY KEY,
+      date DATE NOT NULL,
+      user_name VARCHAR(101) NOT NULL,
+      cat_id INTEGER NOT NULL REFERENCES cats(id) ON DELETE CASCADE,
+      clinic VARCHAR(51) NOT NULL,
+      object VARCHAR(26) NOT NULL,
+      processed_on DATE,
+      UNIQUE(cat_id, date, clinic, object)
     );`);
 
   await pool.query(`

@@ -98,9 +98,11 @@ export default function Input({ name, label, type, value, imageType, placeHolder
         ) : (
             <div className={classNames} style={{ "minWidth": width, "maxWidth": width }}>
                 {type === InputTypes.File && 
-                    <label htmlFor={name} className="flex w-40 h-40 bg-(--primary) items-center justify-center rounded-[10px] text-lg text-(--white) cursor-pointer">+</label>}
+                    <label
+                        htmlFor={name}
+                        className={"flex w-40 h-40 bg-(--primary) items-center justify-center rounded-[10px] text-lg text-(--white) cursor-pointer"+ (type === InputTypes.File ? " order-2" : "")}>+</label>}
                 <div className={"flex justify-between items-center bg-(--white) border order-1 " +
-                    (!hasError ? "border-(--pink)" : "border-(--primary-dark)") + " border-solid rounded-[4px]" + (showLabel ? "py-16" : "") + " px-10 gap-10 " +
+                    (!hasError ? "border-(--pink)" : "border-(--primary-dark)") + " border-solid rounded-[4px] " + (showLabel && type !== InputTypes.File ? "py-16" : "") + " px-10 gap-10 " +
                     (type === InputTypes.File ? " opacity-0 h-0" : " h-40") + (readOnly ? " bg-[#eee]" : "")}>
                     <input
                         className={"text-sm text-(--text) w-full outline-0" + (type === InputTypes.File ? " h-0" : "")}

@@ -4,7 +4,7 @@ import Gallery from '@/app/components/data/Gallery';
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
 import { HeaderMenuItems } from '@/app/enums/enums';
-import { catsService } from '@/app/services/catsService';
+import { catsService } from '@/app/services/client/catsService';
 
 import { useUser } from '../contexts/userContext';
 

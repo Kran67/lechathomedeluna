@@ -21,8 +21,8 @@ import Input from '@/app/components/ui/Input';
 import Link from '@/app/components/ui/Link';
 import { useUser } from '@/app/contexts/userContext';
 import {
-  Cities,
   HeaderMenuItems,
+  UserRole,
 } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
 import {
@@ -33,7 +33,8 @@ import {
   getById,
   resetPassword,
   update,
-} from '@/app/services/userService';
+} from '@/app/services/server/usersService';
+import { Cities } from '@/app/staticLists/staticLists';
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 
@@ -44,7 +45,7 @@ export default function Profile() {
     const [profile, setProfile] = useState<User | null>(null);
     const [city, setCity] = useState<string>(user?.city || "");
 
-    if (!user) {
+    if (!user || (user && !hasRoles(user.roles, [UserRole.Admin]))) {
         redirect("/");
     }
 
@@ -112,8 +113,8 @@ export default function Profile() {
                         <div className="flex flex-col gap-12 md:gap-24">
                             <Input name="id" label="Identifiant" value={profile?.id} hidden={true} />
                             <Input name="email" label="Email" value={profile?.email} readOnly={true}maxLength={100} />
-                            <Input name="name" label="Prénom" value={profile?.name} maxLength={100} />
-                            <Input name="lastname" label="Nom" value={profile?.lastName} maxLength={100} />
+                            <Input name="name" label="Prénom" value={profile?.name} maxLength={50} />
+                            <Input name="lastname" label="Nom" value={profile?.lastName} maxLength={50} />
                             <Input name="social_number" label="N° sécurité sociale" value={profile?.social_number} required={true} maxLength={13} />
                             <Input name="phone" label="Téléphone" value={profile?.phone} maxLength={10} />
                             <Input name="address" label="Adresse" value={profile?.address} maxLength={255} />

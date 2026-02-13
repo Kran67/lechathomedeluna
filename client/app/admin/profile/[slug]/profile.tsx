@@ -23,11 +23,8 @@ import IconButton from '@/app/components/ui/IconButton';
 import Input from '@/app/components/ui/Input';
 import { useUser } from '@/app/contexts/userContext';
 import {
-  Cities,
   HeaderMenuItems,
   IconButtonImages,
-  Roles,
-  YesNo,
 } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
 import {
@@ -37,7 +34,12 @@ import {
 import {
   create,
   update,
-} from '@/app/services/userService';
+} from '@/app/services/server/usersService';
+import {
+  Cities,
+  Roles,
+  YesNo,
+} from '@/app/staticLists/staticLists';
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 
@@ -138,8 +140,8 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                         <div className="flex flex-col gap-12 md:gap-24">
                             <Input name="id" label="Identifiant" value={profile?.id} hidden={true} />
                             <Input name="email" label="Email" value={profile?.email} readOnly={!isNew} required={isNew} maxLength={100} />
-                            <Input name="name" label="Prénom" value={profile?.name} required={isNew} maxLength={100} />
-                            <Input name="lastname" label="Nom" value={profile?.lastName} required={isNew} maxLength={100} />
+                            <Input name="name" label="Prénom" value={profile?.name} required={isNew} maxLength={50} />
+                            <Input name="lastname" label="Nom" value={profile?.lastName} required={isNew} maxLength={50} />
                             <Input name="social_number" label="N° sécurité sociale" value={profile?.social_number} required={true} maxLength={13} pattern={"[0-9]{13}"} />
                             <Input name="phone" label="Téléphone" value={profile?.phone} maxLength={10} />
                             <Input name="address" label="Adresse" value={profile?.address} maxLength={255} />

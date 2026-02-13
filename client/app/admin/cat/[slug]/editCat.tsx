@@ -12,10 +12,7 @@ import {
   useCookies,
 } from 'next-client-cookies';
 import dynamic from 'next/dynamic';
-import {
-  redirect,
-  useRouter,
-} from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 
 import Footer from '@/app/components/layout/Footer';
@@ -25,12 +22,10 @@ import IconButton from '@/app/components/ui/IconButton';
 import Input from '@/app/components/ui/Input';
 import { useUser } from '@/app/contexts/userContext';
 import {
-  CatSexes,
-  CatStatus,
   HeaderMenuItems,
   IconButtonImages,
   InputTypes,
-  YesNo,
+  UserRole,
 } from '@/app/enums/enums';
 import {
   Cat,
@@ -41,9 +36,18 @@ import {
   formatDDMMY,
   formatYMMDD,
   hasRoles,
+  isTodayGreaterThanDatePlus6Months,
   redirectWithDelay,
 } from '@/app/lib/utils';
-import { update } from '@/app/services/catsService';
+import { update } from '@/app/services/server/catsService';
+import { create } from '@/app/services/server/vetVouchersService';
+import {
+  CatSexes,
+  CatStatus,
+  Clinics,
+  voucherObjects,
+  YesNo,
+} from '@/app/staticLists/staticLists';
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 
@@ -66,11 +70,16 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const [sex, setSex] = useState<string | null>(cat?.sex ?? null);
     const [isSterilized, setIsSterilized] = useState<boolean | null>(cat?.isSterilized ?? null);
     const [isDuringVisit, setIsDuringVisit] = useState<boolean | null>(cat?.isDuringVisit ?? null);
-    const [isAdopted, setIsAdopted] = useState<boolean | null>(cat?.isAdopted ?? null);
+    const [isAdoptable, setIsAdoptable] = useState<boolean | null>(cat?.isAdoptable ?? null);
+    const [birthDate, setBirthDate] = useState<string | null>(cat?.birthDate ?? null);
+    const [sterilizationDateError, setSterilizationDateError] = useState<boolean>(false);
     const [hostFamilyId, setHostFamilyId] = useState<string | null>(cat?.hostFamily?.id ?? null);
     const router = useRouter();
     const [pictures, setPictures] = useState<any>([...cat?.pictures ?? []]);
     const [picturesPreview, setPicturesPreview] = useState<string[]>([]);
+
+    const [clinic, setClinic] = useState<string | null>();
+    const [voucherObject, setVoucherObject] = useState<string | null>();
 
     const [catDocuments, setCatDocuments] = useState<CatDocument[]>([...cat?.documents ?? []]);
     const [vaccinesPreview, setVaccinesPreview] = useState<{ url:any, index: number}[]>([]);
@@ -88,11 +97,9 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const [examPicture, setExamPicture] = useState<any | null>(null);
     const inputExamFile = useRef(null);
     const inputExamDate = useRef(null);
-    console.log(cat);
 
-    if (!user || (user && !hasRoles(user.roles, ["Admin", "HostFamily"]))) {
-        redirect("/");
-    }
+    const clinicInputRef = useRef(null);
+    const voucherObjectInputRef = useRef(null);
 
     const filteredHostFamilies = hostFamilies?.map(u => ({
         value: u.id,
@@ -136,7 +143,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
             sterilizationDate,
             birthDate,
             isDuringVisit,
-            isAdopted,
+            isAdoptable,
             adoptionDate,
             hostFamilyId,
             newPictureFiles,
@@ -146,6 +153,35 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         );
         if (!res.error) {
             redirectWithDelay(`/admin/cat/${res.slug}`, 1000);
+        } else {
+            toast.error(res.error);
+        }
+    };
+
+    const handleSubmitVoucher: (e: FormEvent<HTMLFormElement>) => Promise<void> = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setClinic(null);
+        setVoucherObject(null);
+        if (clinicInputRef.current) {
+            console.log(clinicInputRef.current);
+            (clinicInputRef.current as any).clearValue();
+        }
+        if (voucherObjectInputRef.current) {
+            (voucherObjectInputRef.current as any).clearValue();
+        }
+
+        const date: string = formatYMMDD(new Date());
+        const user_name: string = `${user?.name} ${user?.lastName}`;
+        const res = await create(
+            token,
+            date,
+            user_name,
+            cat?.id ?? "-1",
+            clinic ?? "",
+            voucherObject ?? ""
+        );
+        if (!res.error) {
+            toast.success("Bon vétérinaire créé avec succès");
         } else {
             toast.error(res.error);
         }
@@ -208,6 +244,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                 break;
         }
     }
+
     const addDocument = (type: "vaccin" | "antiparasitaire" | "examen") => {
         switch (type)  {
             case "vaccin":
@@ -234,6 +271,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         }
         handleReset(type);
     }
+
     const removeDocument = (e: { preventDefault: () => void; }, idx: number) => {
         catDocuments.splice(idx, 1);
         e.preventDefault();
@@ -274,6 +312,11 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                 break;
         }
     }
+
+    useEffect(() => {
+        console.log(birthDate);
+        setSterilizationDateError(isTodayGreaterThanDatePlus6Months(birthDate));
+    }, [birthDate]);
 
     return (
         <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 lg:px-140 relative">
@@ -374,8 +417,14 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     onChange={(e:any) => setIsSterilized(e?.value as boolean ?? false)}
                                 />
                             </div>
-                            <Input name="sterilizationDate" label="Date de la stérilisation  / castration" type={InputTypes.Date} value={cat?.sterilizationDate ? formatYMMDD(new Date(cat?.sterilizationDate)) : ''} />
-                            <Input name="birthDate" label="Date de naissance" type={InputTypes.Date} value={cat?.birthDate ? formatYMMDD(new Date(cat?.birthDate)) : ''} />
+                            <Input 
+                                name="sterilizationDate"
+                                label="Date de la stérilisation  / castration"
+                                type={InputTypes.Date} value={cat?.sterilizationDate ? formatYMMDD(new Date(cat?.sterilizationDate)) : ''}
+                                className={ sterilizationDateError ? "error" : "" }
+                            />
+                            <Input name="birthDate" label="Date de naissance" type={InputTypes.Date} value={birthDate ? formatYMMDD(new Date(birthDate)) : ''}
+                                onChange={(e) => setBirthDate(e.target.value)} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="isDuringVisit">En cours de visite</label>
                                 <Select
@@ -392,7 +441,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     onChange={(e:any) => setIsDuringVisit(e?.value as boolean ?? "")}
                                 />
                             </div>
-                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                            {/* <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="isAdopted">Est adopté</label>
                                 <Select
                                     options={YesNo}
@@ -407,7 +456,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     value={YesNo.find(c => c.value === isAdopted)}
                                     onChange={(e:any) => setIsAdopted(e?.value as boolean ?? "")}
                                 />
-                            </div>
+                            </div> */}
                             <Input name="adoptionDate" label="Date d'adoption" type={InputTypes.Date} value={cat?.adoptionDate ? formatYMMDD(new Date(cat?.adoptionDate)) : ''} />
                             <Input name="catPictures" label="Photos" type={InputTypes.File} multipleFile={true} onChange={picturesChange} />
                             <div className='flex flex-wrap w-full gap-7'>
@@ -565,9 +614,62 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                         </div>
                         <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
                             <Button text="Modifier la fiche" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />
+                            {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant]) && !isAdoptable && 
+                            <Button 
+                                text="Valider la fiche pour l'adoption"
+                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-270'
+                                onClick={(e) => { setIsAdoptable(true); toast.info("N'oubliez pas de cliquer sur le bouton 'Modifier la fiche' pour que celle-ci soit réellement validée") }}/>}
                         </div>
                     </form>
-                </div>
+                    <hr className='border-(--primary)' />
+                    <div className="flex flex-col gap-10" role="form" aria-label="Demander un bon vétérinaire">
+                         <div className="flex flex-col gap-4 md:gap-8">
+                            <h5 className="text-(--primary)">Demander un bon vétérinaire</h5>
+                        </div>
+                        <div className="flex gap-12 md:gap-24">
+                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                                <label className="text-sm text-(--text) font-medium " htmlFor="clinical">Clinique</label>
+                                <Select
+                                    ref={clinicInputRef}
+                                    options={Clinics}
+                                    className="select"
+                                    classNamePrefix="select"
+                                    name="clinical"
+                                    id="clinical"
+                                    isMulti={false}
+                                    isClearable={false}
+                                    isSearchable={true}
+                                    placeholder="Clinique"
+                                    onChange={(e:any) => setClinic(e?.value ?? null)}
+                                />
+                                <span className="text-sm text-(--text)">* Clinique de l'association</span>
+                            </div>
+                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                                <label className="text-sm text-(--text) font-medium " htmlFor="voucherObjet">Objet du bon</label>
+                                <Select
+                                    ref={voucherObjectInputRef}
+                                    options={voucherObjects}
+                                    className="select"
+                                    classNamePrefix="select"
+                                    name="voucherObjet"
+                                    id="voucherObjet"
+                                    isMulti={false}
+                                    isClearable={false}
+                                    isSearchable={true}
+                                    placeholder="Objet du bon"
+                                    onChange={(e:any) => setVoucherObject(e?.value ?? null)}
+                                />
+                            </div>
+                        </div>
+                        <div className='flex justify-center'>
+                            <Button
+                                text="Demander le bon"
+                                disabled={!voucherObject || !clinic}
+                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230'
+                                onClick={(e) => handleSubmitVoucher(e) }/>
+                        </div>
+                    </div>
+               </div>
             </div>
             <Footer />
         </main>

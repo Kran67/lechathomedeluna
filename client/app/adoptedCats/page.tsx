@@ -16,7 +16,7 @@ import {
   InputImageTypes,
   UserRole,
 } from '@/app/enums/enums';
-import { catsService } from '@/app/services/catsService';
+import { catsService } from '@/app/services/client/catsService';
 
 import { useUser } from '../contexts/userContext';
 import { hasRoles } from '../lib/utils';

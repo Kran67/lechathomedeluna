@@ -25,7 +25,7 @@ export interface Cat {
     sterilizationDate?: string;
     birthDate?: string;
     isDuringVisit?: boolean;
-    isAdopted?: boolean;
+    isAdoptable?: boolean;
     adoptionDate?: string;
     hostFamily?: HostFamily;
     documents: CatDocument[];

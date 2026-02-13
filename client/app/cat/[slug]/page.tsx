@@ -7,9 +7,9 @@ import {
   RedirectType,
 } from 'next/navigation';
 
-import { getCat } from '@/app/api/api';
 import CatDetail from '@/app/cat/[slug]/catDetail';
 import { Cat } from '@/app/interfaces/cat';
+import { getBySlug } from '@/app/services/server/catsService';
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -20,7 +20,7 @@ export async function generateMetadata({ params, searchParams }: Props,
   parent: ResolvingMetadata): Promise<Metadata> {
   const { slug } = await params;
   // on va chercher les information du chat
-  const cat: Cat | any = await getCat(slug);
+  const cat: Cat | any = await getBySlug(slug);
   return {
     title: `Le Chat'Home de Luna - ${cat.name}`,
     description: cat.description,
@@ -42,7 +42,7 @@ export default async function CatPage({ params }: { params: Promise<{ slug: stri
   // on récupère le paramétre slug (identifiant du chat)
   const slug = (await params).slug;
   // on va chercher le chat
-  const cat = await getCat(slug);
+  const cat = await getBySlug(slug);
   // si le chat n'a pas été trouvée, on redirige vers la page 404
   if (cat?.error) {
     redirect("/404", RedirectType.push);

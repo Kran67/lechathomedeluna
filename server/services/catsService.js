@@ -56,11 +56,12 @@ async function listCats(isAdoptable = false, year = 0, hostFamilyId = null) {
     } else if (year > 0) {
       sql += ` WHERE c.adoptionDate IS NOT NULL AND DATE_PART('year',  c.adoptionDate) = ${year}`;
     } else if (isAdoptable) {
-      sql += ' WHERE isAdoptable = true';
+      sql += ' WHERE isAdoptable = true AND c.adoptionDate IS NULL';
     } else {
-      sql += ' WHERE c.isAdoptable = false OR c.adoptionDate IS NULL ';
+      sql += ' WHERE c.isAdoptable = false AND c.adoptionDate IS NULL ';
     }
     sql += ' ORDER BY c.name ASC';
+    console.log(sql);
   const res = await pool.query(sql);
   return res.rows.map(mapCatRow);
 }

@@ -39,6 +39,7 @@ export const dateAge = (dateStr: string | undefined) => {
 }
 
 export const hasRoles = (roles: string, rolesToCheck: string[]): boolean => {
+    if (!roles) return false;
     const userRoles: string[] = roles.split("|");
     return userRoles.some(role => rolesToCheck.includes(role));
 }
@@ -64,4 +65,30 @@ export function formatDDMMY(date: Date) {
     const d = String(date.getDate()).padStart(2, "0");
     const m = String(date.getMonth() + 1).padStart(2, "0");
     return `${d}/${m}/${y}`;
+}
+
+export function addMonthsSafe(date: Date, months: number) {
+    const d = new Date(date);
+    const day = d.getDate();
+
+    d.setMonth(d.getMonth() + months);
+
+    // Si le mois a changé (ex 31 → 3 mars), on revient au dernier jour du mois précédent
+    if (d.getDate() < day) {
+        d.setDate(0);
+    }
+
+    return d;
+}
+
+export function isTodayGreaterThanDatePlus6Months(dateString: string | null) {
+    if (!dateString) return false;
+    const inputDate = new Date(dateString);
+    const datePlus6Months = addMonthsSafe(inputDate, 6);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    datePlus6Months.setHours(0, 0, 0, 0);
+
+    return today > datePlus6Months;
 }

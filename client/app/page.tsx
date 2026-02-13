@@ -19,7 +19,7 @@ import Button from './components/ui/Button';
 import Input from './components/ui/Input';
 import { useUser } from './contexts/userContext';
 import { hasRoles } from './lib/utils';
-import { catsService } from './services/catsService';
+import { catsService } from './services/client/catsService';
 
 /**
  * Ajout les métadata à la page

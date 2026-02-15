@@ -85,3 +85,21 @@ body {
 div:has(>input:required) ~ label:after {
   content: " *"
 }
+
+.tooltip-left { 
+  border-left: 10px solid #0000;
+  border-bottom-left-radius: 10px;
+  mask:
+    radial-gradient(100% 100% at 0 100%,#0000 99%,#000 102%) 
+      0 0/10px 10px no-repeat border-box,
+    linear-gradient(#000 0 0) padding-box;
+}
+
+.tooltip-right { 
+  border-right: 10px solid #0000;
+  border-top-right-radius: 10px;
+  mask:
+    radial-gradient(100% 100% at 100% 100%,#0000 99%,#000 102%) 
+      100% 0/10px 10px no-repeat border-box,
+    linear-gradient(#000 0 0) padding-box;
+}

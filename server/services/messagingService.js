@@ -1,6 +1,6 @@
 const pool = require("../db/pool");
 
-function mapMessengingRow(row) {
+function mapMessagingRow(row) {
   if (!row) return null;
   return {
     id: row.id,
@@ -8,7 +8,7 @@ function mapMessengingRow(row) {
     nickname: row.nickname,
     content: { id: row.message_id, content: decodeURIComponent(row.content) },
     sent_at: row.sent_at,
-    is_readed: row.is_read
+    is_readed: row.is_readed
   };
 }
 
@@ -18,13 +18,14 @@ function mapMessageRow(row) {
     id: row.id,
     thread_id: row.thread_id,
     user_id: row.user_id,
+    nickname: row.nickname,
     content: decodeURIComponent(row.content),
     sent_at: row.sent_at,
-    is_readed: row.is_read
+    is_readed: row.is_readed
   };
 }
 
-async function getMessengingByUserId(userid) {
+async function getMessagingByUserId(userid) {
   const res = await pool.query(`
     SELECT 
         u.id AS user_id,
@@ -44,7 +45,7 @@ async function getMessengingByUserId(userid) {
     LEFT JOIN LATERAL (
         SELECT * 
         FROM messages m 
-        WHERE m.thread_id = mt.id
+        WHERE m.thread_id = mt.id AND m.user_id <> $1
         ORDER BY m.sent_at DESC
         LIMIT 1
     ) m ON TRUE
@@ -52,15 +53,15 @@ async function getMessengingByUserId(userid) {
     ORDER BY mt.created_at DESC, m.sent_at DESC
   `, [userid]);
   if (res.rows.length === 0) return null;
-  return res.rows.map(r => mapMessengingRow(r));
+  return res.rows.map(r => mapMessagingRow(r));
 }
 
-async function getUnreadMessageCountBuUserId(userid) {
+async function getUnreadMessageCountByUserId(userid) {
   const res = await pool.query(`
     SELECT count(m.id) as count
     FROM messages m
     JOIN message_threads mt ON m.thread_id = mt.id
-    WHERE m.is_read = 0
+    WHERE m.is_readed = 0
         AND (
             (mt.user_id = $1 AND m.user_id <> $1)
             OR
@@ -73,14 +74,14 @@ async function getUnreadMessageCountBuUserId(userid) {
 
 async function getAllMessagesById(id) {
   const res = await pool.query(`
-    SELECT m.content, m.sent_at, m.user_id, u.avatar
+    SELECT m.content, m.sent_at, m.user_id, CONCAT(u.name, ' ', u.lastname) as nickname, m.is_readed
     FROM messages m
     JOIN users u ON u.id = m.user_id
     WHERE thread_id = $1
     ORDER BY sent_at
   `, [id]);
   if (res.rows.length === 0) return null;
-  return mapMessageRow(res.rows);
+  return res.rows.map(r => mapMessageRow(r));
 }
 
 async function getById(id) {
@@ -92,7 +93,7 @@ async function getById(id) {
     WHERE mt.id = $1
   `, [id]);
   if (res.rows.length === 0) return null;
-  return mapMessengingRow(res.rows);
+  return mapMessagingRow(res.rows);
 }
 
 async function getByUserIds(fromUserId, toUserId) {
@@ -102,10 +103,10 @@ async function getByUserIds(fromUserId, toUserId) {
     WHERE user_id = $1 AND from_user_id = $2 OR user_id = $2 AND from_user_id = $1
   `, [toUserId, fromUserId]);
   if (res.rows.length === 0) return null;
-  return mapMessengingRow(res.rows);
+  return mapMessagingRow(res.rows);
 }
 
-async function createMessenging(payload) {
+async function createMessaging(payload) {
     const {
         toUserId,
         fromUserId
@@ -129,7 +130,7 @@ async function createMessenging(payload) {
     }
 }
 
-async function deleteMessenging(id) {
+async function deleteMessaging(id) {
   const res = await lastId('DELETE FROM message_threads WHERE id = $1', [id]);
   if (res.rowCount === 0) {
     const err = new Error('Discussion introuvable');
@@ -166,7 +167,7 @@ async function deleteMessage(id) {
   }
 }
 
-async function readAllMessages(threadId, userId, changes) {
+async function readAllMessages(threadId, userId) {
   const res = await pool.query(`UPDATE messages SET is_readed = 1 WHERE thread_id = $1 AND user_id <> $2 `, [threadId, userId]);
   if (res.rowCount === 0) {
     const err = new Error('Discussion introuvable');
@@ -176,13 +177,13 @@ async function readAllMessages(threadId, userId, changes) {
 }
 
 module.exports = {
-  getMessengingByUserId,
-  getUnreadMessageCountBuUserId,
+  getMessagingByUserId,
+  getUnreadMessageCountByUserId,
   getAllMessagesById,
   getById,
   getByUserIds,
-  createMessenging,
-  deleteMessenging,
+  createMessaging,
+  deleteMessaging,
   createMessage,
   deleteMessage,
   readAllMessages

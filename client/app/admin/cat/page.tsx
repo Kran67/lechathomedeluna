@@ -30,6 +30,6 @@ export default async function Page() {
     }
 
     return (
-        <NewCat  hostFamilies={hostFamilies} />
+        <NewCat hostFamilies={hostFamilies} />
     );
 }

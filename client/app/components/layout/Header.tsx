@@ -132,7 +132,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                 <hr className="w-full h-1 border-(--light-grey)" />
                 <Link
                     text="Messagerie"
-                    url="/messenging"
+                    url="/messaging"
                     className="text-2xl hover:text-(--main-red) hover:font-bold w-full"
                     isActive={activeMenu === HeaderMenuItems.Messaging}
                 />

@@ -48,7 +48,7 @@ export default async function sitemap(): Promise<{
             priority: 0.8,
         },
         {
-            url: 'https://www.lechathomedeluna.org/messenging',
+            url: 'https://www.lechathomedeluna.org/messaging',
             lastModified: new Date(),
             changeFrequency: 'daily',
             priority: 0.8,

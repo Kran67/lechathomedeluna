@@ -42,9 +42,9 @@ import {
 const Select = dynamic(() => import("react-select"), { ssr: false });
 
 /**
- * Interface pour les propriétés d'initialisation d'un Profile
+ * Interface pour les propriétés d'initialisation d'un chat
  * 
- * @interface ProfileProps
+ * @interface NewCatProps
  */
 interface NewCatProps {
     hostFamilies?: User[];

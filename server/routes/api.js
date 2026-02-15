@@ -7,7 +7,7 @@ const cats = require('../controllers/catsController');
 const users = require('../controllers/usersController');
 const uploads = require('../controllers/uploadsController');
 const vetVouchers = require('../controllers/vetVouchersController');
-const messenging = require('../controllers/messengingController');
+const messaging = require('../controllers/messagingController');
 
 // Properties
 router.get('/cats', cats.list); // non adoptable
@@ -33,11 +33,13 @@ router.patch('/vetvouchers/:id', requireRole(['Admin', 'Assistant']), vetVoucher
 router.delete('/vetvouchers/:id', requireRole(['Admin', 'Assistant']), vetVouchers.remove);
 
 //messenging
-router.get('/messenging/:userid', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messenging.getByUserId);
-router.post('/messenging', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messenging.create);
-router.delete('/messenging/:id', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messenging.remove);
-router.post('/sendmessage', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messenging.createMsg);
-router.delete('/message/:id', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messenging.removeMsg);
+router.get('/messaging/:userid', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.getByUserId);
+router.post('/messaging', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.create);
+router.delete('/messaging/:id', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.remove);
+router.post('/sendmessage', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.createMsg);
+router.delete('/message/:id', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.removeMsg);
+
+router.get('/messaging/all/:id/:userid', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.getAllMessagesByThreadId);
 
 // Uploads
 router.post('/uploads/image', requireRole(['Admin']), uploads.uploadImage);

@@ -33,7 +33,8 @@ export enum IconButtonImages {
     Star = "star",
     Pen = "pen",
     BlackListed = "blacklisted",
-    ChangePassword = "changepassword"
+    ChangePassword = "changepassword",
+    SendMessage = "SendMessage"
 }
 
 export enum IconButtonImagePositions {

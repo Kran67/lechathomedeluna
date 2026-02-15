@@ -1,15 +1,15 @@
 const {
-    getMessengingByUserId,
-    getUnreadMessageCountBuUserId,
+    getMessagingByUserId,
+    getUnreadMessageCountByUserId,
     getAllMessagesById,
     getById,
     getByUserIds,
-    createMessenging,
-    deleteMessenging,
+    createMessaging,
+    deleteMessaging,
     createMessage,
     deleteMessage,
     readAllMessages
-} = require('../services/messengingService');
+} = require('../services/messagingService');
 
 function statusFromError(e) {
   if (e && e.status) return e.status;
@@ -18,8 +18,19 @@ function statusFromError(e) {
 
 async function getByUserId(req, res) {
   try {
-    const rows = await getMessengingByUserId(req.params.userid);
+    const rows = await getMessagingByUserId(req.params.userid);
     res.json(rows);
+  } catch (e) {
+    res.status(statusFromError(e)).json({ error: e.message });
+  }
+}
+
+async function getAllMessagesByThreadId(req, res) {
+  try {
+    readAllMessages(req.params.id, req.params.userid).then(async ()  => {
+      const rows = await getAllMessagesById(req.params.id);
+      res.json(rows);
+    });
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
   }
@@ -27,7 +38,7 @@ async function getByUserId(req, res) {
 
 async function create(req, res) {
   try {
-    const created = await createMessenging(req.body || {});
+    const created = await createMessaging(req.body || {});
     res.status(201).json(created);
   } catch (e) {
     const code = statusFromError(e);
@@ -39,7 +50,7 @@ async function create(req, res) {
 
 async function remove(req, res) {
   try {
-    await deleteMessenging(req.params.id);
+    await deleteMessaging(req.params.id);
     res.status(204).end();
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
@@ -73,4 +84,5 @@ module.exports = {
   remove,
   createMsg,
   removeMsg,
+  getAllMessagesByThreadId
 };

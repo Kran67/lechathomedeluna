@@ -37,13 +37,11 @@ export default async function Page() {
     }
 
     const res = await getAllUserThreads(token, user.id);
-    if (!res.error) {
+    if (res) {
         threads = res;
         if (threads.length > 0) {
             threads[0].is_readed = true;
         }
-    } else {
-        throw new Error(res.error);
     }
 
     return (<MessagingPage threads={threads} />);

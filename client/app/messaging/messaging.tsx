@@ -68,7 +68,7 @@ export default function MessagingPage({ threads } : MessagingProps) {
     const cookieStore = useCookies();
     const token: string | undefined = cookieStore.get("token");
     const [search, setSearch] = useState<string>("");
-    const [threadId, setThreadId] = useState<string>(threads && threads[0].id);
+    const [threadId, setThreadId] = useState<string>(threads && threads.length > 0 ? threads[0].id : "-1");
     const [messages, setMessages] = useState<Message[]>([]);
     const [visibleThreads, setVisibleThreads] = useState<Messaging[]>(threads);
     const [currentThread, setCurrentThread] = useState<Messaging | undefined>(threads.find((thread: Messaging) => thread.id === threadId));
@@ -87,7 +87,6 @@ export default function MessagingPage({ threads } : MessagingProps) {
     }, [search]);
 
     useEffect(() => {
-        console.log(threadId);
         const thread: Messaging | undefined = threads.find((thread: Messaging) => thread.id === threadId);
         if (thread) {
             getAllMessagesById(token, thread.id, user?.id ?? "0").then((data: Message[]) => {
@@ -145,7 +144,7 @@ export default function MessagingPage({ threads } : MessagingProps) {
         <main className="flex flex-col gap-20 w-full h-screen items-center md:pt-20 md:px-140">
             <Header activeMenu={HeaderMenuItems.Messaging} />
             <div className="flex gap-20 md:gap-30 p-30 md:p-0 w-full xl:w-1115 flex-1 min-h-0">
-                {visibleThreads && <div className="flex flex-col border border-1 border-(--primary) rounded-[10px] w-321 p-16 gap-10 h-full">
+                {visibleThreads && visibleThreads.length > 0 && <div className="flex flex-col border border-1 border-(--primary) rounded-[10px] w-321 p-16 gap-10 h-full">
                     <Input
                         name="search"
                         placeHolder="Rechercher un utilisateur"
@@ -174,8 +173,9 @@ export default function MessagingPage({ threads } : MessagingProps) {
                         ))}
                     </div>
                 </div>}
-                <div className="flex flex-col flex-1 border border-1 border-(--primary) rounded-[10px] gap-6 bg-[url(/images/discussion.png)] bg-no-repeat bg-center bg-blend-lighten bg-[#ffffffcc]">
-                    {currentThread &&
+                <div className={"flex flex-col flex-1 border border-1 border-(--primary) rounded-[10px] gap-6 bg-[url(/images/discussion.png)] bg-no-repeat bg-center bg-blend-lighten bg-[#ffffffcc]"
+                    + (!currentThread ? " justify-center items-center": "")}>
+                    {currentThread ?
                         <>
                             <div className="flex h-75 p-16">
                                 <div className="flex gap-8">
@@ -184,9 +184,7 @@ export default function MessagingPage({ threads } : MessagingProps) {
                                 </div>
                             </div>
                             <hr className="border-(--primary)" />
-                            {!currentThread
-                                ? <span className="text-lg text-(--text)">Vous n'avez pas de messages</span>
-                                : <div className="flex flex-col flex-1 min-h-0 relative">
+                                <div className="flex flex-col flex-1 min-h-0 relative">
                                     <div className="flex flex-col flex-1 overflow-y-auto pl-5 pr-5 gap-10" ref={messagesRef} onClick={() => { setShowPicker(false)} }>
                                         {messages.map((m: Message, idx: number) => (
                                             <div key={idx} className={"flex" + (user?.id === m.user_id ? " self-end" : "")}>
@@ -248,8 +246,8 @@ export default function MessagingPage({ threads } : MessagingProps) {
                                         <IconButton icon={IconButtonImages.SendMessage} imgWidth={24} imgHeight={24} svgStroke='#902677' />
                                     </form>
                                 </div>
-                            }
-                        </>
+                        </> :
+                        <span className="text-lg text-(--text)">Vous n'avez pas de messages</span>
                     }
                 </div>
             </div>

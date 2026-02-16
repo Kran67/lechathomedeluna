@@ -37,7 +37,7 @@ app.use('/auth', authRouter);
 
 (async () => {
   try {
-    await initializeDb(true);
+    await initializeDb();
 
   } catch (err) {
     console.error("❌ Erreur DB :", err);

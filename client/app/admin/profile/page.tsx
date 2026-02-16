@@ -20,10 +20,7 @@ import Button from '@/app/components/ui/Button';
 import Input from '@/app/components/ui/Input';
 import Link from '@/app/components/ui/Link';
 import { useUser } from '@/app/contexts/userContext';
-import {
-  HeaderMenuItems,
-  UserRole,
-} from '@/app/enums/enums';
+import { HeaderMenuItems } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
 import {
   hasRoles,
@@ -45,7 +42,7 @@ export default function Profile() {
     const [profile, setProfile] = useState<User | null>(null);
     const [city, setCity] = useState<string>(user?.city || "");
 
-    if (!user || (user && !hasRoles(user.roles, [UserRole.Admin]))) {
+    if (!user) {
         redirect("/");
     }
 

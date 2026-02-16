@@ -10,6 +10,7 @@ import {
 import { useCookies } from 'next-client-cookies';
 import { toast } from 'react-toastify';
 
+import EmojiPicker from '@/app/components/ui/EmojiPicker';
 import { useUser } from '@/app/contexts/userContext';
 import { DateUtils } from '@/app/lib/dateUtils';
 
@@ -72,8 +73,10 @@ export default function MessagingPage({ threads } : MessagingProps) {
     const [visibleThreads, setVisibleThreads] = useState<Messaging[]>(threads);
     const [currentThread, setCurrentThread] = useState<Messaging | undefined>(threads.find((thread: Messaging) => thread.id === threadId));
     const [message, setMessage] = useState<string>("");
-    const messagesRef = useRef(null);
-    const formRef = useRef(null);
+    const messagesRef = useRef<HTMLDivElement>(null);
+    const formRef = useRef<HTMLFormElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const [showPicker, setShowPicker] = useState(false);
 
     useEffect(() => {
         if (search.trim() !== "") {
@@ -153,7 +156,7 @@ export default function MessagingPage({ threads } : MessagingProps) {
                         showLabel={false}
                         onChange={(e) => setSearch(e.target.value)} />
                     <hr className='border-(--primary)' />
-                    <div className='flex flex-col flex-1 gap-2 overflow-y-auto'>
+                    <div className='flex flex-col flex-1 gap-2 overflow-y-auto' onClick={() => { setShowPicker(false)} }>
                         {visibleThreads?.map((thread, idx) => (
                             <div key={thread.id} className='flex h-64 items-center cursor-pointer' onClick={(e) => setThreadId(thread.id)}>
                                 <div className='flex flex-1 gap-8'>
@@ -183,8 +186,8 @@ export default function MessagingPage({ threads } : MessagingProps) {
                             <hr className="border-(--primary)" />
                             {!currentThread
                                 ? <span className="text-lg text-(--text)">Vous n'avez pas de messages</span>
-                                : <div className="flex flex-col flex-1 min-h-0">
-                                    <div className="flex flex-col flex-1 overflow-y-auto pl-5 pr-5 gap-10" ref={messagesRef}>
+                                : <div className="flex flex-col flex-1 min-h-0 relative">
+                                    <div className="flex flex-col flex-1 overflow-y-auto pl-5 pr-5 gap-10" ref={messagesRef} onClick={() => { setShowPicker(false)} }>
                                         {messages.map((m: Message, idx: number) => (
                                             <div key={idx} className={"flex" + (user?.id === m.user_id ? " self-end" : "")}>
                                                 <div className="flex flex-col">
@@ -200,6 +203,24 @@ export default function MessagingPage({ threads } : MessagingProps) {
                                             </div>
                                         ))}
                                     </div>
+                                    {showPicker && (
+                                        <>
+                                            <EmojiPicker textareaRef={textareaRef} className='pink-emoji-picker absolute bottom-[60px]' />
+                                            <style>{`
+                                                .pink-emoji-picker {
+                                                    --ep-bg: #fff;
+                                                    --ep-border: var(--primary-dark);
+                                                    --ep-text: var(--text);
+                                                    --ep-text-muted: var(--text);
+                                                    --ep-accent: var(--text);
+                                                    --ep-hover: var(--pink);
+                                                    --ep-active-tab: var(--primary);
+                                                    --ep-search-bg: var(--light-pink);
+                                                    --ep-radius: 12px;
+                                                }
+                                            `}</style>
+                                        </>
+                                    )}
                                     <form
                                         onSubmit={handleSendMessage}
                                         className="flex w-full p-5 gap-5"
@@ -207,8 +228,16 @@ export default function MessagingPage({ threads } : MessagingProps) {
                                         aria-label="Envoyer un message"
                                         encType='multipart/form-data'
                                         ref={formRef}>
+                                        <IconButton
+                                            icon={IconButtonImages.Emoji}
+                                            imgWidth={24}
+                                            imgHeight={24}
+                                            svgFill='#902677'
+                                            svgStroke={showPicker ? '#902677' : ''}
+                                            onClick={(e) => { e.preventDefault(); setShowPicker((v) => !v)} } />
                                         <textarea
                                             className='text-sm text-(--text) w-full outline-0 border border-(--pink) px-10 py-5'
+                                            ref={textareaRef}
                                             name="message"
                                             rows={2}
                                             style={{ resize: "none"}}
@@ -216,7 +245,7 @@ export default function MessagingPage({ threads } : MessagingProps) {
                                             onChange={(e) => setMessage(e.target.value)}
                                             onKeyDown={(e) => handleKeyDown(e)}
                                             placeholder="Saisissez votre message" />
-                                        <IconButton icon={IconButtonImages.SendMessage} imgWidth={24} imgHeight={24} />
+                                        <IconButton icon={IconButtonImages.SendMessage} imgWidth={24} imgHeight={24} svgStroke='#902677' />
                                     </form>
                                 </div>
                             }

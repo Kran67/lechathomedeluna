@@ -613,12 +613,12 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                             </div>
                         </div>
                         <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
-                            <Button text="Modifier la fiche" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />
+                            <Button text="Valider les modifications" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />
                             {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant]) && !isAdoptable && 
                             <Button 
                                 text="Valider la fiche pour l'adoption"
                                 className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-270'
-                                onClick={(e) => { setIsAdoptable(true); toast.info("N'oubliez pas de cliquer sur le bouton 'Modifier la fiche' pour que celle-ci soit réellement validée") }}/>}
+                                onClick={(e) => { setIsAdoptable(true); toast.info("N'oubliez pas de cliquer sur le bouton 'Valider les modifications' pour que celle-ci soit réellement validée") }}/>}
                         </div>
                     </form>
                     <hr className='border-(--primary)' />
@@ -644,7 +644,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 />
                                 <span className="text-sm text-(--text)">* Clinique de l'association</span>
                             </div>
-                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                            <div className="select flex flex-col flex-1 gap-7 justify-start h-auto">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="voucherObjet">Objet du bon</label>
                                 <Select
                                     ref={voucherObjectInputRef}
@@ -653,8 +653,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     classNamePrefix="select"
                                     name="voucherObjet"
                                     id="voucherObjet"
-                                    isMulti={false}
-                                    isClearable={false}
+                                    isMulti={true}
+                                    isClearable={true}
                                     isSearchable={true}
                                     placeholder="Objet du bon"
                                     onChange={(e:any) => setVoucherObject(e?.value ?? null)}

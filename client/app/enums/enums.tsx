@@ -11,7 +11,8 @@ export enum HeaderMenuItems {
     Events,
     Volunteers,
     Profile,
-    MyCats
+    MyCats,
+    CatsForAdoption,
 }
 
 export enum LogoSizes {

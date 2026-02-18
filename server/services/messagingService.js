@@ -53,7 +53,7 @@ async function getMessagingByUserId(userid) {
     ORDER BY mt.created_at DESC, m.sent_at DESC
   `, [userid]);
   if (res.rows.length === 0) return null;
-  return res.rows.map(r => mapMessagingRow(r));
+  return res.rows.map(mapMessagingRow);
 }
 
 async function getUnreadMessageCountByUserId(userid) {
@@ -81,7 +81,7 @@ async function getAllMessagesById(id) {
     ORDER BY sent_at
   `, [id]);
   if (res.rows.length === 0) return null;
-  return res.rows.map(r => mapMessageRow(r));
+  return res.rows.map(mapMessageRow);
 }
 
 async function getById(id) {

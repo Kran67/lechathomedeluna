@@ -39,7 +39,7 @@ import { catsService } from '@/app/services/client/catsService';
 export default function AdoptionPage() {
   const [search, setSearch] = useState<string>("");
   const { user } = useUser();
-  const service = catsService(false, search);
+  const service = catsService(undefined, search);
 
   useEffect(() => {
     service.refresh(search);
@@ -56,7 +56,7 @@ export default function AdoptionPage() {
                     {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant]) &&
                             <Input
                             name="search"
-                            placeHolder="Rechercher un chat par son numéro d'identification"
+                            placeHolder="Rechercher un chat par son numéro d'identification ou son nom"
                             imageType={InputImageTypes.Search}
                             className="lg:max-w-357 w-full"
                             value={search}

@@ -43,41 +43,46 @@ export default function Header({ activeMenu }: HeaderProps) {
             className="flex w-full xl:w-1140 md:p-20 items-center justify-between font-normal">
             <Logo size={LogoSizes.Small} className="flex md:hidden" />
             <Logo size={LogoSizes.Large} className="hidden md:flex" />
+            <MenuItem
+                text="Actualités / évènements"
+                isActive={activeMenu === HeaderMenuItems.Home}
+                url="/"
+                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />
             {user && hasRoles(user.roles, [UserRole.HostFamily]) && <MenuItem
                 text="Mes chats"
                 isActive={activeMenu === HeaderMenuItems.MyCats}
-                url="/mycats"
+                url="/myCats"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
             <MenuItem
                 text="Les chats à adopter"
-                isActive={activeMenu === HeaderMenuItems.Home}
-                url="/"
+                isActive={activeMenu === HeaderMenuItems.CatsForAdoption}
+                url="/catsForAdoption"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />
             {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant]) && <MenuItem
                 text="Mes alertes"
                 isActive={activeMenu === HeaderMenuItems.Alerts}
-                url="/myalerts"
+                url="/myAlerts"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
             {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant]) && <MenuItem
                 text="Bons vétérinaires"
                 isActive={activeMenu === HeaderMenuItems.VeterinaryVouchers}
                 url="/veterinary"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
-            {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Volunteer]) && <MenuItem
+            {/* {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Volunteer]) && <MenuItem
                 text="Evénements"
                 isActive={activeMenu === HeaderMenuItems.Events}
                 url="/events"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
+                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />} */}
             {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant]) && <MenuItem
-                text="Adoption"
+                text="Chats en FA"
                 isActive={activeMenu === HeaderMenuItems.Adoption}
-                url="/adoption"
+                url="/faCats"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
-            {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant, UserRole.Volunteer]) && <MenuItem
+            {/* {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant, UserRole.Volunteer]) && <MenuItem
                 text="Bénévoles"
                 isActive={activeMenu === HeaderMenuItems.Volunteers}
                 url="/"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
+                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />} */}
             <MenuItem
                 text="Les chats adoptés"
                 isActive={activeMenu === HeaderMenuItems.AdoptedCats}
@@ -88,11 +93,11 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.Messaging}
                 url="/messaging"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
-            <MenuItem
+            {!user && <MenuItem
                 text="À propos"
                 isActive={activeMenu === HeaderMenuItems.About}
                 url="/about"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold" />
+                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold" />}
             {!user && <MenuItem
                 text="Se connecter"
                 isActive={activeMenu === HeaderMenuItems.Login}
@@ -102,7 +107,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                 text={user.name + " " + user.lastName}
                 isActive={activeMenu === HeaderMenuItems.Profile}
                 url="/admin/profile"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold w-90" />}
+                className="hidden md:flex text-lg cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold w-90 catpaw" />}
             <IconButton
                 icon={isMenuVisible ? IconButtonImages.Cross : IconButtonImages.Menu}
                 className="md:hidden mr-11 mb-6"

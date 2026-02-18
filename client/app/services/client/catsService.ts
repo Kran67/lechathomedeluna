@@ -11,7 +11,7 @@ import type { Cat } from '@/app/interfaces/cat';
  * @function catService
  * @returns { cats: Cat[] | null, loading: boolean, refresh: any, error: boolean }
  */
-export function catsService(adopted: boolean = false, numId?: string, year: number = 0, hostFamilyId: string | undefined = undefined): { cats: Cat[] | null, loading: boolean, refresh: any, error: boolean } {
+export function catsService(type: "adopted" | "adoptable" | undefined, numIdOrName?: string, year: number = 0, hostFamilyId: string | undefined = undefined): { cats: Cat[] | null, loading: boolean, refresh: any, error: boolean } {
     const [cats, setCats] = useState<Cat[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -21,8 +21,10 @@ export function catsService(adopted: boolean = false, numId?: string, year: numb
         setLoading(true);
         try {
             let url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats`;
-            if (adopted) {
+            if (type === "adopted") {
                 url+=`Adopted/${year}`;
+            } else if (type === "adoptable") {
+                url+="adoptable";
             } else if (hostFamilyId) {
                 url+=`Mine/${hostFamilyId}`;
             }
@@ -40,8 +42,8 @@ export function catsService(adopted: boolean = false, numId?: string, year: numb
             }
 
             const data = await res.json();
-            if (numId) {
-                const filteredCats = data.filter((cat: Cat) => cat.numIdentification === numId);
+            if (numIdOrName) {
+                const filteredCats = data.filter((cat: Cat) => cat.numIdentification?.includes(numIdOrName) || cat.name.toLowerCase().includes(numIdOrName));
                 setCats(filteredCats);
                 return;
             }

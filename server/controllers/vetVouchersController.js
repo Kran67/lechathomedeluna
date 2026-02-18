@@ -5,12 +5,7 @@ const {
   updateVetVoucher,
   deleteVetVoucher,
 } = require('../services/vetVouchersService');
-
-function statusFromError(e) {
-  if (e && e.status) return e.status;
-  if (e && e.message && /(UNIQUE|PRIMARY KEY)/i.test(e.message)) return 409;
-  return 500;
-}
+const { statusFromError } = require('../utils/lib');
 
 async function list(req, res) {
   try {

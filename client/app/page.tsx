@@ -5,21 +5,23 @@ import {
   useState,
 } from 'react';
 
-//import { Metadata } from 'next';
-import Gallery from '@/app/components/data/Gallery';
+import dynamic from 'next/dynamic';
+
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
+import Button from '@/app/components/ui/Button';
+import { useUser } from '@/app/contexts/userContext';
 import {
   HeaderMenuItems,
-  InputImageTypes,
   UserRole,
 } from '@/app/enums/enums';
+import { hasRoles } from '@/app/lib/utils';
+import { newsService } from '@/app/services/client/newsService';
+import { newsPeriods } from '@/app/staticLists/staticLists';
 
-import Button from './components/ui/Button';
-import Input from './components/ui/Input';
-import { useUser } from './contexts/userContext';
-import { hasRoles } from './lib/utils';
-import { catsService } from './services/client/catsService';
+import { New } from './interfaces/new';
+
+const Select = dynamic(() => import("react-select"), { ssr: false });
 
 /**
  * Ajout les métadata à la page
@@ -29,7 +31,7 @@ import { catsService } from './services/client/catsService';
  */
 //export const metadata: Metadata = {
 //  title: "Le Chat'Home de Luna - Accueil",
-//  description: "Affichage de la page d'accueil avec la listes des chats"
+//  description: "Affichage de la page d'accueil avec la listes des actualités"
 //};
 
 /**
@@ -38,38 +40,50 @@ import { catsService } from './services/client/catsService';
  * @function HomePage
  */
 export default function HomePage() {
-  const [search, setSearch] = useState<string>("");
+  const [period, setPeriod] = useState<"current" | "next">("current");
   const { user } = useUser();
-  const service = catsService(false, search);
+  const service = newsService(period);
 
   useEffect(() => {
-    service.refresh(search);
-  }, [search]);
+    service.refresh(period);
+  }, [period]);
   
   return (
     <main className="flex flex-col gap-51 md:gap-20 w-full items-center md:pt-20 md:px-140">
       <Header activeMenu={HeaderMenuItems.Home} />
-      <div className="flex flex-col gap-51 md:gap-20 px-16 md:p-0 w-full xl:w-1115">
-        <div className="flex flex-col gap-8 w-full xl:w-1115 lg:w-800 items-center text-center">
-          <span className="text-[32px] text-(--primary) w-full">Association de protection des animaux</span>
-          <span className="text-lg text-(--text) font-normal w-full">​Ensemble, écrivons un avenir meilleur pour nos amis les chats !</span>
-            <div className="flex w-full items-center justify-center gap-10">
-              {user && hasRoles(user.roles, [UserRole.Admin, UserRole.HostFamily]) &&
-                    <Input
-                      name="search"
-                      placeHolder="Rechercher un chat par son numéro d'identification"
-                      imageType={InputImageTypes.Search}
-                      className="lg:max-w-357 w-full"
-                      value={search}
-                      showLabel={false}
-                      onChange={(e) => setSearch(e.target.value)} />
-            }
-            {user && hasRoles(user.roles, [UserRole.Admin]) && 
-              <Button text='Ajouter une fiche chat' url='/admin/cat' className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-16 text-(--white) md:w-170' /> }
-          </div>
+      <div className="flex flex-col gap-51 md:gap-20 px-16 md:p-0 w-full xl:w-1115 jsustify-center items-center">
+        <div className="flex gap-8 w-full lg:w-260 items-center justify-center">
+          <span className="text-[32px] text-(--primary)">Actualités</span>
+          <Select
+            options={newsPeriods}
+            className="select"
+            classNamePrefix="select"
+            name="period"
+            id="period"
+            isMulti={false}
+            isClearable={false}
+            isSearchable={false}
+            placeholder="Période"
+            value={period ? newsPeriods.find((option) => option.value === period) : null}
+            onChange={(e:any) => setPeriod(e?.value ?? null)}
+            styles={{container: provided => ({
+                ...provided,
+                maxWidth: 140
+            })}}
+          />
         </div>
+        <div className="flex w-full items-center justify-center gap-10">
+          {user && hasRoles(user.roles, [UserRole.Admin]) && 
+            <Button text='Ajouter une actualité' url='/admin/news' className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-16 text-(--white) md:w-170' /> }
+        </div>
+        {service.news && service.news.length === 0 && <span className="text-(--text) text-center">Aucune actualité pour le moment.</span>}
+        {service.news && service.news.map((newItem: New, idx: number) => (
+          <img
+            key={idx}
+            src={(newItem.url.includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + newItem.url}
+            alt={`Image de l'actualité du ${newItem.date}`} className="" />
+          ))}
       </div>
-      <Gallery cats={service.cats ?? []} />
       <Footer />
     </main>
   );

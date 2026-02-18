@@ -154,7 +154,7 @@ export default function Property({ cat }: CatProps) {
                             <p className="text-sm text-(--text) font-normal whitespace-break-spaces">{cat?.description}</p>
                         </div>
                         <CollapseElement title="Informations" content={collapseElementContent} />
-                        { !user && cat?.isAdoptable && !cat?.adoptionDate &&
+                        { !user && !cat?.adoptionDate &&
                             <>
                                 <IconButton
                                     icon={IconButtonImages.Heart}

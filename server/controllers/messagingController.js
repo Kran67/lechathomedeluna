@@ -10,11 +10,7 @@ const {
     deleteMessage,
     readAllMessages
 } = require('../services/messagingService');
-
-function statusFromError(e) {
-  if (e && e.status) return e.status;
-  return 500;
-}
+const { statusFromError } = require('../utils/lib');
 
 async function getByUserId(req, res) {
   try {

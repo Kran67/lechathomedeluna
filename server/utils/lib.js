@@ -5,3 +5,9 @@ export function uuid() {
     }
     return _p8() + _p8(!0) + _p8(!0) + _p8();
 }
+
+export const statusFromError = (e) =>{
+  if (e && e.status) return e.status;
+  if (e && e.message && /(UNIQUE|PRIMARY KEY)/i.test(e.message)) return 409;
+  return 500;
+}

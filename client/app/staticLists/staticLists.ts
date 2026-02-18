@@ -745,3 +745,17 @@ export const voucherObjects: {
         label: "Urgence"
     },
 ];
+
+export const newsPeriods: {
+    value: string;
+    label: string;
+}[] = [
+    {
+        value: "current",
+        label: "ce mois-ci"
+    },
+    {
+        value: "next",
+        label: "À venir"
+    },
+];

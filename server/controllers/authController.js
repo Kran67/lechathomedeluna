@@ -1,9 +1,5 @@
 const { register, login, requestPasswordReset, resetPassword } = require('../services/authService');
-
-function statusFromError(e) {
-  if (e && e.status) return e.status;
-  return 500;
-}
+const { statusFromError } = require('../utils/lib');
 
 async function doRegister(req, res) {
   try {

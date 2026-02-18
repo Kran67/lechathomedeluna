@@ -1,16 +1,7 @@
 const { listUsers, getUser, createUser, updateUser, resetMyPassword } = require('../services/usersService');
 const { mapUserRow } = require('../services/authService');
 const { requireAuth } = require('../middlewares/auth');
-const jwt = require('jsonwebtoken');
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1d';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'change-me-in-prod';
-
-function statusFromError(e) {
-  if (e && e.status) return e.status;
-  if (e && e.message && /UNIQUE/i.test(e.message)) return 409;
-  return 500;
-}
+const { statusFromError } = require('../utils/lib');
 
 async function list(req, res) {
   try {

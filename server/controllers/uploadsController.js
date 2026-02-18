@@ -35,6 +35,7 @@ async function uploadImage(req, res) {
     const documentDate = req.body && req.body.date ? String(req.body.date) : null;
     const catId = req.body && req.body.cat_id ? String(req.body.cat_id) : null;
     const type = req.body && req.body.type ? String(req.body.type) : null;
+    const id = req.body && req.body.id ? String(req.body.id) : null;
 
     // If a cat_id is provided, ensure it exists (for better UX)
     if (catId) {
@@ -66,6 +67,8 @@ async function uploadImage(req, res) {
       await pool.query('INSERT INTO cat_pictures (cat_id, url) VALUES ($1, $2)', [catId, publicUrl]);
     } else if (context === "documents") {
       await pool.query('INSERT INTO cat_documents (cat_id, date, url, type) VALUES ($1, $2, $3, $4)', [catId, documentDate, publicUrl, type]);
+    } else if (context === "news") {
+      await pool.query('UPDATE news SET url = $2 WHERE id = $1', [id, publicUrl]);
     }
 
     res.status(201).json({

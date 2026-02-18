@@ -42,7 +42,7 @@ const Select = dynamic(() => import("react-select"), { ssr: false });
 export default function AdoptedCats() {
   const [search, setSearch] = useState<string>("");
   const [year, setYear] = useState<number>(new Date().getFullYear());
-  const service = catsService(true, search, year);
+  const service = catsService("adopted", search, year);
   const { user } = useUser();
 
   const Years: {
@@ -67,7 +67,7 @@ export default function AdoptedCats() {
             {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant]) &&
               <Input
                 name="search"
-                placeHolder="Rechercher un chat par son numéro d'identification"
+                placeHolder="Rechercher un chat par son numéro d'identification ou son nom"
                 imageType={InputImageTypes.Search}
                 className="lg:max-w-357 w-full"
                 value={search}

@@ -103,3 +103,12 @@ div:has(>input:required) ~ label:after {
       100% 0/10px 10px no-repeat border-box,
     linear-gradient(#000 0 0) padding-box;
 }
+
+button.catpaw::before {
+  content: '';
+  font-family: 'FontAwesome';
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  padding-right: 2px;
+}

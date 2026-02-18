@@ -6,7 +6,7 @@ function mapVetVoucherRow(row) {
     id: row.id,
     date: row.date,
     user_name: row.user_name,
-    cat: { slug: row.slug, name: row.name },
+    cat: { slug: row.slug, name: row.name, numId: row.numid },
     clinic: row.clinic,
     object: row.object,
     processed_on: row.processed_on,
@@ -16,15 +16,15 @@ function mapVetVoucherRow(row) {
 async function listVetVoucher(year = 0, clinic = '', object = '') {
   const params = [year];
   let sql = `
-      SELECT v.id, v.date, v.user_name, v.clinic, v.object, v.processed_on, c.slug, c.name
+      SELECT v.id, v.date, v.user_name, v.clinic, v.object, v.processed_on, c.slug, c.name, c.numId
       FROM vet_vouchers v
       LEFT JOIN LATERAL (
-        SELECT slug, name
+        SELECT slug, name, numIdentification as numId
         FROM cats
-        WHERE cat_id = v.id
+        WHERE id = v.id
         LIMIT 1
       ) c ON true
-      WHERE DATE_PART('year',  v.date) = $1`;
+      WHERE DATE_PART('year',  v.date) = $1 AND v.processed_on IS NULL`;
     if (clinic.trim() !== '-' && object.trim() !== '-') {
       sql += ' AND v.clinic = $2';
       sql += ' AND v.object = $3';

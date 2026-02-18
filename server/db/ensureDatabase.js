@@ -103,7 +103,11 @@ async function initSchema(pool) {
       isDuringVisit BOOLEAN DEFAULT false,
       isAdoptable BOOLEAN DEFAULT false,
       adoptionDate DATE,
-      hostfamily_id INTEGER REFERENCES users(id) ON DELETE RESTRICT
+      hostfamily_id INTEGER REFERENCES users(id) ON DELETE RESTRICT,
+      created_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      created_at TIMESTAMPTZ NOT NULL,
+      updated_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      updated_at TIMESTAMPTZ NOT NULL
     );`);
 
   await pool.query(`
@@ -132,9 +136,13 @@ async function initSchema(pool) {
       user_name VARCHAR(101) NOT NULL,
       cat_id INTEGER NOT NULL REFERENCES cats(id) ON DELETE CASCADE,
       clinic VARCHAR(51) NOT NULL,
-      object VARCHAR(26) NOT NULL,
+      object VARCHAR(165) NOT NULL,
       processed_on DATE,
-      UNIQUE(cat_id, date, clinic, object)
+      UNIQUE(cat_id, date, clinic, object),
+      created_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      created_at TIMESTAMPTZ NOT NULL,
+      updated_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      updated_at TIMESTAMPTZ NOT NULL
     );`);
 
   await pool.query(`
@@ -154,6 +162,13 @@ async function initSchema(pool) {
       sent_at TIMESTAMPTZ NOT NULL,
       is_readed INTEGER DEFAULT 0
     );`);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS news (
+      id SERIAL PRIMARY KEY,
+      date DATE NOT NULL,
+      url VARCHAR(50) NOT NULL
+    );`);    
 
   await pool.query(`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email);

@@ -8,6 +8,7 @@ const users = require('../controllers/usersController');
 const uploads = require('../controllers/uploadsController');
 const vetVouchers = require('../controllers/vetVouchersController');
 const messaging = require('../controllers/messagingController');
+const news = require('../controllers/newsController');
 
 // Properties
 router.get('/cats', cats.list); // non adoptable
@@ -32,7 +33,7 @@ router.post('/vetvouchers', requireRole(['Admin', 'Assistant']), vetVouchers.cre
 router.patch('/vetvouchers/:id', requireRole(['Admin', 'Assistant']), vetVouchers.update);
 router.delete('/vetvouchers/:id', requireRole(['Admin', 'Assistant']), vetVouchers.remove);
 
-//messenging
+// Messaging
 router.get('/messaging/:userid', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.getByUserId);
 router.post('/messaging', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.create);
 router.delete('/messaging/:id', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.remove);
@@ -40,6 +41,11 @@ router.post('/sendmessage', requireRole(['Admin', 'Assistant', 'HostFamily', 'Vo
 router.delete('/message/:id', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.removeMsg);
 
 router.get('/messaging/all/:id/:userid', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.getAllMessagesByThreadId);
+
+// News
+router.get('/news/:period', news.getNews);
+router.post('/news', requireRole(['Admin']), news.create);
+router.delete('/news/:id', requireRole(['Admin']), news.remove);
 
 // Uploads
 router.post('/uploads/image', requireRole(['Admin']), uploads.uploadImage);

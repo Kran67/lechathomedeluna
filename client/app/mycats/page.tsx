@@ -26,7 +26,7 @@ import { useUser } from '../contexts/userContext';
  */
 export default function MyCats() {
   const { user } = useUser();
-  const service = catsService(false, undefined, 0, user?.id);
+  const service = catsService(undefined, undefined, 0, user?.id);
 
   const Years: {
     value: number;

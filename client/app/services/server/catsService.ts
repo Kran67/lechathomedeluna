@@ -61,11 +61,11 @@ export const create = async (
         const result = await res.json();
 
         // upload des images
-        pictures?.map(async (picture: any, idx: number) => {
+        pictures?.map(async (picture: any) => {
             const formData = new FormData();
             formData.append("file", picture);
             formData.append("cat_id", result.id);
-            
+            formData.append("context", "pictures");
             await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/uploads/image`, {
                 method: "POST",
                 headers: { Authorization: `Bearer ${token}`, },

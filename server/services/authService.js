@@ -19,6 +19,8 @@ function mapUserRow(row) {
     email: row.email,
     blacklisted: row.blacklisted ?? false,
     referrer_id: row.referrer_id ?? null,
+    reset_token: row.reset_token ?? null,
+    reset_expires: row.reset_expires ?? null
   };
 }
 

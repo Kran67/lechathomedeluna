@@ -82,7 +82,7 @@ async function initSchema(pool) {
         blacklisted BOOLEAN DEFAULT false,
         referrer_id INTEGER REFERENCES users(id) ON DELETE RESTRICT,
         reset_token VARCHAR(255),
-        reset_expires DATE,
+        reset_expires TIMESTAMPTZ,
         UNIQUE(email)
     );`);
 

@@ -26,6 +26,11 @@ router.get('/users/:id', requireSelfOrAdmin('id'), users.getById);
 router.post('/users', requireAdmin, users.create);
 router.patch('/users/:id', requireSelfOrAdmin('id'), users.update);
 
+// Reset password
+router.get('/profile/resetpassword/:email', users.resetPassword);
+router.get('/resetpassword/validate/:token', users.checkResetTokenValidity);
+router.post('/profile/updatepassword', users.updatePassword);
+
 // Vet vouchers
 router.get('/vetvouchers', requireRole(['Admin', 'Assistant']), vetVouchers.list);
 router.get('/vetvouchers/:year/:clinic/:object', requireRole(['Admin', 'Assistant']), vetVouchers.listByParams);

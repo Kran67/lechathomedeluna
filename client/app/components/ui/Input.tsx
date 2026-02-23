@@ -21,7 +21,7 @@ interface InputProps {
     placeHolder?: string;
     required?: boolean;
     width?: number;
-    onChange?: (e: any) => void
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
     hasError?: boolean;
     autoComplete?: string;
     maxLength?: number;

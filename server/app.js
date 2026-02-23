@@ -8,7 +8,6 @@ const usersRouter = require('./routes/users');
 const apiRouter = require('./routes/api');
 const authRouter = require('./routes/auth');
 const cors = require("cors");
-const { hashPassword } = require('./services/authService');
 const { initializeDb } = require('./db/ensureDatabase');
 
 
@@ -37,7 +36,7 @@ app.use('/auth', authRouter);
 
 (async () => {
   try {
-    await initializeDb();
+    await initializeDb(true);
 
   } catch (err) {
     console.error("❌ Erreur DB :", err);

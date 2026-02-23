@@ -85,18 +85,18 @@ export const update = cache(async (token: string | undefined, id: string, name: 
 });
 
 /**
- * Permet de récupèrer un utilisateur depuis la base de données
+ * Permet de reinitialiser le mot de passe d'un utilisateur
  * 
  * @async
  * @function resetPassword
- * @param { string } id - identifiant de l'utilisateur
+ * @param { string } email - email de l'utilisateur
  * @returns { Promise<any> } Un object contenant l'utilisateur ou un object contenant une erreur
  */
-export const resetPassword = cache(async (token: string | undefined, id: string) => {
+export const resetPassword = cache(async (email: string) => {
     try {
-        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/resetpassword/${id}`, {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/resetpassword/${email}`, {
             method: "GET",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+            headers: { "Content-Type": "application/json" },
         });
 
         return await res.json();
@@ -105,3 +105,30 @@ export const resetPassword = cache(async (token: string | undefined, id: string)
         return null;
     }
 });
+
+export async function checkResetTokenValidity(token: string): Promise<{ valid: boolean }> {
+    try {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/resetpassword/validate/${token}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+        return await res.json();
+    } catch (err) {
+        console.error("Erreur lors de la vérification du token de réinitialisation du mot de passe:", err);
+        return { valid: false };
+    }
+}
+
+export const updatePassword = async (token: string, password: string) => {
+    try {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/profile/updatepassword`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token, newPassword: password }),
+        });
+        return await res.json();
+    } catch (err) {
+        console.error("Erreur lors de la mise à jour du mot de passe :", err);
+        return null;
+    }
+}

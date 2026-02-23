@@ -25,6 +25,7 @@ import { User } from '@/app/interfaces/user';
 import {
   hasRoles,
   redirectWithDelay,
+  sendResetPasswordEmail,
 } from '@/app/lib/utils';
 import {
   getById,
@@ -89,12 +90,13 @@ export default function Profile() {
         clear();
     }
 
-    const resetMyPassword = async () => {
-        const result = await resetPassword(token, user!.id);
+    const resetMyPassword = async (e: React.FormEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+        const result = await resetPassword(profile!.email);
         if (result.error) {
             toast.error(`Une erreur est survenue lors de l'envoi de l'email pour la réinitialisation du mot de passe : ${result.error.message}`);
         } else {
-            toast.info(`L'email de réinitialisation du mot de passe du mot de passe à bien été envoyé.`);
+            sendResetPasswordEmail(profile!.email, result.token);
         }
     }
     
@@ -137,7 +139,7 @@ export default function Profile() {
                             <Link
                                 text="Réinitialiser mon mot de passe"
                                 className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)'
-                                onClick={() => resetMyPassword() }/>
+                                onClick={(e: React.FormEvent<HTMLAnchorElement>) => resetMyPassword(e) }/>
                         </div>
                         {hasRoles(user?.roles, ["Admin"]) && <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
                             <Link

@@ -8,6 +8,10 @@ async function getUser(id) {
   return await pool.query('SELECT * FROM users WHERE id = $1', [id]);
 }
 
+async function getUserByEmail(email) {
+  return await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+}
+
 async function createUser({ email, name, lastName, social_number, phone, address, city, roles, blacklisted, referrer_id }) {
   if (!email) {
     const err = new Error("L'email est requis");
@@ -78,7 +82,13 @@ async function updateUser(id, changes = {}) {
 }
 
 async function resetMyPassword(id, token) {
-  await pool.query(`UPDATE users SET reset_token = $2 WHERE id = $1`, [id, token]);
+  await pool.query(`UPDATE users SET reset_token = $2, reset_expires = NOW() + INTERVAL '1 hours' WHERE id = $1`, [id, token]);
+}
+
+async function changePassword(id, newPassword) {
+  const crypto = require('crypto');
+  const hash = crypto.scryptSync(newPassword, 'salt', 64).toString('hex');
+  await pool.query(`UPDATE users SET password_hash = $2, reset_token = NULL, reset_expires = NULL WHERE id = $1`, [id, `scrypt:salt:${hash}`]);
 }
 
 module.exports = {
@@ -86,5 +96,7 @@ module.exports = {
   getUser,
   createUser,
   updateUser,
-  resetMyPassword
+  resetMyPassword,
+  getUserByEmail,
+  changePassword
 };

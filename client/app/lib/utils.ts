@@ -1,3 +1,7 @@
+import { toast } from 'react-toastify';
+
+import emailjs from '@emailjs/browser';
+
 /**
  * Prépare le corps du document html pour l'affichage de fenêtre modale, enlève la scrollbar
  * 
@@ -104,3 +108,26 @@ export const getInitials = (name?: string) =>
             .join("")
             .toUpperCase()
         : "?";
+
+export const sendResetPasswordEmail = async (email: string, token: string) => {
+    emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID ?? "",
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID ?? "",
+        {
+            from_name: "Contact - Le Chat'Home de Luna",
+            from_email: "lechathomedeluna@gmail.com",
+            email: email,
+            token: token,
+        },
+        {
+            publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY,
+        }
+    ).then(
+        () => {
+            toast.info(`L'email de réinitialisation du mot de passe du mot de passe à bien été envoyé.`);
+        },
+        (error: { text: any; }) => {
+            toast.error(error.text);
+        }
+    );
+}

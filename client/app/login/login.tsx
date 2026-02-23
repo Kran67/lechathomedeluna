@@ -56,7 +56,7 @@ export default function Login() {
                 >
                     <div className="flex flex-col gap-8 items-center">
                         <span className="text-2xl md:text-[32px] text-(--primary) font-bold">Heureux de vous revoir</span>
-                        <span className="text-sm text-(--text) font-normal text-center md:w-390">Connectez-vous pour retrouver vos ....</span>
+                        <span className="text-sm text-(--text) font-normal text-center md:w-390">Connectez-vous pour retrouver vos chats.</span>
                     </div>
                     <div className="flex flex-col gap-22 w-full md:w-360">
                         <Input
@@ -66,7 +66,7 @@ export default function Login() {
                             required={true}
                             value={email}
                             onChange={(e) => {
-                                setEmail(e.target.value);
+                                setEmail(e.currentTarget.value);
                                 setError(false);
                             }}
                             hasError={error} />
@@ -77,7 +77,7 @@ export default function Login() {
                             required={true}
                             value={password}
                             onChange={(e) => {
-                                setPassword(e.target.value);
+                                setPassword(e.currentTarget.value);
                                 setError(false);
                             }}
                             hasError={error} />
@@ -86,7 +86,7 @@ export default function Login() {
                     <div className="flex flex-col gap-22 w-full md:w-360 items-center">
                         <Button text="Se connecter" url='' className="flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230" />
                         <div className="flex flex-col gap-12 w-full items-center">
-                            <Link className="text-sm text-(--primary) font-normal text-center" url="/" text="Mot de passe oublié" />
+                            <Link className="text-sm text-(--primary) font-normal text-center" url="/resetpassword" text="Mot de passe oublié" />
                             <div className="text-sm text-(--primary) font-normal text-center">
                                 <span >Pas encore de compte ? </span>
                                 <Link className="font-medium" url="/signin" text="Inscrivez-vous" />

@@ -424,7 +424,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 className={ sterilizationDateError ? "error" : "" }
                             />
                             <Input name="birthDate" label="Date de naissance" type={InputTypes.Date} value={birthDate ? formatYMMDD(new Date(birthDate)) : ''}
-                                onChange={(e) => setBirthDate(e.target.value)} />
+                                onChange={(e) => setBirthDate(e.currentTarget.value)} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="isDuringVisit">En cours de visite</label>
                                 <Select
@@ -458,7 +458,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 />
                             </div> */}
                             <Input name="adoptionDate" label="Date d'adoption" type={InputTypes.Date} value={cat?.adoptionDate ? formatYMMDD(new Date(cat?.adoptionDate)) : ''} />
-                            <Input name="catPictures" label="Photos" type={InputTypes.File} multipleFile={true} onChange={picturesChange} />
+                            <Input name="catPictures" label="Photos" type={InputTypes.File} multipleFile={true} onChange={(e: React.ChangeEvent<HTMLInputElement>) => picturesChange(e)} />
                             <div className='flex flex-wrap w-full gap-7'>
                                 {picturesPreview.map((picture: string, idx: number) => (
                                     <div key={idx} className="rounded-[10px] h-100 w-100 overflow-hidden relative">
@@ -483,7 +483,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                         showLabel={false}
                                         className='max-w-150'
                                         value={vaccineDate}
-                                        onChange={(e) => setVaccineDate(e.target.value)}
+                                        onChange={(e) => setVaccineDate(e.currentTarget.value)}
                                         ref={inputVaccineDate} />
                                     <Input
                                         name="vaccinePicture"

@@ -14,7 +14,7 @@ interface LinkProps {
     text: string;
     url?: string;
     className?: string;
-    onClick?(): void;
+    onClick?(e: React.MouseEvent<HTMLAnchorElement>): void;
     isActive?: boolean;
 }
 
@@ -32,15 +32,15 @@ interface LinkProps {
 export default function Link({ text, url = "#", onClick, className, isActive = false }: LinkProps) {
     const router: AppRouterInstance = useRouter();
 
-    const handleClick: () => void = () => {
-        onClick?.();
+    const handleClick: (e: React.MouseEvent<HTMLAnchorElement>) => void = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        onClick?.(e);
         if (url) router.push(url);
     };
 
     return (
         <a href={url}
             className={className + (isActive ? " text-(--primary-dark)" : " text-(--primary)")}
-            onClick={handleClick}>
+            onClick={(e) => handleClick(e) }>
             {text}
         </a>
     );

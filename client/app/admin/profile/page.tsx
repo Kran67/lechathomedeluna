@@ -32,7 +32,11 @@ import {
   resetPassword,
   update,
 } from '@/app/services/server/usersService';
-import { Cities } from '@/app/staticLists/staticLists';
+import {
+  Capacities,
+  Cities,
+  ColourOption,
+} from '@/app/staticLists/staticLists';
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 
@@ -42,6 +46,7 @@ export default function Profile() {
     const token: string | undefined = cookies.get("token");
     const [profile, setProfile] = useState<User | null>(null);
     const [city, setCity] = useState<string>(user?.city || "");
+    const [capacity, setCapacity] = useState<string>(user?.capacity || "Empty");
 
     if (!user) {
         redirect("/");
@@ -75,7 +80,8 @@ export default function Profile() {
             formData.get("city") as string,
             profile!.roles,
             profile!.blacklisted,
-            profile!.referrer_id ?? null
+            profile!.referrer_id ?? null,
+            capacity
         );
         if (!res.error) {
             redirectWithDelay("/admin/profile", 1000);
@@ -131,6 +137,40 @@ export default function Profile() {
                                     placeholder="Ville"
                                     value={Cities.find(c => c.value === city)}
                                     onChange={(e:any) => setCity(e?.value as string ?? "")}
+                                />
+                            </div>
+                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                                <label className="text-sm text-(--text) font-medium " htmlFor="capacity">Capacité</label>
+                                <Select
+                                    options={Capacities}
+                                    className="select"
+                                    classNamePrefix="select"
+                                    name="capacity"
+                                    id="capacity"
+                                    isMulti={false}
+                                    isClearable={false}
+                                    isSearchable={false}
+                                    placeholder="Capacité"
+                                    styles={{
+                                        option: (base, { data }) => ({ ...base, color: (data as ColourOption).color, backgroundColor: (data as ColourOption).color }),
+                                        control: (base, state) => {
+                                            const selectedOption = state.getValue()[0] as ColourOption | undefined;
+                                            return {
+                                                ...base,
+                                                backgroundColor: selectedOption ? selectedOption.color : base.backgroundColor,
+                                                color: selectedOption ? selectedOption.color : base.color
+                                            };
+                                        },
+                                        singleValue: (base, state) => {
+                                            const selectedOption = state.getValue()[0] as ColourOption | undefined;
+                                            return {
+                                                ...base,
+                                                color: selectedOption ? selectedOption.color : base.color, 
+                                            };
+                                        },
+                                    }}
+                                    value={Capacities?.find(c => c.value === capacity)}
+                                    onChange={(e:any) => setCapacity(e?.value ?? "")}
                                 />
                             </div>
                         </div>

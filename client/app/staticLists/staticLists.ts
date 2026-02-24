@@ -759,3 +759,24 @@ export const newsPeriods: {
         label: "À venir"
     },
 ];
+
+export interface ColourOption {
+  readonly value: string;
+  readonly label: string;
+  readonly color: string;
+  readonly isFixed?: boolean;
+  readonly isDisabled?: boolean;
+}
+
+export const Capacities: readonly ColourOption[] = [
+    {
+        value: "Empty",
+        label: "Empty",
+        color: "#00FF00"
+    },
+    {
+        value: "Full",
+        label: "Full",
+        color: "#FF0000"
+    },
+];

@@ -36,7 +36,9 @@ import {
   update,
 } from '@/app/services/server/usersService';
 import {
+  Capacities,
   Cities,
+  ColourOption,
   Roles,
   YesNo,
 } from '@/app/staticLists/staticLists';
@@ -50,7 +52,7 @@ const Select = dynamic(() => import("react-select"), { ssr: false });
  */
 interface ProfileProps {
     isNew: boolean;
-    profile: User | null;
+    profile: User;
     users?: User[];
 }
 
@@ -62,6 +64,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
     const [roles, setRoles] = useState<string>(profile?.roles || "");
     const [blacklisted, setBlacklisted] = useState<boolean>(profile?.blacklisted ?? false);
     const [referrer, setReferrer] = useState<string>(profile?.referrer_id || "");
+    const [capacity, setCapacity] = useState<string>(profile?.capacity || "Empty");
     const router = useRouter();
     
     if (!user || !hasRoles(user?.roles, ["Admin"])) {
@@ -88,7 +91,8 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                 city,
                 roles,
                 blacklisted,
-                referrer !== "" ? referrer : null
+                referrer !== "" ? referrer : null,
+                capacity
             );
         } else {
             res = await update(
@@ -102,7 +106,8 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                 city,
                 roles,
                 blacklisted,
-                referrer !== "" ? referrer : null
+                referrer !== "" ? referrer : null,
+                capacity
             );
         }
         if (!res.error) {
@@ -198,6 +203,41 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                                     />
                                 </div>
                             }
+                            {hasRoles(user?.roles, ["Admin"]) && hasRoles(profile?.roles, ["HostFamily"]) && 
+                                <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                                    <label className="text-sm text-(--text) font-medium " htmlFor="capacity">Capacité</label>
+                                    <Select
+                                        options={Capacities}
+                                        className="select"
+                                        classNamePrefix="select"
+                                        name="capacity"
+                                        id="capacity"
+                                        isMulti={false}
+                                        isClearable={false}
+                                        isSearchable={false}
+                                        placeholder="Capacité"
+                                        styles={{
+                                            option: (base, { data }) => ({ ...base, color: (data as ColourOption).color, backgroundColor: (data as ColourOption).color }),
+                                            control: (base, state) => {
+                                                const selectedOption = state.getValue()[0] as ColourOption | undefined;
+                                                return {
+                                                    ...base,
+                                                    backgroundColor: selectedOption ? selectedOption.color : base.backgroundColor,
+                                                    color: selectedOption ? selectedOption.color : base.color
+                                                };
+                                            },
+                                            singleValue: (base, state) => {
+                                                const selectedOption = state.getValue()[0] as ColourOption | undefined;
+                                                return {
+                                                    ...base,
+                                                    color: selectedOption ? selectedOption.color : base.color, 
+                                                };
+                                            },
+                                        }}
+                                        value={Capacities?.find(c => c.value === capacity)}
+                                        onChange={(e:any) => setCapacity(e?.value ?? "")}
+                                    />
+                                </div>}
                             {hasRoles(user?.roles, ["Admin"]) && 
                                 <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                     <label className="text-sm text-(--text) font-medium " htmlFor="referrer_id">Référent</label>

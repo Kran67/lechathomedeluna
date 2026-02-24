@@ -81,6 +81,7 @@ async function initSchema(pool) {
         password_hash VARCHAR(255),
         blacklisted BOOLEAN DEFAULT false,
         referrer_id INTEGER REFERENCES users(id) ON DELETE RESTRICT,
+        capacity VARCHAR(5) NOT NULL CHECK (capacity IN ('Empty','Full')),
         reset_token VARCHAR(255),
         reset_expires TIMESTAMPTZ,
         UNIQUE(email)
@@ -223,7 +224,7 @@ async function seedIfEmpty(pool) {
 
   try {
     const usedSlugs = new Set();
-    await pool.query('INSERT INTO users(name, lastname, phone, address, city, roles, email, password_hash) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (email) DO NOTHING', 
+    await pool.query('INSERT INTO users(name, lastname, phone, address, city, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
             [
               'super',
               'admin',
@@ -232,9 +233,10 @@ async function seedIfEmpty(pool) {
               '-',
               'Admin',
               'superadmin@exemple.com',
-              'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba'
+              'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
+              'Empty'
             ]);
-    await pool.query('INSERT INTO users(name, lastname, phone, address, city, roles, email, password_hash) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (email) DO NOTHING', 
+    await pool.query('INSERT INTO users(name, lastname, phone, address, city, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
             [
               'Sylvie',
               '',
@@ -243,7 +245,8 @@ async function seedIfEmpty(pool) {
               'Unknown',
               'Admin',
               'admin@exemple.com',
-              'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba'
+              'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
+              'Empty'
             ]);
     for (const p of data) {
       // Ensure owner user exists
@@ -254,7 +257,7 @@ async function seedIfEmpty(pool) {
           user = { id: rows[0].id };
         }
         if (!user) {
-          const ins = await pool.query('INSERT INTO users(name, lastname, phone, address, city, roles, email, referrer_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id',
+          const ins = await pool.query('INSERT INTO users(name, lastname, phone, address, city, roles, email, referrer_id, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id',
             [
               p.hostFamily && p.hostFamily.name,
               p.hostFamily && p.hostFamily.lastName,
@@ -263,7 +266,8 @@ async function seedIfEmpty(pool) {
               p.hostFamily && p.hostFamily.city ? p.hostFamily.city : null,
               p.hostFamily && p.hostFamily.roles ? p.hostFamily.roles : 'hostfamily',
               p.hostFamily && p.hostFamily.email ? p.hostFamily.email : `unknown${Date.now()}@example.com`,
-              p.hostFamily && p.hostFamily.referrerId ? p.hostFamily.referrerId : null
+              p.hostFamily && p.hostFamily.referrerId ? p.hostFamily.referrerId : null,
+              "Empty"
             ]);
           user = { id: ins.rows[0].id };
         }

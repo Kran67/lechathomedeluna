@@ -10,4 +10,5 @@ export interface User {
     email: string;
     blacklisted: boolean;
     referrer_id?: string;
+    capacity?: string;
 }

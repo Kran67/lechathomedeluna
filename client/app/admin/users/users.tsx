@@ -128,6 +128,7 @@ export default function UsersList({ users }: UsersListProps) {
                         <span className="text-(--white) border-l flex-1 px-5">Adresse</span>
                         <span className="text-(--white) border-l w-150 px-5">Ville</span>
                         <span className="text-(--white) border-l w-90 px-5">Roles</span>
+                        <span className="text-(--white) border-l w-90 px-5">Capacité</span>
                         <span className="text-(--white) border-l w-70 px-5">Actions</span>
                     </div>
                     {filteredUsers?.map((user, idx) => (
@@ -142,6 +143,7 @@ export default function UsersList({ users }: UsersListProps) {
                             <span className={"border-l flex-1 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.address}</span>
                             <span className={"border-l w-150 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.city}</span>
                             <span className={"border-l w-90 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.roles.split("|").map(r => `${r}\n`)}</span>
+                            <span className={"border-l w-90 px-5 border-(--pink)" + (user.capacity === "Empty" ? " bg-[#00ff00]": " bg-[#ff0000]")}>&nbsp;</span>
                             <span className="flex justify-center gap-5 border-(--pink) border-l w-70 px-5">
                                 {user && !hasRoles(user.roles, ["Admin"]) &&
                                     <>

@@ -20,7 +20,8 @@ function mapUserRow(row) {
     blacklisted: row.blacklisted ?? false,
     referrer_id: row.referrer_id ?? null,
     reset_token: row.reset_token ?? null,
-    reset_expires: row.reset_expires ?? null
+    reset_expires: row.reset_expires ?? null,
+    capacity: row.capacity ?? "Empty"
   };
 }
 

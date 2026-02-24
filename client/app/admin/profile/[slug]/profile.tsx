@@ -52,7 +52,7 @@ const Select = dynamic(() => import("react-select"), { ssr: false });
  */
 interface ProfileProps {
     isNew: boolean;
-    profile: User;
+    profile: User | null;
     users?: User[];
 }
 
@@ -203,7 +203,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                                     />
                                 </div>
                             }
-                            {hasRoles(user?.roles, ["Admin"]) && hasRoles(profile?.roles, ["HostFamily"]) && 
+                            {hasRoles(user?.roles, ["Admin"]) && hasRoles(profile?.roles as string, ["HostFamily"]) && 
                                 <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                     <label className="text-sm text-(--text) font-medium " htmlFor="capacity">Capacité</label>
                                     <Select

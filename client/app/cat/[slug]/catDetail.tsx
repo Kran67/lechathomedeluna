@@ -70,7 +70,7 @@ export default function Property({ cat }: CatProps) {
         prepareBodyToShowModal(viewCarousel ? "hidden" : "");
     }, [viewCarousel]);
 
-    const animateHearts = (e: { target: { getBoundingClientRect: () => any; offsetTop: any; }; }, url: string) => {
+    const animateHearts = (e: React.MouseEvent<HTMLButtonElement>, url: string) => {
         const getRandom = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
         const colors: string[] = ["text-(--primary)", "text-(--primary-dark)", "text-(--pink)", "text-(--light-pink)"];
         for (let i = 0; i < 40; i++) {
@@ -79,9 +79,9 @@ export default function Property({ cat }: CatProps) {
             paw.className = `cat-paw ${colors[colorIdx]} fa fa-paw`;
             
             // Position de départ au centre du bouton
-            const rect = e.target.getBoundingClientRect();
+            const rect = e.currentTarget.getBoundingClientRect();
             paw.style.left = (rect.left + rect.width / 2) + 'px';
-            paw.style.top = (e.target.offsetTop - rect.height / 2) + 'px';
+            paw.style.top = (e.currentTarget.offsetTop - rect.height / 2) + 'px';
             const max = getRandom(50, 256);
             paw.style.fontSize = `${max}px`;
             paw.style.setProperty('--tx', `${getRandom(-480, 200)}px`);
@@ -166,7 +166,7 @@ export default function Property({ cat }: CatProps) {
                                     imgHeight={32}
                                     className="text-lg text-(--white) bg-(--primary) rounded-[10px] py-8 px-8 justify-center"
                                     position={IconButtonImagePositions.Right}
-                                    onClick={ (e) => animateHearts(e, "/send") }
+                                    onClick={ (e:React.MouseEvent<HTMLButtonElement>) => animateHearts(e, "/send") }
                                 />
                                 <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-1" id="pawsContainer"></div>
                             </>

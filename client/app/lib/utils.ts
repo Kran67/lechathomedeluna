@@ -120,7 +120,7 @@ export const sendResetPasswordEmail = async (email: string, token: string) => {
             token: token,
         },
         {
-            publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY,
+            publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC,
         }
     ).then(
         () => {

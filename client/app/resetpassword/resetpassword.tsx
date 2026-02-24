@@ -76,7 +76,7 @@ export default function ResetPassword() {
                                 setError(false);
                             }}
                             hasError={error} />
-                        <ReCAPTCHA ref={recaptcha} sitekey={process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY ?? "-"} onChange={handleCaptchaChange} />
+                        <ReCAPTCHA ref={recaptcha} sitekey={process.env.NEXT_PUBLIC_CAPTCHA_SITE ?? "-"} onChange={handleCaptchaChange} />
                     </div>
                     {error && <span className="text-sm text-(--primary) font-bold">{errorMsg}</span>}
                     <div className="flex flex-col gap-22 w-full md:w-360 items-center">

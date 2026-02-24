@@ -223,14 +223,14 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                                                 return {
                                                     ...base,
                                                     backgroundColor: selectedOption ? selectedOption.color : base.backgroundColor,
-                                                    color: selectedOption ? selectedOption.color : base.color
+                                                    color: `${selectedOption ? selectedOption.color : base.color} !important`,
                                                 };
                                             },
                                             singleValue: (base, state) => {
                                                 const selectedOption = state.getValue()[0] as ColourOption | undefined;
                                                 return {
                                                     ...base,
-                                                    color: selectedOption ? selectedOption.color : base.color, 
+                                                    color: `${selectedOption ? selectedOption.color : base.color} !important`,
                                                 };
                                             },
                                         }}

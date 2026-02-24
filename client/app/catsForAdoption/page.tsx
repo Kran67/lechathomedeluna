@@ -9,7 +9,6 @@ import {
 import Gallery from '@/app/components/data/Gallery';
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
-import Button from '@/app/components/ui/Button';
 import Input from '@/app/components/ui/Input';
 import { useUser } from '@/app/contexts/userContext';
 import {
@@ -47,7 +46,7 @@ export default function HomePage() {
   
   return (
     <main className="flex flex-col gap-51 md:gap-20 w-full items-center md:pt-20 md:px-140">
-      <Header activeMenu={HeaderMenuItems.Home} />
+      <Header activeMenu={HeaderMenuItems.CatsForAdoption} />
       <div className="flex flex-col gap-51 md:gap-20 px-16 md:p-0 w-full xl:w-1115">
         <div className="flex flex-col gap-8 w-full xl:w-1115 lg:w-800 items-center text-center">
           <span className="text-[32px] text-(--primary) w-full">Association de protection des animaux</span>
@@ -63,8 +62,6 @@ export default function HomePage() {
                       showLabel={false}
                       onChange={(e) => setSearch(e.target.value)} />
             }
-            {user && hasRoles(user.roles, [UserRole.Admin]) && 
-              <Button text='Ajouter une fiche chat' url='/admin/cat' className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-16 text-(--white) md:w-170' /> }
           </div>
         </div>
       </div>

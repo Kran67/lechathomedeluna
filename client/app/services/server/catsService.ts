@@ -32,10 +32,11 @@ export const create = async (
     sterilizationDate: string | null,
     birthDate: string | null,
     isDuringVisit: boolean | null,
-    isAdopted: boolean | null,
+    isAdoptable: boolean | null,
     adoptionDate: string | null,
     hostFamilyId: string | null,
-    pictures: any
+    pictures: any,
+    userId: string
     ) => {
     try {
         const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats`, {
@@ -53,9 +54,10 @@ export const create = async (
                 sterilizationDate,
                 birthDate,
                 isDuringVisit,
-                isAdopted,
+                isAdoptable,
                 adoptionDate,
-                hostFamilyId
+                hostFamilyId,
+                userId
             }),
         });
         const result = await res.json();
@@ -94,13 +96,14 @@ export const update = async (
     sterilizationDate: string | null,
     birthDate: string | null,
     isDuringVisit: boolean | null,
-    isAdopted: boolean | null,
+    isAdoptable: boolean | null,
     adoptionDate: string | null,
     hostFamilyId: string | null,
     newPictures: any,
     picturesToDelete: string[] | null,
     newDocuments: CatDocument[],
-    documentsToDelete: string[] | null
+    documentsToDelete: string[] | null,
+    userId: string
     ) => {
     try {
         const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats/${slug}`, {
@@ -118,9 +121,10 @@ export const update = async (
                 sterilizationDate,
                 birthDate,
                 isDuringVisit,
-                isAdopted,
+                isAdoptable,
                 adoptionDate,
-                hostFamilyId
+                hostFamilyId,
+                userId
             }),
         });
         const result = await res.json();

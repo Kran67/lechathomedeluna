@@ -72,7 +72,7 @@
         "dress": "Tigré",
         "race": "Européen",
         "birthDate": "2019-01-01",
-        "isAdoptable": true,
+        "isAdoptable": false,
         "pictures": [
             "/images/chats/choupinette/choupinette-1.jpg",
             "/images/chats/choupinette/choupinette-2.jpg",
@@ -113,7 +113,7 @@
         "dress": "Gris",
         "race": "Européen",
         "birthDate": "2023-01-01",
-        "isAdoptable": true,
+        "isAdoptable": false,
         "pictures": [
             "/images/chats/stocky/stocky-1.jpg",
             "/images/chats/stocky/stocky-2.jpg",

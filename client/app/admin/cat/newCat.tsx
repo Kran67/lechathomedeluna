@@ -58,7 +58,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
     const [sex, setSex] = useState<string | null>(null);
     const [isSterilized, setIsSterilized] = useState<boolean | null>(null);
     const [isDuringVisit, setIsDuringVisit] = useState<boolean | null>(null);
-    const [isAdopted, setIsAdopted] = useState<boolean | null>(null);
+    const [isAdoptable, setIsAdoptable] = useState<boolean | null>(null);
     const [hostFamilyId, setHostFamilyId] = useState<string | null>(null);
     const [pictures, setPictures] = useState<any>([]);
     const [picturesPreview, setPicturesPreview] = useState<string[]>([]);
@@ -91,10 +91,11 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
             sterilizationDate,
             birthDate,
             isDuringVisit,
-            isAdopted,
+            isAdoptable,
             adoptionDate,
             hostFamilyId,
-            pictures
+            pictures,
+            user?.id as string
         );
         if (!res.error) {
             redirectWithDelay(`/admin/cat/${res.slug}`, 1000);

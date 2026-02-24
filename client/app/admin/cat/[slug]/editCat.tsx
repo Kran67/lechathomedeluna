@@ -149,7 +149,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
             newPictureFiles,
             deletedPictureFiles,
             newCatDocumentFiles,
-            deletedCatDocumentFiles
+            deletedCatDocumentFiles,
+            user?.id as string
         );
         if (!res.error) {
             redirectWithDelay(`/admin/cat/${res.slug}`, 1000);

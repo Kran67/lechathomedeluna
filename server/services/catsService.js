@@ -61,7 +61,6 @@ async function listCats(isAdoptable = false, year = 0, hostFamilyId = null) {
       sql += ' WHERE c.isAdoptable = false AND c.adoptionDate IS NULL ';
     }
     sql += ' ORDER BY c.name ASC';
-    console.log(sql);
   const res = await pool.query(sql);
   return res.rows.map(mapCatRow);
 }
@@ -104,6 +103,7 @@ async function createCat(payload) {
     adoptionDate = null,
     hostFamilyId = null,
     pictures = [],
+    userId = null,
   } = payload || {};
 
   if (!name) throw new Error('Nom est requis');
@@ -113,9 +113,9 @@ async function createCat(payload) {
   const base = tools.uuid();
   const uniqueSlug = await ensureUniqueSlug(base);
   const res = await pool.query(
-    `INSERT INTO cats(name, slug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdoptable, adoptionDate, hostFamily_id) 
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING id`,
-    [name, uniqueSlug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdoptable, adoptionDate, hostFamilyId]
+    `INSERT INTO cats(name, slug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdoptable, adoptionDate, hostFamily_id, created_by, created_at, updated_by, updated_at) 
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15, $16, NOW(), $17, NOW()) RETURNING id`,
+    [name, uniqueSlug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdoptable, adoptionDate, hostFamilyId, userId, userId]
   );
   const lastId = res.rows[0].id;
 
@@ -150,7 +150,7 @@ async function updateCat(slug, changes) {
     throw err;
   }
   params.push(slug);
-  const res = await pool.query(`UPDATE cats SET ${fields.join(', ')} WHERE slug = $${fields.length + 1}`, params);
+  const res = await pool.query(`UPDATE cats SET ${fields.join(', ')}, updated_by = ${changes["userId"]}, updated_at = NOW() WHERE slug = $${fields.length + 1}`, params);
   if (res.rowCount === 0) {
     const err = new Error('Chat introuvable');
     err.status = 404;

@@ -5,6 +5,10 @@ import {
   useState,
 } from 'react';
 
+import {
+  Cookies,
+  useCookies,
+} from 'next-client-cookies';
 import dynamic from 'next/dynamic';
 
 import Footer from '@/app/components/layout/Footer';
@@ -13,12 +17,17 @@ import Button from '@/app/components/ui/Button';
 import { useUser } from '@/app/contexts/userContext';
 import {
   HeaderMenuItems,
+  IconButtonImages,
   UserRole,
 } from '@/app/enums/enums';
 import { hasRoles } from '@/app/lib/utils';
-import { newsService } from '@/app/services/client/newsService';
+import {
+  deleteNew,
+  newsService,
+} from '@/app/services/client/newsService';
 import { newsPeriods } from '@/app/staticLists/staticLists';
 
+import IconButton from './components/ui/IconButton';
 import { New } from './interfaces/new';
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
@@ -43,10 +52,20 @@ export default function HomePage() {
   const [period, setPeriod] = useState<"current" | "next">("current");
   const { user } = useUser();
   const service = newsService(period);
+    const cookies: Cookies = useCookies();
+    const token: string | undefined = cookies.get("token");
 
   useEffect(() => {
     service.refresh(period);
   }, [period]);
+
+  const deleteNews = async (e: React.MouseEvent<HTMLButtonElement>, id: string) => {
+    e.stopPropagation();
+    if (confirm("Êtes-vous sûr de vouloir supprimer cette actualité ?")) {
+      await deleteNew(token, id);
+      service.refresh(period);      
+    }
+  };
   
   return (
     <main className="flex flex-col gap-51 md:gap-20 w-full items-center md:pt-20 md:px-140">
@@ -78,10 +97,21 @@ export default function HomePage() {
         </div>
         {service.news && service.news.length === 0 && <span className="text-(--text) text-center">Aucune actualité pour le moment.</span>}
         {service.news && service.news.map((newItem: New, idx: number) => (
-          <img
-            key={idx}
-            src={(newItem.url.includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + newItem.url}
-            alt={`Image de l'actualité du ${newItem.date}`} className="" />
+          <div key={newItem.id + idx} className='relative'>
+            {user && hasRoles(user.roles, [UserRole.Admin]) && <IconButton
+                            icon={IconButtonImages.Trash}
+                            imgWidth={16}
+                            imgHeight={16}
+                            className={"w-32 h-32 absolute right-16 top-16 bg-(--primary) z-1 rounded-[5px] flex items-center justify-center"}
+                            svgFill="#FFF"
+                            onClick={(e) => deleteNews(e, newItem.id)}
+                            title="Supprimer l'actualité"
+                        />
+            }
+            <img
+              src={(newItem.url.includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + newItem.url}
+              alt={`Image de l'actualité du ${newItem.date}`} className="" />
+            </div>
           ))}
       </div>
       <Footer />

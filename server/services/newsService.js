@@ -12,7 +12,7 @@ function mapNewsRow(row) {
 async function news(next = false) {
   const param = next ? '>' : '=';
   const sql = `
-      SELECT date, url 
+      SELECT id, date, url 
       FROM news n
       WHERE DATE_PART('month', n.date) ${param} DATE_PART('month', CURRENT_DATE)
       ORDER BY n.date ASC`;
@@ -36,7 +36,7 @@ async function createNews(payload) {
 }
 
 async function deleteNews(id) {
-  const res = await lastId('DELETE FROM news WHERE id = $1', [id]);
+  const res = await pool.query('DELETE FROM news WHERE id = $1', [id]);
   if (res.rowCount === 0) {
     const err = new Error('Actualité introuvable');
     err.status = 404;

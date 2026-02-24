@@ -19,7 +19,7 @@ export interface IconButtonProps {
     icon?: IconButtonImages;
     className?: string;
     url?: string;
-    onClick?: (e:any) => void;
+    onClick?: (e:React.MouseEvent<HTMLButtonElement>) => void;
     imgWidth?: number;
     imgHeight?: number;
     text?: string;
@@ -54,7 +54,7 @@ export default function IconButton({ icon, className, onClick, url, imgWidth, im
         position = IconButtonImagePositions.Left }: IconButtonProps) {
     const router: AppRouterInstance = useRouter();
 
-    const handleClick: (e:any) => void = (e) => {
+    const handleClick: (e:React.MouseEvent<HTMLButtonElement>) => void = (e) => {
         onClick?.(e);
         if (url) router.push(url);
     };

@@ -64,3 +64,18 @@ export function newsService(period: 'current' |'next'): { news: New[] | null, lo
 
     return { news, loading, refresh, error };
 }
+
+export const deleteNew = async (
+    token: string | undefined,
+    id: string
+) => {
+    try {
+        await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/news/${id}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+        });
+    } catch (err) {
+        console.error("Erreur lors de la supression de l'actualité :", err);
+        return null;
+    }
+};

@@ -280,7 +280,7 @@ async function seedIfEmpty(pool) {
 
       // Insert cat
       const res = await pool.query(
-        'INSERT INTO cats(slug, name, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdoptable, adoptionDate, hostfamily_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) ON CONFLICT (id) DO NOTHING RETURNING id',
+        'INSERT INTO cats(slug, name, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdoptable, adoptionDate, hostfamily_id, created_by, created_at, updated_by, updated_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,2, NOW(), 2, NOW()) ON CONFLICT (id) DO NOTHING RETURNING id',
         [
           slug,
           p.name,

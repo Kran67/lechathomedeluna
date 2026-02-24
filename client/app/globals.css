@@ -112,3 +112,31 @@ button.catpaw::before {
   align-items: center;
   padding-right: 2px;
 }
+
+.ruban span {
+  display: block;
+  box-shadow: 0 3px 10px -5px rgba(0, 0, 0, 1);
+  line-height: 20px;
+}
+
+.ruban span:before {
+  content: '';
+  position: absolute;
+  border-left: 3px solid var(--primary);
+  border-right: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+  border-top: 3px solid var(--primary);
+  top: 20px;
+  left: 0px;
+}
+
+.ruban span:after {
+  content: '';
+  position: absolute;
+  border-left: 3px solid transparent;
+  border-right: 3px solid var(--primary);
+  border-bottom: 3px solid transparent;
+  border-top: 3px solid var(--primary);
+  top: 20px;
+  right: 0px;
+}

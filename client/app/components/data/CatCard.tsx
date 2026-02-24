@@ -44,6 +44,9 @@ export default function CatCard({ cat }: PropsCC) {
 
     return (
         <div className="flex flex-col rounded-[10px] bg-(--white) w-full md:w-355 relative cursor-pointer border border-(--primary) p-5" onClick={() => handleClick()}>
+            {!cat.isDuringVisit && <div className="absolute ruban -left-5 -top-5 w-145 h-145 z-1 overflow-hidden">
+                <span className='absolute -left-30 top-40 w-160 text-center rotate-[-45deg] text-(--white) text-sm bg-gradient-to-b from-(--pink) to-(--primary) pl-5 pr-5'>EN COURS DE VISITE</span>
+            </div>}
             {!cat.adoptionDate && user && hasRoles(user.roles, ["Admin"]) && <IconButton
                 icon={IconButtonImages.Pen}
                 imgWidth={16}

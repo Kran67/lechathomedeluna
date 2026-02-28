@@ -1,7 +1,7 @@
 const pool = require("../db/pool");
 
 async function listUsers() {
-  return await pool.query('SELECT * FROM users WHERE id > 1 ORDER BY id DESC');
+  return await pool.query('SELECT * FROM users WHERE id > 1 AND blacklisted = false ORDER BY id DESC');
 }
 
 async function getUser(id) {

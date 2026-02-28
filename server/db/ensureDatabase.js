@@ -149,19 +149,37 @@ async function initSchema(pool) {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS message_threads (
       id SERIAL PRIMARY KEY,
-      user_id INTEGER NOT NULL REFERENCES users(id),
-      from_user_id INTEGER NOT NULL REFERENCES users(id),
-      created_at TIMESTAMPTZ NOT NULL
+      type VARCHAR(20) NOT NULL DEFAULT 'private' CHECK (type IN ('private','group')),
+      name VARCHAR(255),
+      created_by INTEGER REFERENCES users(id),
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );`);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS thread_participants (
+      thread_id INTEGER NOT NULL REFERENCES message_threads(id) ON DELETE CASCADE,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      role VARCHAR(20) DEFAULT 'member', -- admin / member
+      joined_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      PRIMARY KEY (thread_id, user_id)
     );`);
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS messages (
       id SERIAL PRIMARY KEY,
       thread_id INTEGER NOT NULL REFERENCES message_threads(id) ON DELETE CASCADE,
-      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      sender_id INTEGER NOT NULL REFERENCES users(id),
       content TEXT NOT NULL,
-      sent_at TIMESTAMPTZ NOT NULL,
-      is_readed INTEGER DEFAULT 0
+      sent_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      deleted_at TIMESTAMPTZ
+    );`);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS message_reads (
+      message_id INTEGER NOT NULL REFERENCES messages(id) ON DELETE CASCADE,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      read_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      PRIMARY KEY (message_id, user_id)
     );`);
 
   await pool.query(`
@@ -195,10 +213,22 @@ async function initSchema(pool) {
   `);
 
   await pool.query(`
-    CREATE INDEX IF NOT EXISTS idx_message_thread_from_user_id ON users(id);
+    CREATE INDEX IF NOT EXISTS idx_thread_participants_user ON thread_participants(user_id);
   `);
   await pool.query(`
-    CREATE INDEX IF NOT EXISTS idx_message_thread_user_id ON users(id);
+    CREATE INDEX IF NOT EXISTS idx_messages_thread ON messages(thread_id);
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_message_reads_user ON message_reads(user_id);
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_messages_thread_sent ON messages(thread_id, sent_at DESC);
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_message_reads_user_message ON message_reads(user_id, message_id);
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_messages_thread_sender ON messages(thread_id, sender_id);
   `);
 }
 
@@ -239,7 +269,7 @@ async function seedIfEmpty(pool) {
     await pool.query('INSERT INTO users(name, lastname, phone, address, city, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
             [
               'Sylvie',
-              '',
+              'Présidente',
               '0000000000',
               'Unknown',
               'Unknown',

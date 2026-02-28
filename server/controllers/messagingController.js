@@ -1,20 +1,23 @@
 const {
-    getMessagingByUserId,
+    getAllThreadsByUserId,
     getUnreadMessageCountByUserId,
     getAllMessagesById,
-    getById,
-    getByUserIds,
     createMessaging,
     deleteMessaging,
     createMessage,
     deleteMessage,
-    readAllMessages
+    readAllMessages,
+    addMembersToThread,
+    removeMembersToThread,
+    renameMessagingThread,
+    leaveMessagingThread,
+    setNewAdmin
 } = require('../services/messagingService');
 const { statusFromError } = require('../utils/lib');
 
 async function getByUserId(req, res) {
   try {
-    const rows = await getMessagingByUserId(req.params.userid);
+    const rows = await getAllThreadsByUserId(req.params.userid);
     res.json(rows);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
@@ -24,7 +27,7 @@ async function getByUserId(req, res) {
 async function getAllMessagesByThreadId(req, res) {
   try {
     readAllMessages(req.params.id, req.params.userid).then(async ()  => {
-      const rows = await getAllMessagesById(req.params.id);
+      const rows = await getAllMessagesById(req.params.id, req.params.userid);
       res.json(rows);
     });
   } catch (e) {
@@ -34,8 +37,8 @@ async function getAllMessagesByThreadId(req, res) {
 
 async function create(req, res) {
   try {
-    const created = await createMessaging(req.body || {});
-    res.status(201).json(created);
+    await createMessaging(req.body || {});
+    res.status(201).end();
   } catch (e) {
     const code = statusFromError(e);
     // Map message for validation consistency
@@ -55,8 +58,8 @@ async function remove(req, res) {
 
 async function createMsg(req, res) {
   try {
-    const created = await createMessage(req.body || {});
-    res.status(201).json(created);
+    await createMessage(req.body || {});
+    res.status(201).end();
   } catch (e) {
     const code = statusFromError(e);
     // Map message for validation consistency
@@ -74,11 +77,64 @@ async function removeMsg(req, res) {
   }
 }
 
+async function addMembers(req, res) {
+  try {
+    await addMembersToThread(req.body || {});
+    res.status(201).end();
+  } catch (e) {
+    const code = statusFromError(e);
+    // Map message for validation consistency
+    let msg = e.message;
+    res.status(code).json({ error: msg });
+  }
+}
+
+async function removeMembers(req, res) {
+  try {
+    await removeMembersToThread(req.body || {});
+    res.status(201).end();
+  } catch (e) {
+    const code = statusFromError(e);
+    // Map message for validation consistency
+    let msg = e.message;
+    res.status(code).json({ error: msg });
+  }
+}
+
+async function renameThread(req, res) {
+  try {
+    await renameMessagingThread(req.body || {});
+    res.status(200).end();
+  } catch (e) {
+    const code = statusFromError(e);
+    // Map message for validation consistency
+    let msg = e.message;
+    res.status(code).json({ error: msg });
+  }
+}
+
+async function leaveThread(req, res) {
+  try {
+    await leaveMessagingThread(req.body || {});
+    await setNewAdmin(req.body.threadId);
+    res.status(200).end();
+  } catch (e) {
+    const code = statusFromError(e);
+    // Map message for validation consistency
+    let msg = e.message;
+    res.status(code).json({ error: msg });
+  }
+}
+
 module.exports = {
   getByUserId,
   create,
   remove,
   createMsg,
   removeMsg,
-  getAllMessagesByThreadId
+  getAllMessagesByThreadId,
+  addMembers,
+  removeMembers,
+  renameThread,
+  leaveThread
 };

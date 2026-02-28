@@ -21,7 +21,7 @@ router.patch('/cats/:slug', requireRole(['Admin','Assistant', 'HostFamily']), ca
 router.delete('/cats/:id', requireRole(['Admin']), cats.remove);
 
 // Users
-router.get('/users', requireAdmin, users.list);
+router.get('/users', requireAuth, users.list);
 router.get('/users/:id', requireSelfOrAdmin('id'), users.getById);
 router.post('/users', requireAdmin, users.create);
 router.patch('/users/:id', requireSelfOrAdmin('id'), users.update);
@@ -44,6 +44,10 @@ router.post('/messaging', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volu
 router.delete('/messaging/:id', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.remove);
 router.post('/sendmessage', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.createMsg);
 router.delete('/message/:id', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.removeMsg);
+router.post('/messaging/addmembers', requireAuth, messaging.addMembers);
+router.post('/messaging/removemembers', requireAuth, messaging.removeMembers);
+router.post('/messaging/renamethread', requireAuth, messaging.renameThread);
+router.post('/messaging/leavethread', requireAuth, messaging.leaveThread);
 
 router.get('/messaging/all/:id/:userid', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.getAllMessagesByThreadId);
 

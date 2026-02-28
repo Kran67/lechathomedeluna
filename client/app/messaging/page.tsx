@@ -15,9 +15,13 @@ import { redirect } from 'next/navigation';
 
 import { UserRole } from '../enums/enums';
 import { Messaging } from '../interfaces/messaging';
+import { User } from '../interfaces/user';
 import { hasRoles } from '../lib/utils';
 import { getAllUserThreads } from '../services/server/messagingService';
-import { getById } from '../services/server/usersService';
+import {
+  getAll,
+  getById,
+} from '../services/server/usersService';
 import MessagingPage from './messaging';
 
 /**
@@ -36,7 +40,7 @@ export default async function Page() {
         redirect("/");
     }
 
-    const res = await getAllUserThreads(token, user.id);
+    let res = await getAllUserThreads(token, user.id);
     if (res) {
         threads = res;
         if (threads.length > 0) {
@@ -44,5 +48,8 @@ export default async function Page() {
         }
     }
 
-    return (<MessagingPage threads={threads} />);
+    res = await getAll(token);
+    const users = res ? res.map((u: User) => ({ value: u.id, label: u.name + " " + u.lastName })) : [];
+    
+    return (<MessagingPage threads={threads} userList={users} />);
 }

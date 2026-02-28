@@ -36,7 +36,10 @@ export enum IconButtonImages {
     BlackListed = "blacklisted",
     ChangePassword = "changepassword",
     SendMessage = "SendMessage",
-    Emoji = "Emoji"
+    Emoji = "Emoji",
+    Person = "Person",
+    Group = "Group",
+    RemoveParticipant = "RemoveParticipant",
 }
 
 export enum IconButtonImagePositions {

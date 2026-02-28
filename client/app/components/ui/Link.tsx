@@ -16,6 +16,7 @@ interface LinkProps {
     className?: string;
     onClick?(e: React.MouseEvent<HTMLAnchorElement>): void;
     isActive?: boolean;
+    title?: string;
 }
 
 /**
@@ -28,8 +29,9 @@ interface LinkProps {
  * @param {string?} LinkProps.className - Classes css du lien
  * @isActive {boolean?} LinkProps.isActive - Indique si le lien est le lien actif ou non
  * @param {function?} LinkProps.onClick - Function à executer sur le clique du lien avant redirection si elle est passée
+ * @param {string} LinkProps.title - Bulle d'information du lien
  */
-export default function Link({ text, url = "#", onClick, className, isActive = false }: LinkProps) {
+export default function Link({ text, url = "#", onClick, className, isActive = false, title }: LinkProps) {
     const router: AppRouterInstance = useRouter();
 
     const handleClick: (e: React.MouseEvent<HTMLAnchorElement>) => void = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -40,6 +42,7 @@ export default function Link({ text, url = "#", onClick, className, isActive = f
     return (
         <a href={url}
             className={className + (isActive ? " text-(--primary-dark)" : " text-(--primary)")}
+            title={title}
             onClick={(e) => handleClick(e) }>
             {text}
         </a>

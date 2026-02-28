@@ -114,7 +114,7 @@ export const sendMessage = async (
                 content
             })
         });
-        return await res.json();
+        //return await res.json();
     } catch (err) {
         console.error("Erreur lors de la récupération des discussions :", err);
         return null;

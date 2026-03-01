@@ -23,6 +23,7 @@ import ModalRenameThread from '../components/modals/modalRenameThread';
 import IconButton from '../components/ui/IconButton';
 import Input from '../components/ui/Input';
 import Link from '../components/ui/Link';
+import MessageAttachments from '../components/ui/MessageAttachments';
 import {
   HeaderMenuItems,
   IconButtonImages,
@@ -31,6 +32,7 @@ import {
 } from '../enums/enums';
 import {
   Message,
+  MessageAttachment,
   Messaging,
 } from '../interfaces/messaging';
 import {
@@ -43,6 +45,7 @@ import {
 import {
   getAllMessagesById,
   sendMessage,
+  uploadMessageFiles,
 } from '../services/client/messagingService';
 
 /**
@@ -92,6 +95,8 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
     const [showModalRenameThread, setShowModalRenameThread] = useState<boolean>(false);
     const [showModalLeaveGroup, setShowModalLeaveGroup] = useState<boolean>(false);
     const potentialNewMemberList = userList.filter((userItem) => !currentThread?.members?.some((member) => member.id === userItem.value)) ?? [];
+    const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (search.trim() !== "") {
@@ -111,7 +116,6 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
                 setMessages(data);
             });
             setCurrentThread(thread);
-    console.log(currentThread?.user_id);
         }
     }, [threadId]);
 
@@ -123,17 +127,20 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
     }, [messages]);
 
     const _sendMessage = async () => {
-        if (currentThread && user) {
-            await sendMessage(
-                token,
-                currentThread?.id,
-                user?.id,
-                message
-            );
-            setThreadId("-1");
-            setMessage("");
-            setTimeout(() => setThreadId(currentThread.id), 10);
+        if (!currentThread || !user) return;
+        if (!message.trim() && pendingFiles.length === 0) return;        
+
+        let attachments: MessageAttachment[] = [];
+        if (pendingFiles.length > 0) {
+            attachments = await uploadMessageFiles(token, pendingFiles);
+            setPendingFiles([]);
+            if (fileInputRef.current) fileInputRef.current.value = '';
         }
+
+        await sendMessage(token, currentThread.id, user.id, message, attachments);
+        setThreadId("-1");
+        setMessage("");
+        setTimeout(() => setThreadId(currentThread.id), 10);
     }
 
     const handleSendMessage: (e: FormEvent<HTMLFormElement>) => Promise<void> = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -160,6 +167,14 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
     useEffect(() => {
         prepareBodyToShowModal(showModalNewThread || showModalAddRemoveMembers || showModalLeaveGroup ? "hidden" : "");
     }, [showModalNewThread, showModalAddRemoveMembers, showModalLeaveGroup]);
+
+    const getFileIcon = (file: File) => {
+        if (file.type === 'application/pdf') return '/images/pdf.png';
+        if (file.type.startsWith('image/')) return URL.createObjectURL(file);
+        if (file.type.includes('word')) return '/images/doc.png';
+        if (file.type.includes('spreadsheet')) return '/images/xls.png';
+        return '/images/text.png';
+    }
 
   return (
         <main className="flex flex-col gap-20 w-full h-screen items-center md:pt-20 md:px-140">
@@ -208,6 +223,7 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
             {showModalLeaveGroup && createPortal(
                 <ModalLeaveThread
                     threadId={currentThread?.id ?? "-1"}
+                    isLastMember={currentThread?.members?.length === 1}
                     closeModal={() => setShowModalLeaveGroup(false)}
                     onSuccess={() => {
                         setShowModalLeaveGroup(false);
@@ -313,11 +329,12 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
                                             <div className="flex flex-col">
                                                 {currentThread.type === "group" && user?.id !== m.user_id && <span className={"flex text-xs text-[#aaa]" + (user?.id !== m.user_id ? " pl-10" : " pr-10 justify-end")}>{m.nickname}</span>}
                                                 <span
-                                                    className={"flex text-sm p-5 pl-10 pr-10 whitespace-pre-line" +
+                                                    className={"flex flex-col text-sm p-5 pl-10 pr-10 whitespace-pre-line relative " +
                                                         (user?.id !== m.user_id 
                                                             ? " self-start tooltip-left text-(--white) bg-(--primary) rounded-es-[10px] rounded-e-[10px]" 
                                                             : " self-end tooltip-right text-(--white) bg-(--pink) rounded-s-[10px] rounded-ee-[10px]")}>
-                                                        {m.content}
+                                                        {m.content && <span className={"whitespace-pre-line " + (user?.id === m.user_id ? "self-end" : "")}>{m.content}</span>}
+                                                        <MessageAttachments attachments={m.attachments} isMine={user?.id === m.user_id} />
                                                 </span>
                                                 <span className={"flex text-xs text-[#aaa]" + (user?.id !== m.user_id ? " pl-10" : " pr-10 justify-end")}>{DateUtils.differenceDate(new Date(m.sent_at)).text}</span>
                                             </div>
@@ -326,7 +343,7 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
                                 </div>
                                 {showPicker && (
                                     <>
-                                        <EmojiPicker textareaRef={textareaRef} className='pink-emoji-picker absolute bottom-[60px]' />
+                                        <EmojiPicker textareaRef={textareaRef} className='pink-emoji-picker absolute bottom-[60px] z-2' />
                                         <style>{`
                                             .pink-emoji-picker {
                                                 --ep-bg: #fff;
@@ -342,6 +359,25 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
                                         `}</style>
                                     </>
                                 )}
+                                {/* Prévisualisation des fichiers sélectionnés */}
+                                {pendingFiles.length > 0 && (
+                                    <div className="absolute bottom-[60px] left-5 flex gap-4 bg-white border border-(--pink) rounded p-8 shadow">
+                                        {pendingFiles.map((f: File, i: number) => (
+                                        <div key={i} className="relative text-xs flex flex-col items-center gap-2 max-w-[80px]">
+                                            <img src={getFileIcon(f)} className="w-[60px] h-[50px] object-cover rounded" alt={f.name} />
+                                            <span className="truncate w-full text-center">{f.name}</span>
+                                            <IconButton
+                                                icon={IconButtonImages.Cross}
+                                                imgWidth={6}
+                                                imgHeight={6}
+                                                svgFill='#fff'
+                                                className="absolute -top-2 -right-2 text-white bg-(--pink) rounded-full w-14 h-14 text-[10px] flex items-center justify-center cursor-pointer"
+                                                onClick={() => setPendingFiles(prev => prev.filter((_: File, j: number) => j !== i))}
+                                            />
+                                        </div>
+                                        ))}
+                                    </div>
+                                )}
                                 <form
                                     onSubmit={handleSendMessage}
                                     className="flex w-full p-5 gap-5 bg-(--white)"
@@ -356,6 +392,24 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
                                         svgFill='#902677'
                                         svgStroke={showPicker ? '#902677' : ''}
                                         onClick={(e) => { e.preventDefault(); setShowPicker((v) => !v)} } />
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        multiple
+                                        accept="image/*,.pdf,.doc,.docx,.txt,.xlsx,.xls"
+                                        className="hidden"
+                                        onChange={(e) => {
+                                            const files = Array.from(e.target.files ?? []);
+                                            setPendingFiles(prev => [...prev, ...files].slice(0, 5));
+                                        }}
+                                    />
+                                    <IconButton
+                                        icon={IconButtonImages.Paperclip}
+                                        imgWidth={24}
+                                        imgHeight={24}
+                                        svgStroke='#902677'
+                                        onClick={(e) => { e.preventDefault(); fileInputRef.current?.click(); }}
+                                    />                                        
                                     <textarea
                                         className='text-sm text-(--text) w-full outline-0 border border-(--pink) px-10 py-5'
                                         ref={textareaRef}

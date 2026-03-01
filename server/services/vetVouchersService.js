@@ -113,7 +113,7 @@ async function updateVetVoucher(id, changes) {
 }
 
 async function deleteVetVoucher(id) {
-  const res = await lastId('DELETE FROM vet_vouchers WHERE id = $1', [id]);
+  const res = await pool.query('DELETE FROM vet_vouchers WHERE id = $1', [id]);
   if (res.rowCount === 0) {
     const err = new Error('Bon vétérinaire introuvable');
     err.status = 404;

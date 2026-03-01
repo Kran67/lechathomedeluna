@@ -187,7 +187,19 @@ async function initSchema(pool) {
       id SERIAL PRIMARY KEY,
       date DATE NOT NULL,
       url VARCHAR(50) NOT NULL
-    );`);    
+    );`);
+
+  await pool.query(`
+      CREATE TABLE IF NOT EXISTS message_attachments (
+      id          SERIAL PRIMARY KEY,
+      message_id  INTEGER NOT NULL REFERENCES messages(id) ON DELETE CASCADE,
+      filename    TEXT NOT NULL,           -- nom stocké sur disque
+      original_name TEXT NOT NULL,         -- nom original du fichier
+      mime_type   TEXT NOT NULL,
+      size        INTEGER NOT NULL,        -- taille en bytes
+      url         TEXT NOT NULL,           -- chemin public ex: /uploads/messaging/xxx.pdf
+      created_at  TIMESTAMPTZ DEFAULT now()
+  );`);
 
   await pool.query(`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email);
@@ -229,6 +241,10 @@ async function initSchema(pool) {
   `);
   await pool.query(`
     CREATE INDEX IF NOT EXISTS idx_messages_thread_sender ON messages(thread_id, sender_id);
+  `);
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_message_attachments_message_id ON message_attachments(message_id);
   `);
 }
 

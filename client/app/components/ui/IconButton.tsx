@@ -155,7 +155,11 @@ export default function IconButton({ icon, className, onClick, url, imgWidth, im
                     <path d="m16.49437,4.54343c0,2.51144 -2.00795,7.30887 -4.48331,7.30887c-2.47687,0 -4.48782,-4.79743 -4.48782,-7.30887c0,-2.50843 2.01095,-4.54343 4.48782,-4.54343c2.47537,0 4.48331,2.035 4.48331,4.54343l0,0z" fill={svgFill ?? "#0D0D0D"} />
                     <path d="m14.92077,17.97684l8.75171,0c-0.67182,-2.38068 -2.39421,-5.94118 -6.09899,-5.94118c-1.28352,1.74192 -5.54891,2.1883 -5.54891,2.1883c0,0 -4.36308,-0.42985 -5.64961,-2.14923c-6.1561,0 -6.34397,8.902 -6.34397,8.902l14.88827,0l0,-2.9999l0.0015,0z" fill={svgFill ?? "#0D0D0D"} />
                     <rect height="1.46087" fill={svgFill ?? "#0D0D0D"} width="7.42009" x="16.51691" y="19.50685"/>
-                </svg>;                    
+                </svg>;
+            case IconButtonImages.Paperclip:
+                return <svg width={imgWidth ?? "24"} height={imgHeight ?? "24"} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" stroke={svgStroke ?? "#0D0D0D"} />
+                </svg>;
             default:
                 return <svg width={imgWidth ?? "11"} height={imgHeight ?? "9"} viewBox="0 0 11 9" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect fill={svgBgFill ?? "#FFF"} height="7" stroke="none" width="10" x="0" y="0" />

@@ -50,6 +50,8 @@ router.post('/messaging/renamethread', requireAuth, messaging.renameThread);
 router.post('/messaging/leavethread', requireAuth, messaging.leaveThread);
 
 router.get('/messaging/all/:id/:userid', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.getAllMessagesByThreadId);
+// Ajouter après les routes messaging existantes :
+router.post('/messaging/upload', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.uploadMessageAttachment);
 
 // News
 router.get('/news/:period', news.getNews);

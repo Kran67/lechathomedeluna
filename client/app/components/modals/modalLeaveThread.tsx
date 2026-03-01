@@ -19,10 +19,12 @@ import IconButton from '../ui/IconButton';
 
 export default function ModalLeaveThread({
     threadId,
+    isLastMember,
     closeModal,
     onSuccess,
 }: {
     threadId: string;
+    isLastMember: boolean;
     closeModal: () => void;
     onSuccess: () => void;
 }) {
@@ -38,6 +40,7 @@ export default function ModalLeaveThread({
             body: JSON.stringify({
                 threadId,
                 userId: user?.id,
+                isLastMember
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -68,7 +71,7 @@ export default function ModalLeaveThread({
                 className="bg-(--white) relative px-8 py-10 md:px-36 md:py-39 rounded-[10px] flex flex-col gap-20 md:gap-40 w-full md:w-380 border border-(--primary) border-1"
                 onClick={(e) => e.stopPropagation()}
             >
-                <h4 className="text-(--primary)">Êtes-vous sûr de vouloir quitter ce groupe ?</h4>
+                <h4 className="text-(--primary)">{isLastMember && "Attention, vous êtes le dernier membre de ce groupe. Si vous quittez, celui-ci sera supprimé\n" }Êtes-vous sûr de vouloir quitter ce groupe ?</h4>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-12 md:gap-24" role="form" aria-label="Information du groupe">
                     <div className="flex flex-1 gap-10">
                         <Button text="Annuler" onClick={(e) => { e.preventDefault(); closeModal(); }} className='flex justify-center bg-(--primary) rounded-[10px] p-8 px-16 text-(--white) w-200 self-center' />

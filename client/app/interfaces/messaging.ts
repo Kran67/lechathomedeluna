@@ -9,6 +9,14 @@ export interface Messaging {
     members: { id: string, name: string }[]
 }
 
+export interface MessageAttachment {
+  id: string;
+  url: string;
+  original_name: string;
+  mime_type: string;
+  size: number;
+}
+
 export interface Message {
     id: string;
     thread_id: string;
@@ -17,4 +25,5 @@ export interface Message {
     content: string;
     sent_at: Date;
     is_readed: boolean;
+    attachments: MessageAttachment[];
 }

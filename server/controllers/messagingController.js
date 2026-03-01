@@ -1,3 +1,6 @@
+const path = require('path');
+const fs = require('fs');
+
 const {
     getAllThreadsByUserId,
     getUnreadMessageCountByUserId,
@@ -14,6 +17,56 @@ const {
     setNewAdmin
 } = require('../services/messagingService');
 const { statusFromError } = require('../utils/lib');
+const multer = require('multer');
+const MESSAGING_UPLOAD_DIR = path.join(__dirname, '..', 'public', 'uploads', 'messaging');
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    fs.mkdirSync(MESSAGING_UPLOAD_DIR, { recursive: true });
+    cb(null, MESSAGING_UPLOAD_DIR);
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    cb(null, `${Date.now()}-${Math.random().toString(16).slice(2, 10)}${ext}`);
+  }
+});
+
+const ALLOWED_MIME = [
+  'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'text/plain'
+];
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 Mo max
+  fileFilter: (req, file, cb) => {
+    if (ALLOWED_MIME.includes(file.mimetype)) return cb(null, true);
+    cb(new Error('Type de fichier non autorisé'));
+  }
+}).array('files', 5); // jusqu'à 5 fichiers par message
+
+async function uploadMessageAttachment(req, res) {
+  upload(req, res, async (err) => {
+    if (err) return res.status(400).json({ error: err.message });
+    if (!req.files || req.files.length === 0)
+      return res.status(400).json({ error: 'Aucun fichier reçu' });
+
+    const results = req.files.map(f => ({
+      filename: f.filename,
+      original_name: f.originalname,
+      mime_type: f.mimetype,
+      size: f.size,
+      url: `/uploads/messaging/${f.filename}`
+    }));
+
+    res.status(201).json({ attachments: results });
+  });
+}
 
 async function getByUserId(req, res) {
   try {
@@ -116,7 +169,11 @@ async function renameThread(req, res) {
 async function leaveThread(req, res) {
   try {
     await leaveMessagingThread(req.body || {});
-    await setNewAdmin(req.body.threadId);
+    if (req.body.isLastMember) {
+      await deleteMessaging(req.body.threadId);
+    } else {
+      await setNewAdmin(req.body.threadId);
+    }
     res.status(200).end();
   } catch (e) {
     const code = statusFromError(e);
@@ -136,5 +193,6 @@ module.exports = {
   addMembers,
   removeMembers,
   renameThread,
-  leaveThread
+  leaveThread,
+  uploadMessageAttachment
 };

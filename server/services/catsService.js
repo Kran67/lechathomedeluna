@@ -160,7 +160,7 @@ async function updateCat(slug, changes) {
 }
 
 async function deleteCat(id) {
-  const res = await lastId('DELETE FROM cats WHERE id = $1', [id]);
+  const res = await pool.query('DELETE FROM cats WHERE id = $1', [id]);
   if (res.rowCount === 0) {
     const err = new Error('Chat introuvable');
     err.status = 404;
@@ -169,7 +169,7 @@ async function deleteCat(id) {
 }
 
 async function getCatHostFamilyId(id) {
-  const res = await lastId('SELECT hostfamily_id FROM cats WHERE id = $1', [id]);
+  const res = await pool.query('SELECT hostfamily_id FROM cats WHERE id = $1', [id]);
   return res.rows.length > 0 ? res.rows[0] : null;
 }
 

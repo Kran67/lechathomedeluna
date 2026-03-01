@@ -171,31 +171,43 @@ async function getAllMessagesById(id, userId) {
                 ELSE false
             END AS is_read,
 
-            mr.read_at
+            mr.read_at,
+            COALESCE(
+              json_agg(
+                json_build_object(
+                  'id', ma.id,
+                  'url', ma.url,
+                  'original_name', ma.original_name,
+                  'mime_type', ma.mime_type,
+                  'size', ma.size
+                )
+              ) FILTER (WHERE ma.id IS NOT NULL),
+              '[]'
+            ) AS attachments
 
         FROM messages m
 
         -- Sécurité : vérifier que l'utilisateur appartient au thread
-        JOIN thread_participants tp
-            ON tp.thread_id = m.thread_id
-            AND tp.user_id = $2
+        JOIN thread_participants tp ON tp.thread_id = m.thread_id AND tp.user_id = $2
 
-        JOIN users u 
-            ON u.id = m.sender_id
+        JOIN users u ON u.id = m.sender_id
 
-        LEFT JOIN message_reads mr
-            ON mr.message_id = m.id
-            AND mr.user_id = $2
+        LEFT JOIN message_reads mr ON mr.message_id = m.id AND mr.user_id = $2
+
+        LEFT JOIN message_attachments ma ON ma.message_id = m.id
 
         WHERE m.thread_id = $1
-
+        GROUP BY m.id, u.id, mr.message_id, mr.read_at
         ORDER BY m.sent_at DESC
         LIMIT 10
     ) sub
     ORDER BY sent_at ASC;
   `, [id, userId]);
   if (res.rows.length === 0) return [];
-  return res.rows.map(mapMessageRow);
+  return res.rows.map(row => ({
+    ...mapMessageRow(row),
+    attachments: row.attachments || []
+  }));
 }
 
 async function createMessaging(payload) {
@@ -269,14 +281,9 @@ async function createMessaging(payload) {
     //return await getById(res.rows[0].thread_id, fromUserId);
 }
 
-async function deleteMessaging(id, userId) {
-  const res = await lastId(`UPDATE message_threads mt
-    SET deleted_at = now()
-    FROM thread_participants tp
-    WHERE 
-        mt.id = $1
-        AND tp.thread_id = mt.id
-        AND tp.user_id = $2;`, [id, userId]);
+async function deleteMessaging(id) {
+  const res = await pool.query(`DELETE FROM message_threads 
+    WHERE id = $1;`, [id]);
   if (res.rowCount === 0) {
     const err = new Error('Discussion introuvable');
     err.status = 404;
@@ -288,13 +295,14 @@ async function createMessage(payload) {
   const {
     threadId,
     userId,
-    content
+    content,
+    attachments = []
   } = payload || {};
 
   if (!threadId) throw new Error('threadId est requis');
   if (!userId) throw new Error("userId est requis");
 
-  await pool.query(
+  const result = await pool.query(
     `WITH inserted_message AS (
       INSERT INTO messages (thread_id, sender_id, content, sent_at)
       SELECT 
@@ -312,14 +320,23 @@ async function createMessage(payload) {
     SELECT id, $2, now()
       FROM inserted_message
     RETURNING message_id;`,
-    [threadId, userId, encodeURIComponent(content)]
+    [threadId, userId, content ? encodeURIComponent(content) : '']
   );
 
-  //return getById(threadId);
+  const messageId = result.rows[0]?.message_id;
+  if (messageId && attachments.length > 0) {
+    for (const att of attachments) {
+      await pool.query(
+        `INSERT INTO message_attachments (message_id, filename, original_name, mime_type, size, url)
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+        [messageId, att.filename, att.original_name, att.mime_type, att.size, att.url]
+      );
+    }
+  }  
 }
 
 async function deleteMessage(id, userId) {
-  const res = await lastId(`UPDATE messages m
+  const res = await pool.query(`UPDATE messages m
     SET deleted_at = now(),
         content = 'Message supprimé'
     FROM thread_participants tp
@@ -399,10 +416,9 @@ async function setNewAdmin(threadId) {
       SELECT user_id
       FROM thread_participants
       WHERE thread_id = $1
-      AND role = 'member'
       ORDER BY joined_at ASC
       LIMIT 1
-    );`, [threadId]);
+    ) AND thread_id = $1;`, [threadId]);
   if (res.rowCount === 0) {
     const err = new Error('Discussion introuvable ou aucun membre restant pour devenir admin');
     err.status = 404;

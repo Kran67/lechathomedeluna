@@ -3,7 +3,10 @@ import {
   useState,
 } from 'react';
 
-import { Messaging } from '../../interfaces/messaging';
+import {
+  MessageAttachment,
+  Messaging,
+} from '../../interfaces/messaging';
 
 /**
  * Permet de récupèrer les bons vétérinaire depuis la base de données
@@ -102,21 +105,28 @@ export const sendMessage = async (
     token: string | undefined,
     threadId: string,
     userId: string,
-    content: string
+    content: string,
+    attachments: MessageAttachment[] = []
 ) => {
-    try {
-        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/sendmessage`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
-            body: JSON.stringify({
-                threadId,
-                userId,
-                content
-            })
-        });
-        //return await res.json();
-    } catch (err) {
-        console.error("Erreur lors de la récupération des discussions :", err);
-        return null;
-    }
+    await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/sendmessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+        body: JSON.stringify({ threadId, userId, content, attachments})
+    });
+};
+
+export const uploadMessageFiles = async (
+  token: string | undefined,
+  files: File[]
+): Promise<MessageAttachment[]> => {
+  const formData = new FormData();
+  files.forEach(f => formData.append('files', f));
+
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/messaging/upload`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData
+  });
+  const data = await res.json();
+  return data.attachments ?? [];
 };

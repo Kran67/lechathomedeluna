@@ -40,6 +40,7 @@ export enum IconButtonImages {
     Person = "Person",
     Group = "Group",
     RemoveParticipant = "RemoveParticipant",
+    Paperclip = "Paperclip",
 }
 
 export enum IconButtonImagePositions {

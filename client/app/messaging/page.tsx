@@ -51,5 +51,5 @@ export default async function Page() {
     res = await getAll(token);
     const users = res ? res.map((u: User) => ({ value: u.id, label: u.name + " " + u.lastName })) : [];
     
-    return (<MessagingPage threads={threads} userList={users} />);
+    return (<MessagingPage threads={threads ?? []} userList={users} />);
 }

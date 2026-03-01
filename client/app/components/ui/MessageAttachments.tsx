@@ -6,6 +6,8 @@ import { createPortal } from 'react-dom';
 
 import { MessageAttachment } from '@/app/interfaces/messaging';
 
+import Button from './Button';
+
 const API = process.env.NEXT_PUBLIC_API_BASE_URL ?? '';
 
 function formatSize(bytes: number) {
@@ -80,12 +82,11 @@ export default function MessageAttachments({ attachments, isMine }: Props) {
             className="max-w-[90vw] max-h-[90vh] rounded-[8px] shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           />
-          <button
+          <Button
             onClick={() => setLightbox(null)}
             className="absolute top-4 right-6 text-white text-3xl font-bold hover:opacity-80 cursor-pointer"
-          >
-            ✕
-          </button>
+            text="✕"
+          />
         </div>,
         document.body
       )}

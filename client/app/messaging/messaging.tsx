@@ -82,6 +82,7 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
     const [threadId, setThreadId] = useState<string>(threads && threads.length > 0 ? threads[0].id : "-1");
     const [messages, setMessages] = useState<Message[]>([]);
     const [visibleThreads, setVisibleThreads] = useState<Messaging[]>(threads);
+    console.log(threads);
     const [currentThread, setCurrentThread] = useState<Messaging | undefined>(threads ? threads.find((thread: Messaging) => thread.id === threadId) : undefined);
     const [message, setMessage] = useState<string>("");
     const messagesRef = useRef<HTMLDivElement>(null);

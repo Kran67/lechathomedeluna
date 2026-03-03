@@ -52,7 +52,7 @@ export default function AdoptionPage() {
             <Header activeMenu={HeaderMenuItems.Adoption} />
             <div className="flex flex-col gap-51 md:gap-20 px-16 md:p-0 w-full xl:w-1115">
                 <div className="flex flex-col gap-8 w-full xl:w-1115 lg:w-800 items-center text-center">
-                    <span className="text-[32px] text-(--primary) w-full">Les chats nouvellement accuillis</span>
+                    <span className="text-[32px] text-(--primary) w-full">Les chats nouvellement accueillis</span>
                     <span className="text-lg text-(--text) font-normal w-full">Fiches de chats en attente de validation</span>
                     <div className="flex w-full items-center justify-center gap-10">
                         {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant]) &&

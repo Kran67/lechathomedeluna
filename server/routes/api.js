@@ -34,6 +34,7 @@ router.post('/profile/updatepassword', users.updatePassword);
 // Vet vouchers
 router.get('/vetvouchers', requireRole(['Admin', 'Assistant']), vetVouchers.list);
 router.get('/vetvouchers/:year/:clinic/:object', requireRole(['Admin', 'Assistant']), vetVouchers.listByParams);
+router.get('/vetvouchers/:id', requireRole(['Admin', 'Assistant']), vetVouchers.listByParams);
 router.post('/vetvouchers', requireRole(['Admin', 'Assistant']), vetVouchers.create);
 router.patch('/vetvouchers/:id', requireRole(['Admin', 'Assistant']), vetVouchers.update);
 router.delete('/vetvouchers/:id', requireRole(['Admin', 'Assistant']), vetVouchers.remove);
@@ -41,6 +42,7 @@ router.delete('/vetvouchers/:id', requireRole(['Admin', 'Assistant']), vetVouche
 // Messaging
 router.get('/messaging/:userid', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.getByUserId);
 router.post('/messaging', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.create);
+router.post('/messaging/createandsendmessage', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.createAndSendMessage);
 router.delete('/messaging/:id', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.remove);
 router.post('/sendmessage', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.createMsg);
 router.delete('/message/:id', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.removeMsg);

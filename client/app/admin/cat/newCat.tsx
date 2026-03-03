@@ -58,7 +58,6 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
     const [sex, setSex] = useState<string | null>(null);
     const [isSterilized, setIsSterilized] = useState<boolean | null>(null);
     const [isDuringVisit, setIsDuringVisit] = useState<boolean | null>(null);
-    const [isAdoptable, setIsAdoptable] = useState<boolean | null>(null);
     const [hostFamilyId, setHostFamilyId] = useState<string | null>(null);
     const [pictures, setPictures] = useState<any>([]);
     const [picturesPreview, setPicturesPreview] = useState<string[]>([]);
@@ -91,7 +90,6 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
             sterilizationDate,
             birthDate,
             isDuringVisit,
-            isAdoptable,
             adoptionDate,
             hostFamilyId,
             pictures,
@@ -122,7 +120,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
 
     return (
         <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 lg:px-140 relative">
-            <Header activeMenu={HeaderMenuItems.Home} />
+            <Header activeMenu={HeaderMenuItems.Adoption} />
             <div className="flex flex-col w-full gap-10 lg:gap-24 lg:w-970 px-16 pb-80 lg:px-0 lg:pb-0">
                 <div className="flex flex-col flex-1 gap-20 md:gap-41 rounded-[10px] border border-solid border-(--pink) bg-(--white) py-20 px-30 md:py-40 md:px-59">
                     <form onSubmit={handleSubmit} className="flex flex-col gap-20 md:gap-41" role="form" aria-label="Information du compte" encType='multipart/form-data'>

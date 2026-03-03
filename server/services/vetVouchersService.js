@@ -13,7 +13,7 @@ function mapVetVoucherRow(row) {
   };
 }
 
-async function listVetVoucher(year = 0, clinic = '', object = '') {
+async function listVetVoucher(year = 0, clinic = '', object = '', id = null) {
   const params = [year];
   let sql = `
       SELECT v.id, v.date, v.user_name, v.clinic, v.object, v.processed_on, c.slug, c.name, c.numId
@@ -21,23 +21,31 @@ async function listVetVoucher(year = 0, clinic = '', object = '') {
       LEFT JOIN LATERAL (
         SELECT slug, name, numIdentification as numId
         FROM cats
-        WHERE id = v.id
+        WHERE id = v.cat_id
         LIMIT 1
       ) c ON true
-      WHERE DATE_PART('year',  v.date) = $1 AND v.processed_on IS NULL`;
-    if (clinic.trim() !== '-' && object.trim() !== '-') {
-      sql += ' AND v.clinic = $2';
-      sql += ' AND v.object = $3';
-      params.push(clinic.trim());
-      params.push(object.trim());
+      WHERE v.processed_on IS NULL `;
+    if (id) {
+      sql += ' AND v.id = $1';
+      params.length = 0;
+      params.push(id);
     }
-    if (clinic.trim() !== '-' && object.trim() === '-') {
-      sql += ' AND v.clinic = $2';
-      params.push(clinic.trim());
-    }
-    if (clinic.trim() === '-' && object.trim() !== '-') {
-      sql += ' AND v.object = $2';
-      params.push(object.trim());
+    else {
+      sql += ` AND DATE_PART('year',  v.date) = $1`;
+      if (clinic.trim() !== '-' && object.trim() !== '-') {
+        sql += ' AND v.clinic = $2';
+        sql += ' AND v.object = $3';
+        params.push(clinic.trim());
+        params.push(object.trim());
+      }
+      if (clinic.trim() !== '-' && object.trim() === '-') {
+        sql += ' AND v.clinic = $2';
+        params.push(clinic.trim());
+      }
+      if (clinic.trim() === '-' && object.trim() !== '-') {
+        sql += ' AND v.object = $2';
+        params.push(object.trim());
+      }
     }
     sql += ' ORDER BY v.date DESC';
   const res = await pool.query(sql, params);
@@ -67,6 +75,7 @@ async function createVetVoucher(payload) {
     cat_id,
     clinic,
     object,
+    created_by,
   } = payload || {};
 
   if (!date) throw new Error('La date est requise');
@@ -76,9 +85,9 @@ async function createVetVoucher(payload) {
   if (!object) throw new Error("L'object est requis");
 
   const res = await pool.query(
-    `INSERT INTO vet_vouchers(date, user_name, cat_id, clinic, object) 
-     VALUES ($1,$2,$3,$4,$5) RETURNING id`,
-    [date, user_name, cat_id, clinic, object]
+    `INSERT INTO vet_vouchers(date, user_name, cat_id, clinic, object, created_by, created_at, updated_by, updated_at) 
+     VALUES ($1,$2,$3,$4,$5,$6,NOW(),$6,NOW()) RETURNING id`,
+    [date, user_name, cat_id, clinic, object, created_by]
   );
   const lastId = res.rows[0].id;
 

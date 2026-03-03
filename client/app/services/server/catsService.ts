@@ -32,7 +32,6 @@ export const create = async (
     sterilizationDate: string | null,
     birthDate: string | null,
     isDuringVisit: boolean | null,
-    isAdoptable: boolean | null,
     adoptionDate: string | null,
     hostFamilyId: string | null,
     pictures: any,
@@ -54,7 +53,6 @@ export const create = async (
                 sterilizationDate,
                 birthDate,
                 isDuringVisit,
-                isAdoptable,
                 adoptionDate,
                 hostFamilyId,
                 userId

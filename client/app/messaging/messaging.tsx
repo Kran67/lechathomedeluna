@@ -24,6 +24,7 @@ import IconButton from '../components/ui/IconButton';
 import Input from '../components/ui/Input';
 import Link from '../components/ui/Link';
 import MessageAttachments from '../components/ui/MessageAttachments';
+import MessageContent from '../components/ui/MessageContent';
 import {
   HeaderMenuItems,
   IconButtonImages,
@@ -41,6 +42,7 @@ import {
   getInitials,
   prepareBodyToShowModal,
   redirectWithDelay,
+  truncate,
 } from '../lib/utils';
 import {
   getAllMessagesById,
@@ -264,7 +266,7 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
                                     <div className={"flex justify-center items-center rounded-[50%] w-48 h-48 text-(--white) " + (thread.type === "private" ? "bg-(--text)" : "bg-(--pink)")}>{thread.type === "private" ? getInitials(thread.nickname) : "G"}</div>
                                     <div className="flex flex-col">
                                         <div className="text-(--primary)">{thread.nickname}</div>
-                                        <div className={"text-sm text-(--pink)" + (!thread.is_readed && thread.content && thread.content.id ? " font-bold" : "")}>{thread.content.content}</div>
+                                        <div className={"text-sm text-(--pink)" + (!thread.is_readed && thread.content && thread.content.id ? " font-bold" : "")}>{truncate(thread.content.content, 25)}</div>
                                     </div>
                                 </div>
                                 <div className='flex flex-col items-end'>
@@ -333,7 +335,7 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
                                                         (user?.id !== m.user_id 
                                                             ? " self-start tooltip-left text-(--white) bg-(--primary) rounded-es-[10px] rounded-e-[10px]" 
                                                             : " self-end tooltip-right text-(--white) bg-(--pink) rounded-s-[10px] rounded-ee-[10px]")}>
-                                                        {m.content && <span className={"whitespace-pre-line " + (user?.id === m.user_id ? "self-end" : "")}>{m.content}</span>}
+                                                        {m.content && <span className={"whitespace-pre-line " + (user?.id === m.user_id ? "self-end" : "")}><MessageContent content={m.content} /></span>}
                                                         <MessageAttachments attachments={m.attachments} isMine={user?.id === m.user_id} />
                                                 </span>
                                                 <span className={"flex text-xs text-[#aaa]" + (user?.id !== m.user_id ? " pl-10" : " pr-10 justify-end")}>{DateUtils.differenceDate(new Date(m.sent_at)).text}</span>

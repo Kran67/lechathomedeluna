@@ -100,6 +100,23 @@ async function create(req, res) {
   }
 }
 
+async function createAndSendMessage(req, res) {
+  try {
+    req.body.userIds.map(async (u) => {
+      const result = await createMessaging({ toUserId: u, fromUserId: req.body.fromUserId});
+      if (result.rowCount > 0) {
+        await createMessage({ threadId: result.rows[0].thread_id, userId: u, content: req.body.message });
+      }
+    });
+    res.status(201).end();
+  } catch (e) {
+    const code = statusFromError(e);
+    // Map message for validation consistency
+    let msg = e.message;
+    res.status(code).json({ error: msg });
+  }
+}
+
 async function remove(req, res) {
   try {
     await deleteMessaging(req.params.id);
@@ -194,5 +211,6 @@ module.exports = {
   removeMembers,
   renameThread,
   leaveThread,
-  uploadMessageAttachment
+  uploadMessageAttachment,
+  createAndSendMessage
 };

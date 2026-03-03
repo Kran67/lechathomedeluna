@@ -4,12 +4,14 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { createPortal } from 'react-dom';
 
 import dynamic from 'next/dynamic';
 import { redirect } from 'next/navigation';
 
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
+import ModalMessage from '@/app/components/modals/modalMessage';
 import Button from '@/app/components/ui/Button';
 import IconButton from '@/app/components/ui/IconButton';
 import Input from '@/app/components/ui/Input';
@@ -43,6 +45,8 @@ export default function UsersList({ users }: UsersListProps) {
     const [filteredUsers, setFilteredUsers] = useState<User[] | undefined>(users);
     const [roles, setRoles] = useState<string>("");
     const [blacklisted, setBlacklisted] = useState<boolean>(false);
+    const [checkedUser, setCheckedUser] = useState<string[]>([]);
+    const [showModalMessage, setShowModalMessage] = useState<boolean>(false);
 
     if (!user || !hasRoles(user?.roles, ["Admin"])) {
         redirect("/");
@@ -60,9 +64,27 @@ export default function UsersList({ users }: UsersListProps) {
         setFilteredUsers(filteredUsersList);
     }, [search, roles, blacklisted]);
 
+    const addOrRemoveUserToMessage = (checked: boolean, value: string) => {
+        if (checked) {
+            setCheckedUser([...checkedUser, value]);
+        } else {
+            setCheckedUser(checkedUser.filter((v) => v !== value));
+        }
+    }
+
     return (
         <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 xl:px-140 relative">
             <Header activeMenu={HeaderMenuItems.Profile} />
+            {showModalMessage && createPortal(
+                <ModalMessage
+                    userIds={checkedUser}
+                    closeModal={() => setShowModalMessage(false)}
+                    onSuccess={() => {
+                        setShowModalMessage(false);
+                    }}
+                />,
+                document.body
+            )}
             <div className="flex flex-col w-full gap-10 lg:gap-24 lg:w-1200 px-16 pb-80 lg:px-0 lg:pb-0">
                 <div className="lg:flex lg:flex-row lg:gap-10 w-full lg:py-16 lg:px-7 border-b-0 lg:border-b-1 border-solid border-b-(--pink)">
                     <IconButton
@@ -76,7 +98,7 @@ export default function UsersList({ users }: UsersListProps) {
                 </div>
                 <span className="text-lg text-(--primary) w-full">Liste des utilisateurs</span>
                 <div className="flex flex w-full gap-10">
-                    <Button text='Ajouter un utilisateur' url='/admin/profile/new' className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />
+                    <Button text='Ajouter un utilisateur' url='/admin/profile/new' className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-16 text-(--white)' />
                     <Input
                         name="search"
                         placeHolder="Rechercher un utilisateur"
@@ -117,6 +139,12 @@ export default function UsersList({ users }: UsersListProps) {
                                 width: 150
                             })}}
                         />
+                        <Button
+                            text='Envoyer un message'
+                            className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-16 text-(--white)'
+                            disabled={checkedUser.length === 0}
+                            onClick={() => setShowModalMessage(true) }
+                            />
                 </div>
                 <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
                     <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
@@ -131,24 +159,25 @@ export default function UsersList({ users }: UsersListProps) {
                         <span className="text-(--white) border-l w-90 px-5">Capacité</span>
                         <span className="text-(--white) border-l w-70 px-5">Actions</span>
                     </div>
-                    {filteredUsers?.map((user, idx) => (
-                        <div key={user.id} className={"flex w-full border-solid border-(--pink) border-b " + (user.blacklisted ? " italic" : "") + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
+                    {filteredUsers?.map((u, idx) => (
+                        <div key={u.id} className={"flex w-full border-solid border-(--pink) border-b " + (u.blacklisted ? " italic" : "") + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
                             <span className="flex justify-center items-center px-5 w-20">
-                                {user.blacklisted ? <IconButton url="#" icon={IconButtonImages.BlackListed} svgFill="#CE25A6" imgWidth={20} title="Sur la liste noire" /> : null}
+                                {user.id !== u.id && <input type="checkbox" name={"check-" + u.id} value={u.id} onChange={(e) => { addOrRemoveUserToMessage(e.currentTarget.checked, e.currentTarget.value)}} />}
+                                {u.blacklisted ? <IconButton url="#" icon={IconButtonImages.BlackListed} svgFill="#CE25A6" imgWidth={20} title="Sur la liste noire" /> : null}
                             </span>
-                            <span className={"w-150 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.name} {user.lastName}</span>
-                            <span className={"border-l w-150 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.social_number}</span>
-                            <span className={"border-l w-200 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.email}</span>
-                            <span className={"border-l w-100 px-5 text-center" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.phone}</span>
-                            <span className={"border-l flex-1 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.address}</span>
-                            <span className={"border-l w-150 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.city}</span>
-                            <span className={"border-l w-90 px-5" + (user.blacklisted ? " text-black" : " text-(--text)")}>{user.roles.split("|").map(r => `${r}\n`)}</span>
-                            <span className={"border-l w-90 px-5 border-(--pink)" + (user.capacity === "Empty" ? " bg-[#00ff00]": " bg-[#ff0000]")}>&nbsp;</span>
+                            <span className={"w-150 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.name} {u.lastName}</span>
+                            <span className={"border-l w-150 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.social_number}</span>
+                            <span className={"border-l w-200 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.email}</span>
+                            <span className={"border-l w-100 px-5 text-center" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.phone}</span>
+                            <span className={"border-l flex-1 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.address}</span>
+                            <span className={"border-l w-150 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.city}</span>
+                            <span className={"border-l w-90 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.roles.split("|").map(r => `${r}\n`)}</span>
+                            <span className={"border-l w-90 px-5 border-(--pink)" + (u.capacity === "Empty" ? " bg-[#00ff00]": " bg-[#ff0000]")}>&nbsp;</span>
                             <span className="flex justify-center gap-5 border-(--pink) border-l w-70 px-5">
-                                {user && !hasRoles(user.roles, ["Admin"]) &&
+                                {u && !hasRoles(u.roles, ["Admin"]) &&
                                     <>
-                                        <IconButton url={`/admin/profile/${user.id}`} icon={IconButtonImages.Pen} svgFill="#CE25A6" imgWidth={20} title="Editer le profile" />
-                                        <IconButton url={`/admin/resetpassword/${user.id}`} icon={IconButtonImages.ChangePassword} svgFill="#CE25A6" imgWidth={20} title="Changer le mot de passe" />
+                                        <IconButton url={`/admin/profile/${u.id}`} icon={IconButtonImages.Pen} svgFill="#CE25A6" imgWidth={20} title="Editer le profile" />
+                                        <IconButton url={`/admin/resetpassword/${u.id}`} icon={IconButtonImages.ChangePassword} svgFill="#CE25A6" imgWidth={20} title="Changer le mot de passe" />
                                     </>
                                 }
                             </span>

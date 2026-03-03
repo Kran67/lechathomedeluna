@@ -137,7 +137,7 @@ async function initSchema(pool) {
       user_name VARCHAR(101) NOT NULL,
       cat_id INTEGER NOT NULL REFERENCES cats(id) ON DELETE CASCADE,
       clinic VARCHAR(51) NOT NULL,
-      object VARCHAR(165) NOT NULL,
+      object VARCHAR(175) NOT NULL,
       processed_on DATE,
       UNIQUE(cat_id, date, clinic, object),
       created_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -248,11 +248,45 @@ async function initSchema(pool) {
   `);
 }
 
-// function slugify(input) {
-//   const s = String(input || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-//   const slug = s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/-{2,}/g, '-');
-//   return slug || 'cat';
-// }
+async function seedBaseData() {
+  // utiisateurs de base
+  await pool.query('INSERT INTO users(name, lastname, phone, address, city, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
+          [
+            'super',
+            'admin',
+            '----------',
+            '-',
+            '-',
+            'Admin',
+            'superadmin@exemple.com',
+            'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
+            'Empty'
+          ]);
+  await pool.query('INSERT INTO users(name, lastname, phone, address, city, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
+          [
+            'Sylvie',
+            'Présidente',
+            '0000000000',
+            'Unknown',
+            'Unknown',
+            'Admin',
+            'admin@exemple.com',
+            'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
+            'Empty'
+          ]);
+  // groupes de discussion de base
+  await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'Adoption', 1]);
+  await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'Bons vétérinaire', 1]);
+  await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'Registre sanitaire', 1]);
+  await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'Visite', 1]);
+  await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'ICAD', 1]);
+  // participants sur les groupes de discussion de base
+  await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [1, 2, 'admin']);
+  await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [2, 2, 'admin']);
+  await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [3, 2, 'admin']);
+  await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [4, 2, 'admin']);
+  await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [5, 2, 'admin']);
+}
 
 async function seedIfEmpty(pool) {
   const res = await pool.query('SELECT COUNT(*)::int as c FROM cats');
@@ -270,30 +304,7 @@ async function seedIfEmpty(pool) {
 
   try {
     const usedSlugs = new Set();
-    await pool.query('INSERT INTO users(name, lastname, phone, address, city, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
-            [
-              'super',
-              'admin',
-              '----------',
-              '-',
-              '-',
-              'Admin',
-              'superadmin@exemple.com',
-              'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
-              'Empty'
-            ]);
-    await pool.query('INSERT INTO users(name, lastname, phone, address, city, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
-            [
-              'Sylvie',
-              'Présidente',
-              '0000000000',
-              'Unknown',
-              'Unknown',
-              'Admin',
-              'admin@exemple.com',
-              'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
-              'Empty'
-            ]);
+    seedBaseData();
     for (const p of data) {
       // Ensure owner user exists
       let user = null;
@@ -351,20 +362,7 @@ async function seedIfEmpty(pool) {
       );
       p.id = res.rows[0].id;
       // Pictures
-      //const pics = new Set();
       if (Array.isArray(p.pictures)) p.pictures.forEach(async (u, idx) => u && await pool.query('INSERT INTO cat_pictures(cat_id, url, scheduling) VALUES ($1,$2,$3)', [p.id, u, idx]));
-      //for (let i = 0; i< pics.size; i++) {
-      //  const url = pics[i];
-      //  await pool.query('INSERT INTO cat_pictures(cat_id, url) VALUES ($1,$2,$3)', [p.id, url,i]);
-      //}
-
-      // Equipments
-      //if (Array.isArray(p.equipments)) {
-      //  for (const name of p.equipments) {
-      //    await db.runAsync('INSERT OR IGNORE INTO property_equipments(property_id, name) VALUES (?,?)', [p.id, name]);
-      //  }
-      //}
-
     }
   } catch (e) {
     console.log(e);

@@ -41,6 +41,7 @@ export enum IconButtonImages {
     Group = "Group",
     RemoveParticipant = "RemoveParticipant",
     Paperclip = "Paperclip",
+    Approved = "Approved"
 }
 
 export enum IconButtonImagePositions {
@@ -59,7 +60,8 @@ export enum InputTypes {
     Email = 'email',
     Date = 'date',
     Hidden = 'hidden',
-    File = "file"
+    File = "file",
+    Checkbox = "checkbox"
 }
 
 export enum InputImageTypes {

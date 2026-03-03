@@ -99,7 +99,6 @@ async function createCat(payload) {
     sterilizationDate = null,
     birthDate = null,
     isDuringVisit = null,
-    isAdoptable = false,
     adoptionDate = null,
     hostFamilyId = null,
     pictures = [],
@@ -114,8 +113,8 @@ async function createCat(payload) {
   const uniqueSlug = await ensureUniqueSlug(base);
   const res = await pool.query(
     `INSERT INTO cats(name, slug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdoptable, adoptionDate, hostFamily_id, created_by, created_at, updated_by, updated_at) 
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15, $16, NOW(), $17, NOW()) RETURNING id`,
-    [name, uniqueSlug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdoptable, adoptionDate, hostFamilyId, userId, userId]
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,false,$13,$14, $15, NOW(), $16, NOW()) RETURNING id`,
+    [name, uniqueSlug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, adoptionDate, hostFamilyId, userId, userId]
   );
   const lastId = res.rows[0].id;
 

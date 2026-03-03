@@ -11,7 +11,7 @@ import { VetVoucher } from '../../interfaces/vetVoucher';
  * @function vetVouchersService
  * @returns { vetVouchers: VetVoucher[] | null, loading: boolean, refresh: any, error: boolean }
  */
-export function vetVouchersService(token: string | undefined, year: number = 0, clinic: string = '-', voucherObject: string = '-'): { vetVouchers: VetVoucher[] | null, loading: boolean, refresh: any, error: boolean } {
+export function vetVouchersService(token: string | undefined, year: number = 0, clinic: string = '-', voucherObject: string = '-', id: string | null = null): { vetVouchers: VetVoucher[] | null, loading: boolean, refresh: any, error: boolean } {
     const [vetVouchers, setVetVouchers] = useState<VetVoucher[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -21,6 +21,9 @@ export function vetVouchersService(token: string | undefined, year: number = 0, 
         setLoading(true);
         try {
             let url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/vetvouchers/${year}/${clinic}/${voucherObject}`;
+            if (id) {
+                url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/vetvouchers/${id}`;
+            }
 
             const res: Response = await fetch(url, {
                 method: "GET",

@@ -4,7 +4,8 @@ export const create = async (
     user_name: string,
     cat_id: string,
     clinic: string,
-    object: string
+    object: string,
+    created_by: string
     ) => {
     try {
         const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/vetvouchers`, {
@@ -15,7 +16,8 @@ export const create = async (
                 user_name,
                 cat_id,
                 clinic,
-                object
+                object,
+                created_by
             }),
         });
         const result = await res.json();

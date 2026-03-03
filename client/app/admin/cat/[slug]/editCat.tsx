@@ -20,6 +20,7 @@ import Header from '@/app/components/layout/Header';
 import Button from '@/app/components/ui/Button';
 import IconButton from '@/app/components/ui/IconButton';
 import Input from '@/app/components/ui/Input';
+import { CONSTANTS } from '@/app/consts/constants';
 import { useUser } from '@/app/contexts/userContext';
 import {
   HeaderMenuItems,
@@ -39,6 +40,7 @@ import {
   isTodayGreaterThanDatePlus6Months,
   redirectWithDelay,
 } from '@/app/lib/utils';
+import { sendMessage } from '@/app/services/client/messagingService';
 import { update } from '@/app/services/server/catsService';
 import { create } from '@/app/services/server/vetVouchersService';
 import {
@@ -164,7 +166,6 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         setClinic(null);
         setVoucherObject(null);
         if (clinicInputRef.current) {
-            console.log(clinicInputRef.current);
             (clinicInputRef.current as any).clearValue();
         }
         if (voucherObjectInputRef.current) {
@@ -179,10 +180,13 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
             user_name,
             cat?.id ?? "-1",
             clinic ?? "",
-            voucherObject ?? ""
+            voucherObject ?? "",
+            user?.id as string
         );
         if (!res.error) {
             toast.success("Bon vétérinaire créé avec succès");
+            const baseUrl = process.env.NEXT_PUBLIC_APP_BASE_URL ?? (typeof window !== 'undefined' ? window.location.origin : '');
+            await sendMessage(token, CONSTANTS.THREAD_GROUPS.VET_VOUCHERS.toString(), user?.id as string, `📋 Demande de bon vétérinaire pour ${cat?.name} ${cat?.numIdentification ? '('+cat.numIdentification+')' : ''}\nClinique: ${baseUrl}/veterinary/?id=${res.id}[${clinic}]\nObjet: ${voucherObject}`, []);
         } else {
             toast.error(res.error);
         }
@@ -321,7 +325,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
 
     return (
         <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 lg:px-140 relative">
-            <Header activeMenu={HeaderMenuItems.Home} />
+            <Header activeMenu={HeaderMenuItems.Adoption} />
             <div className="flex flex-col w-full gap-10 lg:gap-24 lg:w-970 px-16 pb-80 lg:px-0 lg:pb-0">
                 <div className="lg:flex lg:flex-row lg:gap-10 w-full lg:py-16 lg:px-7 border-b-0 lg:border-b-1 border-solid border-b-(--pink)">
                     <IconButton
@@ -658,14 +662,14 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     isClearable={true}
                                     isSearchable={true}
                                     placeholder="Objet du bon"
-                                    onChange={(e:any) => setVoucherObject(e?.value ?? null)}
+                                    onChange={(e:any) => { setVoucherObject(e.map((e: any) => e.value).join(", ") ?? null) }}
                                 />
                             </div>
                         </div>
                         <div className='flex justify-center'>
                             <Button
                                 text="Demander le bon"
-                                disabled={!voucherObject || !clinic}
+                                disabled={!clinic || voucherObject?.length === 0}
                                 className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230'
                                 onClick={(e) => handleSubmitVoucher(e) }/>
                         </div>

@@ -254,7 +254,7 @@ async function createMessaging(payload) {
         LATERAL (VALUES ($1), ($2)) AS users(user_id)
         ON CONFLICT DO NOTHING
         RETURNING thread_id;`
-      res = await pool.query(sql, [toUserId, fromUserId]);
+      res = await pool.query(sql, [fromUserId, toUserId]);
     } else {
       sql = `
         WITH new_thread AS (
@@ -278,6 +278,7 @@ async function createMessaging(payload) {
         RETURNING thread_id;`;
       res = await pool.query(sql, [fromUserId, groupName, memberIds]);
     }
+    return res;
     //return await getById(res.rows[0].thread_id, fromUserId);
 }
 

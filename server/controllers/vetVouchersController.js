@@ -19,7 +19,7 @@ async function list(req, res) {
 
 async function listByParams(req, res) {
   try {
-    const rows = await listVetVoucher(req.params.year, req.params.clinic, req.params.object);
+    const rows = await listVetVoucher(req.params.year, req.params.clinic, req.params.object, req.params.id);
     res.json(rows);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });

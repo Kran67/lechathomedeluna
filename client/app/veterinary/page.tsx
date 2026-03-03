@@ -7,21 +7,32 @@ import {
 
 import { useCookies } from 'next-client-cookies';
 import dynamic from 'next/dynamic';
-import { redirect } from 'next/navigation';
+import {
+  redirect,
+  useSearchParams,
+} from 'next/navigation';
+import { toast } from 'react-toastify';
 
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
 import {
   HeaderMenuItems,
+  IconButtonImages,
   UserRole,
 } from '@/app/enums/enums';
 
+import IconButton from '../components/ui/IconButton';
+import { CONSTANTS } from '../consts/constants';
 import { useUser } from '../contexts/userContext';
+import { VetVoucher } from '../interfaces/vetVoucher';
 import {
   formatDDMMY,
+  formatYMMDD,
   hasRoles,
 } from '../lib/utils';
+import { sendMessage } from '../services/client/messagingService';
 import { vetVouchersService } from '../services/client/vetVouchersService';
+import { update } from '../services/server/vetVouchersService';
 import {
   Clinics,
   voucherObjects,
@@ -52,7 +63,9 @@ export default function VetVouchers() {
     const [year, setYear] = useState<number>(new Date().getFullYear());
     const [clinic, setClinic] = useState<string>('-');
     const [voucherObject, setVoucherObject] = useState<string>('-');
-    const service = vetVouchersService(token, year, clinic, voucherObject);
+    const searchParams = useSearchParams();
+    const [vetVoucherId, setVetVoucherId] = useState<string | null>(searchParams.get("id"));
+    const service = vetVouchersService(token, year, clinic, voucherObject, vetVoucherId);
 
     const Years: {
         value: number;
@@ -76,6 +89,18 @@ export default function VetVouchers() {
         service.refresh();
     }, [year, clinic, voucherObject]);
 
+    const approved = async (e: React.MouseEvent<HTMLButtonElement>, voucher: VetVoucher) => {
+        e.stopPropagation();
+        const res = await update(token, voucher.id, formatYMMDD(new Date()));
+        if (!res.error) {
+            await sendMessage(token, CONSTANTS.THREAD_GROUPS.VET_VOUCHERS.toString(), user?.id as string, `✔️ Bon vétérinaire pour ${voucher.cat.name} ${voucher.cat.numId ? '('+voucher.cat.numId+')' : ''} traité.`, []);
+            service.refresh();
+            toast.success("Bon vétérinaire validé avec succès.");
+        } else {
+
+        }
+    };
+  
     return (
         <main className="flex flex-col gap-20 w-full items-center md:pt-20 md:px-140">
             <Header activeMenu={HeaderMenuItems.VeterinaryVouchers} />
@@ -93,7 +118,7 @@ export default function VetVouchers() {
                                 isClearable={true}
                                 isSearchable={true}
                                 placeholder="Clinique"
-                                onChange={(e:any) => setClinic(e?.value ?? null)}
+                                onChange={(e:any) => { setVetVoucherId(null); setClinic(e?.value ?? null)}}
                                 styles={{container: provided => ({
                                     ...provided,
                                     width: 370,
@@ -110,7 +135,7 @@ export default function VetVouchers() {
                                 isClearable={true}
                                 isSearchable={true}
                                 placeholder="Objet du bon"
-                                onChange={(e:any) => setVoucherObject(e?.value ?? null)}
+                                onChange={(e:any) => { setVetVoucherId(null); setVoucherObject(e?.value ?? null) }}
                                 styles={{container: provided => ({
                                     ...provided,
                                     width: 200,
@@ -154,6 +179,11 @@ export default function VetVouchers() {
                             <span className="border-l flex-1 px-5 text-(--text)">{voucher.clinic}</span>
                             <span className="border-l w-250 px-5 text-(--text)">{voucher.object}</span>
                             <span className="flex justify-center gap-5 border-(--pink) border-l w-70 px-5">
+                                <IconButton
+                                    icon={IconButtonImages.Approved}
+                                    svgStroke='#902677'
+                                    onClick={ (e:React.MouseEvent<HTMLButtonElement>) => approved(e, voucher)}
+                                    title='Traiter la demande' />
                             </span>
                         </div>
                     ))}

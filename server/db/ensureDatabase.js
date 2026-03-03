@@ -104,6 +104,7 @@ async function initSchema(pool) {
       isDuringVisit BOOLEAN DEFAULT false,
       isAdoptable BOOLEAN DEFAULT false,
       adoptionDate DATE,
+      favoriteCount INTERGER DEFAULT 0,
       hostfamily_id INTEGER REFERENCES users(id) ON DELETE RESTRICT,
       created_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       created_at TIMESTAMPTZ NOT NULL,

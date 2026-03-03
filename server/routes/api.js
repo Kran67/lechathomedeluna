@@ -17,6 +17,7 @@ router.get('/catsAdopted/:year', cats.listAdopted);
 router.get('/catsMine/:id', cats.listMine);
 router.get('/cats/:id', cats.getById);
 router.post('/cats', requireRole(['Admin','Assistant', 'HostFamily']), cats.create);
+router.post('/cats/favorite', cats.updateFavoriteCount);
 router.patch('/cats/:slug', requireRole(['Admin','Assistant', 'HostFamily']), cats.update);
 router.delete('/cats/:id', requireRole(['Admin']), cats.remove);
 

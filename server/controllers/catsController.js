@@ -4,6 +4,7 @@ const {
   createCat,
   updateCat,
   deleteCat,
+  updateCatFavoriteCount
 } = require('../services/catsService');
 const { statusFromError } = require('../utils/lib');
 
@@ -79,6 +80,15 @@ async function update(req, res) {
   }
 }
 
+async function updateFavoriteCount(req, res) {
+  try {
+    await updateCatFavoriteCount(req.params.slug);
+    res.status(201).end();
+  } catch (e) {
+    res.status(statusFromError(e)).json({ error: e.message });
+  }
+}
+
 async function remove(req, res) {
   try {
     await deleteCat(req.params.id);
@@ -97,4 +107,5 @@ module.exports = {
   create,
   update,
   remove,
+  updateFavoriteCount,
 };

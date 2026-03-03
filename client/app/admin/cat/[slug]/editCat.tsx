@@ -34,6 +34,7 @@ import {
 } from '@/app/interfaces/cat';
 import { User } from '@/app/interfaces/user';
 import {
+  baseUrl,
   formatDDMMY,
   formatYMMDD,
   hasRoles,
@@ -70,9 +71,9 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const token: string | undefined = cookies.get("token");
     const [status, setStatus] = useState<string | null>(cat?.status ?? null);
     const [sex, setSex] = useState<string | null>(cat?.sex ?? null);
-    const [isSterilized, setIsSterilized] = useState<boolean | null>(cat?.isSterilized ?? null);
-    const [isDuringVisit, setIsDuringVisit] = useState<boolean | null>(cat?.isDuringVisit ?? null);
-    const [isAdoptable, setIsAdoptable] = useState<boolean | null>(cat?.isAdoptable ?? null);
+    const [isSterilized, setIsSterilized] = useState<boolean>(cat?.isSterilized ?? false);
+    const [isDuringVisit, setIsDuringVisit] = useState<boolean>(cat?.isDuringVisit ?? false);
+    let isAdoptable = cat?.isAdoptable ?? false;
     const [birthDate, setBirthDate] = useState<string | null>(cat?.birthDate ?? null);
     const [sterilizationDateError, setSterilizationDateError] = useState<boolean>(false);
     const [hostFamilyId, setHostFamilyId] = useState<string | null>(cat?.hostFamily?.id ?? null);
@@ -99,6 +100,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const [examPicture, setExamPicture] = useState<any | null>(null);
     const inputExamFile = useRef(null);
     const inputExamDate = useRef(null);
+    const primaryButton = useRef(null);
 
     const clinicInputRef = useRef(null);
     const voucherObjectInputRef = useRef(null);
@@ -185,7 +187,6 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         );
         if (!res.error) {
             toast.success("Bon vétérinaire créé avec succès");
-            const baseUrl = process.env.NEXT_PUBLIC_APP_BASE_URL ?? (typeof window !== 'undefined' ? window.location.origin : '');
             await sendMessage(token, CONSTANTS.THREAD_GROUPS.VET_VOUCHERS.toString(), user?.id as string, `📋 Demande de bon vétérinaire pour ${cat?.name} ${cat?.numIdentification ? '('+cat.numIdentification+')' : ''}\nClinique: ${baseUrl}/veterinary/?id=${res.id}[${clinic}]\nObjet: ${voucherObject}`, []);
         } else {
             toast.error(res.error);
@@ -618,12 +619,17 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                             </div>
                         </div>
                         <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
-                            <Button text="Valider les modifications" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />
+                            <Button ref={primaryButton} text="Valider les modifications" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />
                             {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant]) && !isAdoptable && 
                             <Button 
                                 text="Valider la fiche pour l'adoption"
                                 className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-270'
-                                onClick={(e) => { setIsAdoptable(true); toast.info("N'oubliez pas de cliquer sur le bouton 'Valider les modifications' pour que celle-ci soit réellement validée") }}/>}
+                                onClick={async (e) => {
+                                    isAdoptable = true;
+                                    if (hostFamilyId) {
+                                        await sendMessage(token, CONSTANTS.THREAD_GROUPS.ADOPTION.toString(), user?.id as string, `Le 🐈 ${baseUrl}/admin/cat/${cat?.slug}[${cat?.name}] ${cat?.numIdentification ? '('+cat.numIdentification+')' : ''} vient de passer à l'adoption 🔥.`, []);
+                                    }
+                                } }/>}
                         </div>
                     </form>
                     <hr className='border-(--primary)' />

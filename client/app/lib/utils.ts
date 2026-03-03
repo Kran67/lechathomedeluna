@@ -131,3 +131,5 @@ export const sendResetPasswordEmail = async (email: string, token: string) => {
         }
     );
 }
+
+export const baseUrl = process.env.NEXT_PUBLIC_APP_BASE_URL ?? (typeof window !== 'undefined' ? window.location.origin : '');

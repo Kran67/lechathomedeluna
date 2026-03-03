@@ -172,6 +172,10 @@ async function getCatHostFamilyId(id) {
   return res.rows.length > 0 ? res.rows[0] : null;
 }
 
+async function updateCatFavoriteCount(slug) {
+  await pool.query('UPDATE cats SET favoriteCount = favoriteCount + 1 WHERE slug = $1', [slug]);
+}
+
 module.exports = {
   listCats,
   getCatDetails,
@@ -179,4 +183,5 @@ module.exports = {
   updateCat,
   deleteCat,
   getCatHostFamilyId,
+  updateCatFavoriteCount
 };

@@ -121,7 +121,7 @@ export const update = async (
                 isDuringVisit,
                 isAdoptable,
                 adoptionDate,
-                hostFamilyId,
+                hostFamily_Id: hostFamilyId,
                 userId
             }),
         });

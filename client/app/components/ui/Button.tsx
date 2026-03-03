@@ -1,6 +1,8 @@
 // À cause de l'événement onClick
 'use client'
 
+import { RefObject } from 'react';
+
 import {
   AppRouterInstance,
 } from 'next/dist/shared/lib/app-router-context.shared-runtime';
@@ -20,6 +22,7 @@ interface ButtonProps {
     url?: string
     onClick?: (e: any) => void;
     buttonType?: ButtonTypes;
+    ref?: RefObject<null>
 }
 
 /**
@@ -33,8 +36,9 @@ interface ButtonProps {
  * @param {string?} ButtonProps.url - Url de redirection lors du clique sur le bouton
  * @param {string?} ButtonProps.clickFunc - Function à executer sur le clique du bouton avant redirection si elle est passée
  * @param {ButtonTypes?} ButtonProps.buttonType - Type de bouton (Button / Submit)
+ * @param {RefObject<null>} ButtonProps.ref - reférence DOM du bouton
  */
-export default function Button({ text, disabled, className, url, onClick, buttonType = ButtonTypes.Submit }: ButtonProps) {
+export default function Button({ text, disabled, className, url, onClick, buttonType = ButtonTypes.Submit, ref }: ButtonProps) {
     const router: AppRouterInstance = useRouter();
 
     const handleClick = (e: any) => {
@@ -48,7 +52,8 @@ export default function Button({ text, disabled, className, url, onClick, button
             disabled={disabled}
             type={buttonType}
             onClick={handleClick}
-            role="button">
+            role="button"
+            ref={ref}>
             {text}
         </button>
     );

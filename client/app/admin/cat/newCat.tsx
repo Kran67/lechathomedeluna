@@ -20,6 +20,7 @@ import Header from '@/app/components/layout/Header';
 import Button from '@/app/components/ui/Button';
 import IconButton from '@/app/components/ui/IconButton';
 import Input from '@/app/components/ui/Input';
+import { CONSTANTS } from '@/app/consts/constants';
 import { useUser } from '@/app/contexts/userContext';
 import {
   HeaderMenuItems,
@@ -29,9 +30,11 @@ import {
 } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
 import {
+  baseUrl,
   hasRoles,
   redirectWithDelay,
 } from '@/app/lib/utils';
+import { sendMessage } from '@/app/services/client/messagingService';
 import { create } from '@/app/services/server/catsService';
 import {
   CatSexes,
@@ -76,10 +79,11 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
         const sterilizationDate: string | null = formData.get("sterilizationDate") as string !== '' ? formData.get("sterilizationDate") as string : null;
         const birthDate: string | null = formData.get("birthDate") as string !== '' ? formData.get("birthDate") as string : null;
         const adoptionDate: string | null = formData.get("adoptionDate") as string !== '' ? formData.get("adoptionDate") as string : null;
+        const catName: string = formData.get("name") as string;
 
         const res = await create(
             token,
-            formData.get("name") as string,
+            catName,
             formData.get("description") as string,
             status,
             formData.get("numIdentification") as string,
@@ -96,6 +100,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
             user?.id as string
         );
         if (!res.error) {
+            await sendMessage(token, CONSTANTS.THREAD_GROUPS.ADOPTION.toString(), user?.id as string, `La fiche pour le 🐈 ${baseUrl}/admin/cat/${res.slug}[${catName}] vient d'être créée.\n`, []);
             redirectWithDelay(`/admin/cat/${res.slug}`, 1000);
         } else {
             toast.error(res.error);

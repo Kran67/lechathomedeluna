@@ -71,7 +71,7 @@ async function remove(req, res) {
 async function count(req, res) {
   try {
     const count = await getVetVoucherCount();
-    res.json(parseInt(count,10));
+    res.json(count ? parseInt(count,10) : 0);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
   }

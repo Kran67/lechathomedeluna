@@ -203,7 +203,7 @@ async function leaveThread(req, res) {
 async function unreadMessageCountByUserId(req, res) {
   try {
     const rows = await getUnreadMessageCountByUserId(req.params.userid);
-    res.json(parseInt(rows.unread_count,10));
+    res.json(rows ? parseInt(rows.unread_count,10) : 0);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
   }

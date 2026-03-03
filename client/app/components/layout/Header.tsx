@@ -52,25 +52,27 @@ export default function Header({ activeMenu }: HeaderProps) {
     const token: string | undefined = cookies.get("token");
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/messaging/unread/${user?.id}`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
-        }).then(async (response) => {
-            setUnreadMsg(await response.json());
-        });
-        if (user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant])) {
-            fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/vetvoucherscount`, {
+        if (token) {
+            fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/messaging/unread/${user?.id}`, {
                 method: "GET",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
             }).then(async (response) => {
-                setVetVoucherCount(await response.json());
+                setUnreadMsg(await response.json());
             });
-            fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/catnotfullycompletedcount`, {
-                method: "GET",
-                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
-            }).then(async (response) => {
-                setCatNotFullyCompletedCount(await response.json());
-            });
+            if (user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant])) {
+                fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/vetvoucherscount`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+                }).then(async (response) => {
+                    setVetVoucherCount(await response.json());
+                });
+                fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/catnotfullycompletedcount`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+                }).then(async (response) => {
+                    setCatNotFullyCompletedCount(await response.json());
+                });
+            }
         }
     }, [user]);
 
@@ -132,7 +134,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.Messaging}
                 url="/messaging"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                badge={unreadMsg}/>}
+                badge={unreadMsg} />}
             {!user && <MenuItem
                 text="À propos"
                 isActive={activeMenu === HeaderMenuItems.About}

@@ -1,6 +1,14 @@
 'use client'
 
-import { useState } from 'react';
+import {
+  useEffect,
+  useState,
+} from 'react';
+
+import {
+  Cookies,
+  useCookies,
+} from 'next-client-cookies';
 
 import IconButton from '@/app/components/ui/IconButton';
 import Link from '@/app/components/ui/Link';
@@ -37,6 +45,34 @@ interface HeaderProps {
 export default function Header({ activeMenu }: HeaderProps) {
     const [isMenuVisible, setIsMenuVisible] = useState(false);
     const { user } = useUser();
+    const [unreadMsg, setUnreadMsg] = useState<number>(0);
+    const [vetVoucherCount, setVetVoucherCount] = useState<number>(0);
+    const [catNotFullyCompletedCount, setCatNotFullyCompletedCount] = useState<number>(0);
+    const cookies: Cookies = useCookies();
+    const token: string | undefined = cookies.get("token");
+
+    useEffect(() => {
+        fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/messaging/unread/${user?.id}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+        }).then(async (response) => {
+            setUnreadMsg(await response.json());
+        });
+        if (user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant])) {
+            fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/vetvoucherscount`, {
+                method: "GET",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+            }).then(async (response) => {
+                setVetVoucherCount(await response.json());
+            });
+            fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/catnotfullycompletedcount`, {
+                method: "GET",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+            }).then(async (response) => {
+                setCatNotFullyCompletedCount(await response.json());
+            });
+        }
+    }, [user]);
 
     return (
         <header
@@ -62,12 +98,14 @@ export default function Header({ activeMenu }: HeaderProps) {
                 text="Mes alertes"
                 isActive={activeMenu === HeaderMenuItems.Alerts}
                 url="/myAlerts"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
+                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                badge={unreadMsg + vetVoucherCount + catNotFullyCompletedCount} />}
             {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant]) && <MenuItem
                 text="Bons vétérinaires"
                 isActive={activeMenu === HeaderMenuItems.VeterinaryVouchers}
                 url="/veterinary"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
+                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                badge={vetVoucherCount} />}
             {/* {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Volunteer]) && <MenuItem
                 text="Evénements"
                 isActive={activeMenu === HeaderMenuItems.Events}
@@ -77,7 +115,8 @@ export default function Header({ activeMenu }: HeaderProps) {
                 text="Chats en FA"
                 isActive={activeMenu === HeaderMenuItems.Adoption}
                 url="/faCats"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
+                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                badge={catNotFullyCompletedCount} />}
             {/* {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant, UserRole.Volunteer]) && <MenuItem
                 text="Bénévoles"
                 isActive={activeMenu === HeaderMenuItems.Volunteers}
@@ -92,7 +131,8 @@ export default function Header({ activeMenu }: HeaderProps) {
                 text="Messagerie"
                 isActive={activeMenu === HeaderMenuItems.Messaging}
                 url="/messaging"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
+                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                badge={unreadMsg}/>}
             {!user && <MenuItem
                 text="À propos"
                 isActive={activeMenu === HeaderMenuItems.About}

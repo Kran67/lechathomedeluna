@@ -17,9 +17,11 @@ router.get('/catsAdopted/:year', cats.listAdopted);
 router.get('/catsMine/:id', cats.listMine);
 router.get('/cats/:id', cats.getById);
 router.post('/cats', requireRole(['Admin','Assistant', 'HostFamily']), cats.create);
-router.post('/cats/favorite', cats.updateFavoriteCount);
+router.patch('/cats/favorite/:slug', cats.updateFavoriteCount);
 router.patch('/cats/:slug', requireRole(['Admin','Assistant', 'HostFamily']), cats.update);
 router.delete('/cats/:id', requireRole(['Admin']), cats.remove);
+router.get('/catnotfullycompletedcount', requireRole(['Admin', 'Assistant']), cats.notFullyCompletedCount);
+router.get('/catnotfullycompletedlist', requireRole(['Admin', 'Assistant']), cats.notFullyCompletedList);
 
 // Users
 router.get('/users', requireAuth, users.list);
@@ -39,9 +41,11 @@ router.get('/vetvouchers/:id', requireRole(['Admin', 'Assistant']), vetVouchers.
 router.post('/vetvouchers', requireRole(['Admin', 'Assistant']), vetVouchers.create);
 router.patch('/vetvouchers/:id', requireRole(['Admin', 'Assistant']), vetVouchers.update);
 router.delete('/vetvouchers/:id', requireRole(['Admin', 'Assistant']), vetVouchers.remove);
+router.get('/vetvoucherscount', requireRole(['Admin', 'Assistant']), vetVouchers.count);
 
 // Messaging
 router.get('/messaging/:userid', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.getByUserId);
+router.get('/messaging/unread/:userid', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.unreadMessageCountByUserId);
 router.post('/messaging', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.create);
 router.post('/messaging/createandsendmessage', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.createAndSendMessage);
 router.delete('/messaging/:id', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.remove);

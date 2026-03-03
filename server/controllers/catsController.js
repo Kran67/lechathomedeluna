@@ -4,7 +4,9 @@ const {
   createCat,
   updateCat,
   deleteCat,
-  updateCatFavoriteCount
+  updateCatFavoriteCount,
+  getAllCatsNotFullyCompletedCount,
+  getAllCatsNotFullyCompletedList
 } = require('../services/catsService');
 const { statusFromError } = require('../utils/lib');
 
@@ -98,6 +100,24 @@ async function remove(req, res) {
   }
 }
 
+async function notFullyCompletedCount(req, res) {
+  try {
+    const count = await getAllCatsNotFullyCompletedCount();
+    res.json(parseInt(count,10));
+  } catch (e) {
+    res.status(statusFromError(e)).json({ error: e.message });
+  }
+}
+
+async function notFullyCompletedList(req, res) {
+  try {
+    const list = await getAllCatsNotFullyCompletedList();
+    //res.json(parseInt(rows.count,10));
+  } catch (e) {
+    res.status(statusFromError(e)).json({ error: e.message });
+  }
+}
+
 module.exports = {
   list,
   listAdoptable,
@@ -108,4 +128,6 @@ module.exports = {
   update,
   remove,
   updateFavoriteCount,
+  notFullyCompletedCount,
+  notFullyCompletedList
 };

@@ -140,3 +140,36 @@ button.catpaw::before {
   top: 20px;
   right: 0px;
 }
+
+.heart {
+  position: relative;
+  width: 44px;
+}
+
+.heart:before,
+.heart:after {
+    position: absolute;
+    content: "";
+    top: -6px;
+    width: 25px;
+    height: 35px;
+    border: 1px solid red;
+    border-radius: 50px 50px 0 0;
+    transform: rotate(-45deg);
+    transform-origin: 0 100%;
+}
+.heart:after {
+    left: -2px;
+    transform: rotate(45deg);
+    transform-origin :100% 100%;
+}
+
+.heart:before {
+  border-right: none;
+  border-bottom: none;
+  left: 22px;
+}
+.heart:after {
+  border-left: none;
+  border-bottom: none;
+}

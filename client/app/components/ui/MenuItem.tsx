@@ -1,7 +1,9 @@
 'use client'
 
-import { useRouter } from "next/navigation";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import {
+  AppRouterInstance,
+} from 'next/dist/shared/lib/app-router-context.shared-runtime';
+import { useRouter } from 'next/navigation';
 
 /**
  * Interface pour les propriétés d'initialisation d'un élément du menu
@@ -14,6 +16,7 @@ interface MenuItemProps {
     url: string;
     className?: string;
     onClick?: () => void;
+    badge?: number;
 }
 
 /**
@@ -27,7 +30,7 @@ interface MenuItemProps {
  * @param {string?} MenuItemProps.className - Classes css de l'élément
  * @param {function?} MenuItemProps.onClick - Function à executer sur le clique du lien avant redirection si elle est passée
  */
-export default function MenuItem({ text, isActive = false, url, className, onClick }: MenuItemProps) {
+export default function MenuItem({ text, isActive = false, url, className, onClick, badge }: MenuItemProps) {
     const router: AppRouterInstance = useRouter();
 
     const handleClick: () => void = () => {
@@ -36,6 +39,12 @@ export default function MenuItem({ text, isActive = false, url, className, onCli
     };
 
     return (
-        <button className={(isActive ? "text-(--main-red) font-bold " : "") + className} onClick={handleClick} role="button">{text}</button>
+        <button
+            className={"relative " + (isActive ? "text-(--main-red) font-bold " : "") + className}
+            onClick={handleClick}
+            role="button">
+                {text}
+                <span className={'flex items-center justify-center absolute -right-14 w-12 h-12 bg-(--primary) text-[8px] text-(--white) rounded-[50%]' + (badge && badge > 0 ? "" : " hidden")}>{badge}</span>
+        </button>
     );
 }

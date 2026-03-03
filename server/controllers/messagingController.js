@@ -200,6 +200,15 @@ async function leaveThread(req, res) {
   }
 }
 
+async function unreadMessageCountByUserId(req, res) {
+  try {
+    const rows = await getUnreadMessageCountByUserId(req.params.userid);
+    res.json(parseInt(rows.unread_count,10));
+  } catch (e) {
+    res.status(statusFromError(e)).json({ error: e.message });
+  }
+}
+
 module.exports = {
   getByUserId,
   create,
@@ -212,5 +221,6 @@ module.exports = {
   renameThread,
   leaveThread,
   uploadMessageAttachment,
-  createAndSendMessage
+  createAndSendMessage,
+  unreadMessageCountByUserId
 };

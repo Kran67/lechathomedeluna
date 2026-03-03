@@ -4,6 +4,7 @@ const {
   createVetVoucher,
   updateVetVoucher,
   deleteVetVoucher,
+  getVetVoucherCount
 } = require('../services/vetVouchersService');
 const { statusFromError } = require('../utils/lib');
 
@@ -67,6 +68,16 @@ async function remove(req, res) {
   }
 }
 
+async function count(req, res) {
+  try {
+    const count = await getVetVoucherCount();
+    res.json(parseInt(count,10));
+  } catch (e) {
+    res.status(statusFromError(e)).json({ error: e.message });
+  }
+}
+
+
 module.exports = {
   list,
   listByParams,
@@ -74,4 +85,5 @@ module.exports = {
   create,
   update,
   remove,
+  count
 };

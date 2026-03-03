@@ -24,6 +24,7 @@ import {
   dateAge,
   prepareBodyToShowModal,
 } from '@/app/lib/utils';
+import { updateFavorite } from '@/app/services/server/catsService';
 
 /**
  * Interface pour les chats d'initialisation d'un chat
@@ -46,42 +47,56 @@ export default function Property({ cat }: CatProps) {
     const [carouselImageIndex, setCarouselImageIndex] = useState(0);
     const router = useRouter();
     const { user } = useUser();
+    const [favoriteCount, setFavoriteCount] = useState<number>(cat?.favoriteCount ?? 0);
 
     const viewCarouselAndActiveImage = (viewCarousel: boolean, index: number) => {
         setViewCarousel(viewCarousel);
         setCarouselImageIndex(index);
     }
 
-    const collapseElementContent: string[] = [];
+    const collapseElementContent: { name:string, url?:string }[] = [];
     if (cat?.birthDate) {
-        collapseElementContent.push(`${dateAge(cat?.birthDate)} an(s)`);
+        collapseElementContent.push({ name: `${dateAge(cat?.birthDate)} an(s)` });
     }
     if (cat?.sex) {
-        collapseElementContent.push(cat?.sex);
+        collapseElementContent.push({ name: cat?.sex});
     }
     if (cat?.dress) {
-        collapseElementContent.push(cat?.dress);
+        collapseElementContent.push({ name: cat?.dress});
     }
     if (cat?.status) {
-        collapseElementContent.push(cat?.status);
+        collapseElementContent.push({ name: cat?.status});
     }
+
+    const collapseElementDocuments: { name:string, url:string }[] = [
+        {
+            name: "",
+            url: ""
+        },
+        {
+            name: "",
+            url: ""
+        }
+    ];
 
     useEffect(() => {
         prepareBodyToShowModal(viewCarousel ? "hidden" : "");
     }, [viewCarousel]);
 
-    const animateHearts = (e: React.MouseEvent<HTMLButtonElement>, url: string) => {
+    const animateHearts = async (e: React.MouseEvent<HTMLButtonElement>, url: string) => {
         const getRandom = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
         const colors: string[] = ["text-(--primary)", "text-(--primary-dark)", "text-(--pink)", "text-(--light-pink)"];
+        await updateFavorite(cat?.slug ?? "");
+        setFavoriteCount(favoriteCount + 1);
         for (let i = 0; i < 40; i++) {
             const paw = document.createElement('i');
             const colorIdx = getRandom(0, 3);
             paw.className = `cat-paw ${colors[colorIdx]} fa fa-paw`;
-            
+            const target = (e.target as HTMLButtonElement);
             // Position de départ au centre du bouton
-            const rect = e.currentTarget.getBoundingClientRect();
+            const rect = target.getBoundingClientRect();
             paw.style.left = (rect.left + rect.width / 2) + 'px';
-            paw.style.top = (e.currentTarget.offsetTop - rect.height / 2) + 'px';
+            paw.style.top = (target.offsetTop - rect.height / 2) + 'px';
             const max = getRandom(50, 256);
             paw.style.fontSize = `${max}px`;
             paw.style.setProperty('--tx', `${getRandom(-480, 200)}px`);
@@ -148,12 +163,14 @@ export default function Property({ cat }: CatProps) {
                     </div>
                     <div className="flex flex-col gap-40 lg:w-full bg-(--white) rounded-[10px] border boder-solid border-(--pink) p-24 order-0 lg:order-1">
                         <div className="flex flex-col gap-32">
-                            <div className="flex flex-col gap-16">
+                            <div className="flex gap-8 items-center">
                                 <span className="text-2xl text-(--text)">{cat?.name}</span>
+                                {favoriteCount > 0 && <span className='heart flex items-center justify-center text-sm text-(--primary)'>{favoriteCount}</span>}
                             </div>
                             <p className="text-sm text-(--text) font-normal whitespace-break-spaces">{cat?.description}</p>
                         </div>
                         <CollapseElement title="Informations" content={collapseElementContent} />
+                        <CollapseElement title="Documents" content={collapseElementDocuments} />
                         { !user && !cat?.adoptionDate &&
                             <>
                                 <IconButton

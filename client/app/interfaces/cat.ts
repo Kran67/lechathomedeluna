@@ -30,4 +30,5 @@ export interface Cat {
     hostFamily?: HostFamily;
     documents: CatDocument[];
     pictures: string[];
+    favoriteCount: number;
 }

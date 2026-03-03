@@ -316,12 +316,12 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
                                 }</div>
                                     <div className='flex flex-col gap-5'>
                                         <div className='flex gap-5 justify-center'>
-                                            <IconButton icon={IconButtonImages.Person} imgWidth={24} imgHeight={24} svgFill='#902677' title='Ajouter un membre' onClick={() => { setRemoveMembers(false); setShowModalAddRemoveMembers(true)} } />
+                                            {currentThread.type === "group" && <IconButton icon={IconButtonImages.Person} imgWidth={24} imgHeight={24} svgFill='#902677' title='Ajouter un membre' onClick={() => { setRemoveMembers(false); setShowModalAddRemoveMembers(true)} } />}
                                             {currentThread.type === "group" && user?.id === currentThread.user_id &&
                                                 <IconButton icon={IconButtonImages.RemoveParticipant} imgWidth={24} imgHeight={24} svgFill='#902677' title='Supprimer un membre' onClick={() => { setRemoveMembers(true); setShowModalAddRemoveMembers(true)} } />
                                             }
                                         </div>
-                                    <Link text="Quitter le groupe" className='text-sm text-(--pink) hover:underline' onClick={() => setShowModalLeaveGroup(true)} />
+                                    {currentThread.type === "group" && <Link text="Quitter le groupe" className='text-sm text-(--pink) hover:underline' onClick={() => setShowModalLeaveGroup(true)} />}
                                 </div>
                             </div>
                             <div className="flex flex-col flex-1 min-h-0 relative bg-[url(/images/discussion.png)] bg-no-repeat bg-center bg-blend-lighten bg-[#ffffffcc]">

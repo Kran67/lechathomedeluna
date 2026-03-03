@@ -177,3 +177,17 @@ export const update = async (
         return null;
     }
 }
+
+export const updateFavorite = async (
+    slug: string,
+    ) => {
+    try {
+        await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats/favorite/${slug}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+        });
+    } catch (err) {
+        console.error("Erreur lors de la modification de la fiche du chat :", err);
+        return null;
+    }
+}

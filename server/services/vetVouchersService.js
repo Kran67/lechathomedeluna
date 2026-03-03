@@ -130,10 +130,16 @@ async function deleteVetVoucher(id) {
   }
 }
 
+async function getVetVoucherCount() {
+  const res = await pool.query('SELECT count(*) AS count FROM vet_vouchers');
+  return res.rows[0].count;
+}
+
 module.exports = {
   listVetVoucher,
   getVetVoucherById,
   createVetVoucher,
   updateVetVoucher,
-  deleteVetVoucher
+  deleteVetVoucher,
+  getVetVoucherCount
 };

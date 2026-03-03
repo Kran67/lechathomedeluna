@@ -1,9 +1,15 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+
+import Image from 'next/image';
+
 import arrowBottom from '@/app/assets/images/bottom_arrow.svg';
 import Tag from '@/app/components/ui/Tag';
-import Image from 'next/image';
 
 /**
  * Interface pour les propriétés d'initialisation de l'élément collapse
@@ -12,7 +18,7 @@ import Image from 'next/image';
  */
 interface CollapseElementProps {
     title: string;
-    content?: string[];
+    content?: { name: string, url?: string}[];
     opened?: boolean;
 }
 
@@ -47,10 +53,10 @@ export default function CollapseElement({ title, content, opened = false }: Coll
             </div>
             <div className="overflow-hidden transition-height duration-300 ease-out" style={{ height: isOpen ? contentHeight : 0 }}>
                 <div ref={ref} className="grid gap-8 grid-cols-8" style={{ "gridTemplateRows": `repeat(${(content?.length ?? 3) / 3}, 1fr)` }}>
-                    {content?.map((tag: string, index: number) => (
+                    {content?.map((tag: { name: string, url?: string}, index: number) => (
                         <Tag
                             key={index}
-                            text={tag}
+                            text={tag.name}
                             className="flex items-center justify-center md:whitespace-nowrap text-xs text-(--white) font-normal bg-(--primary-dark) rounded-[5px] py-8 px-8 text-center" />
                     ))}
                 </div>

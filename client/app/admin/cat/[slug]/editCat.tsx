@@ -66,6 +66,7 @@ interface EditCatProps {
 }
 
 export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
+    console.log(cat);
     const { user } = useUser();
     const cookies: Cookies = useCookies();
     const token: string = cookies.get("token") as string;
@@ -80,6 +81,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const router = useRouter();
     const [pictures, setPictures] = useState<any>([...cat?.pictures ?? []]);
     const [picturesPreview, setPicturesPreview] = useState<string[]>([]);
+    const [isPreVisit, setIsPreVisit] = useState<boolean>(cat?.isPreVisit ?? false);
 
     const [clinic, setClinic] = useState<string | null>();
     const [voucherObject, setVoucherObject] = useState<string | null>();
@@ -119,6 +121,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         const sterilizationDate: string | null = formData.get("sterilizationDate") as string !== '' ? formData.get("sterilizationDate") as string : null;
         const birthDate: string | null = formData.get("birthDate") as string !== '' ? formData.get("birthDate") as string : null;
         const adoptionDate: string | null = formData.get("adoptionDate") as string !== '' ? formData.get("adoptionDate") as string : null;
+        const preVisitDate: string | null = formData.get("preVisitDate") as string !== '' ? formData.get("preVisitDate") as string : null;
         let hasNewFiles: boolean = false;
         pictures.map((picture: any) => {
             if (typeof picture !== "string") {
@@ -149,6 +152,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
             isDuringVisit,
             isAdoptable,
             adoptionDate,
+            isPreVisit,
+            preVisitDate,
             hostFamilyId,
             newPictureFiles,
             deletedPictureFiles,
@@ -463,6 +468,23 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 />
                             </div> */}
                             <Input name="adoptionDate" label="Date d'adoption" type={InputTypes.Date} value={cat?.adoptionDate ? formatYMMDD(new Date(cat?.adoptionDate)) : ''} />
+                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                                <label className="text-sm text-(--text) font-medium " htmlFor="isSterilized">En pré visite</label>
+                                <Select
+                                    options={YesNo}
+                                    className="select"
+                                    classNamePrefix="select"
+                                    name="preVisit"
+                                    id="preVisit"
+                                    isMulti={false}
+                                    isClearable={false}
+                                    isSearchable={false}
+                                    placeholder="pré visite ?"
+                                    value={YesNo.find(c => c.value === isPreVisit)}
+                                    onChange={(e:any) => setIsPreVisit(e?.value as boolean ?? false)}
+                                />
+                            </div>
+                            <Input name="preVisitDate" label="Date de la pré visite" type={InputTypes.Date} value={cat?.preVisitDate ? formatYMMDD(new Date(cat?.preVisitDate)) : ''} />
                             <Input name="catPictures" label="Photos" type={InputTypes.File} multipleFile={true} onChange={(e: React.ChangeEvent<HTMLInputElement>) => picturesChange(e)} />
                             <div className='flex flex-wrap w-full gap-7'>
                                 {picturesPreview.map((picture: string, idx: number) => (

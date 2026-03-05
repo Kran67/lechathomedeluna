@@ -36,16 +36,11 @@ async function initializeDb(deleteAll = false) {
 }
 
 async function dropAll(client) {
-  await client.query('DROP TABLE IF EXISTS cat_vaccines CASCADE');
-  await client.query('DROP TABLE IF EXISTS cat_documents CASCADE');
-  await client.query('DROP TABLE IF EXISTS cat_pictures CASCADE');
-  await client.query('DROP TABLE IF EXISTS cats CASCADE');
-  await client.query('DROP TABLE IF EXISTS users CASCADE');
-  await client.query('DROP TABLE IF EXISTS vet_vouchers CASCADE');
-  await client.query('DROP TABLE IF EXISTS message_threads CASCADE');
-  await client.query('DROP TABLE IF EXISTS messages CASCADE');
-  //await client.query('ALTER SEQUENCE users_id_seq RESTART WITH 1');
-  //await client.query('ALTER SEQUENCE cats_id_seq RESTART WITH 1');
+  await client.query('DROP SCHEMA public CASCADE;');
+  await client.query('CREATE SCHEMA public;');
+  await client.query('GRANT ALL ON SCHEMA public TO postgres;');
+  await client.query('GRANT ALL ON SCHEMA public TO public;');
+  await client.query("COMMENT ON SCHEMA public IS 'standard public schema';");
 }
 
 async function checkDatabase(client) {
@@ -105,8 +100,8 @@ async function initSchema(pool) {
       isAdoptable BOOLEAN DEFAULT false,
       adoptionDate DATE,
       favoriteCount INTEGER DEFAULT 0,
-      preVisit BOOLEAN DEFAULT false,
-      preVisitDate TIMESTAMPTZ,
+      isPreVisit BOOLEAN DEFAULT false,
+      preVisitDate DATE,
       hostfamily_id INTEGER REFERENCES users(id) ON DELETE RESTRICT,
       created_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       created_at TIMESTAMPTZ NOT NULL,

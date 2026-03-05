@@ -6,7 +6,8 @@ const {
   deleteCat,
   updateCatFavoriteCount,
   getAllCatsNotFullyCompletedCount,
-  getAllCatsNotFullyCompletedList
+  getAllCatsNotFullyCompletedList,
+  catsHasPreVisitWithoutDateList
 } = require('../services/catsService');
 const { statusFromError } = require('../utils/lib');
 
@@ -112,7 +113,16 @@ async function notFullyCompletedCount(req, res) {
 async function notFullyCompletedList(req, res) {
   try {
     const list = await getAllCatsNotFullyCompletedList();
-    //res.json(parseInt(rows.count,10));
+    res.json(list);
+  } catch (e) {
+    res.status(statusFromError(e)).json({ error: e.message });
+  }
+}
+
+async function hasPreVisitWithoutDateList(req, res) {
+  try {
+    const list = await catsHasPreVisitWithoutDateList();
+    res.json(list);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
   }
@@ -129,5 +139,6 @@ module.exports = {
   remove,
   updateFavoriteCount,
   notFullyCompletedCount,
-  notFullyCompletedList
+  notFullyCompletedList,
+  hasPreVisitWithoutDateList
 };

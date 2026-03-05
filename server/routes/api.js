@@ -12,9 +12,9 @@ const news = require('../controllers/newsController');
 
 // Properties
 router.get('/cats', cats.list); // non adoptable
-router.get('/catsAdoptable', cats.listAdoptable);
-router.get('/catsAdopted/:year', cats.listAdopted);
-router.get('/catsMine/:id', cats.listMine);
+router.get('/catsadoptable', cats.listAdoptable);
+router.get('/catsadopted/:year', cats.listAdopted);
+router.get('/catsmine/:id', cats.listMine);
 router.get('/cats/:id', cats.getById);
 router.post('/cats', requireRole(['Admin','Assistant', 'HostFamily']), cats.create);
 router.patch('/cats/favorite/:slug', cats.updateFavoriteCount);
@@ -22,6 +22,7 @@ router.patch('/cats/:slug', requireRole(['Admin','Assistant', 'HostFamily']), ca
 router.delete('/cats/:id', requireRole(['Admin']), cats.remove);
 router.get('/catnotfullycompletedcount', requireRole(['Admin', 'Assistant']), cats.notFullyCompletedCount);
 router.get('/catnotfullycompletedlist', requireRole(['Admin', 'Assistant']), cats.notFullyCompletedList);
+router.get('/hasprevisitwithoutdatelist', requireRole(['Admin', 'Assistant']), cats.hasPreVisitWithoutDateList);
 
 // Users
 router.get('/users', requireAuth, users.list);

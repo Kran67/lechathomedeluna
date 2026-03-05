@@ -24,9 +24,19 @@ function mapCatRow(row) {
     adoptionDate: row.adoptiondate,
     hostFamily: row.hostfamily_id ? { id: row.hostfamily_id, name: row.hostfamily_name } : undefined,
     favoriteCount: row.favoritecount,
-    preVisit: row.previsit,
+    isPreVisit: row.isprevisit,
     preVisitDate: row.previsitdate,
     pictures: [row.url],
+  };
+}
+
+function mapCatUnCompletdRow(row) {
+  if (!row) return null;
+  return {
+    slug: row.slug,
+    name: row.name,
+    numId: row.numidentification,
+    fields: row.fields
   };
 }
 
@@ -131,14 +141,14 @@ async function createCat(payload) {
 }
 
 async function updateCat(slug, changes) {
-  const allowed = ['name', 'description', 'status', 'numIdentification', 'sex', 'dress', 'race', 'isSterilized', 'sterilizationDate', 'birthDate', 'isDuringVisit', 'isAdoptable', 'adoptionDate', 'hostFamily_Id', 'preVisit', 'preVisitDate'];
+  const allowed = ['name', 'description', 'status', 'numIdentification', 'sex', 'dress', 'race', 'isSterilized', 'sterilizationDate', 'birthDate', 'isDuringVisit', 'isAdoptable', 'adoptionDate', 'hostFamily_Id', 'isPreVisit', 'preVisitDate'];
   const fields = [];
   const params = [];
 
   for (const key of allowed) {
     if (key in (changes || {})) {
       fields.push(`${key} = $${allowed.indexOf(key) + 1}`);
-      if (["sterilizationDate", "birthDate", "adoptionDate"].includes(key) && changes[key] === "") {
+      if (["sterilizationDate", "birthDate", "adoptionDate", "preVisitDate"].includes(key) && changes[key] === "") {
         params.push(null);
       } else {
         params.push(changes[key]);
@@ -195,7 +205,20 @@ async function getAllCatsNotFullyCompletedCount() {
 }
 
 async function getAllCatsNotFullyCompletedList() {
-  const res = await pool.query(`SELECT id, slug, name
+  const res = await pool.query(`SELECT 
+      slug,
+      name,
+      numIdentification,
+      ARRAY_REMOVE(ARRAY[
+        CASE WHEN description       IS NULL OR description       = '' THEN 'description'       END,
+        CASE WHEN numIdentification IS NULL OR numIdentification = '' THEN 'n° d''identification' END,
+        CASE WHEN dress             IS NULL OR dress             = '' THEN 'robe'             END,
+        CASE WHEN race              IS NULL OR race              = '' THEN 'race'              END,
+        CASE WHEN sterilizationDate IS NULL                          THEN 'date de stérilisation' END,
+        CASE WHEN birthDate         IS NULL                          THEN 'date de naissance'         END,
+        CASE WHEN adoptionDate      IS NULL                          THEN 'date d''adoption'      END,
+        CASE WHEN hostfamily_id     IS NULL                          THEN 'famille d''accueil'     END
+      ], NULL) AS fields
     FROM cats
     WHERE
       description       IS NULL OR description       = '' OR
@@ -207,7 +230,17 @@ async function getAllCatsNotFullyCompletedList() {
       adoptionDate      IS NULL OR
       hostfamily_id     IS NULL
     ORDER BY name;`);
-  //return res.rows[0].count;
+  return res.rows.map(mapCatUnCompletdRow);
+}
+
+async function catsHasPreVisitWithoutDateList() {
+  let sql = `
+      SELECT DISTINCT c.*
+      FROM cats c
+      WHERE isPreVisit = true AND preVisitDate IS NULL
+      ORDER BY c.name ASC`;
+  const res = await pool.query(sql);
+  return res.rows.map(mapCatRow);
 }
 
 module.exports = {
@@ -219,5 +252,6 @@ module.exports = {
   getCatHostFamilyId,
   updateCatFavoriteCount,
   getAllCatsNotFullyCompletedCount,
-  getAllCatsNotFullyCompletedList
+  getAllCatsNotFullyCompletedList,
+  catsHasPreVisitWithoutDateList
 };

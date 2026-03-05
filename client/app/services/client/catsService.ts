@@ -90,3 +90,32 @@ export const getCatNotFullyCompletedCount = async (
         return { error: err };
     }
 };
+
+
+export const getCatNotFullyCompletedList = async (
+    token: string,
+) => {
+    try {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/catnotfullycompletedlist`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+        });
+        return await res.json();
+    } catch (err) {
+        return { error: err };
+    }
+};
+
+export const getHasPreVisitWithoutDateList = async (
+    token: string,
+) => {
+    try {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/hasprevisitwithoutdatelist`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+        });
+        return await res.json();
+    } catch (err) {
+        return { error: err };
+    }
+};  

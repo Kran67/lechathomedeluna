@@ -96,6 +96,8 @@ export const update = async (
     isDuringVisit: boolean | null,
     isAdoptable: boolean | null,
     adoptionDate: string | null,
+    isPreVisit: boolean | null,
+    preVisitDate: string | null,
     hostFamilyId: string | null,
     newPictures: any,
     picturesToDelete: string[] | null,
@@ -121,6 +123,8 @@ export const update = async (
                 isDuringVisit,
                 isAdoptable,
                 adoptionDate,
+                isPreVisit,
+                preVisitDate,
                 hostFamily_Id: hostFamilyId,
                 userId
             }),

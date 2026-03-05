@@ -17,6 +17,7 @@ import {
   UserRole,
 } from '@/app/enums/enums';
 
+import Link from '../components/ui/Link';
 import { useUser } from '../contexts/userContext';
 import { Message } from '../interfaces/messaging';
 import { VetVoucher } from '../interfaces/vetVoucher';
@@ -26,6 +27,10 @@ import {
   hasRoles,
   truncate,
 } from '../lib/utils';
+import {
+  getCatNotFullyCompletedList,
+  getHasPreVisitWithoutDateList,
+} from '../services/client/catsService';
 import { unreadMessageListByUserId } from '../services/client/messagingService';
 
 /**
@@ -50,7 +55,7 @@ export default function MyAlerts() {
   const token: string = cookies.get("token") as string;
   const [unreadMessages, setUnreadMessage] = useState<Message[]>([]);
   const [vetVoucherList, setVetVoucherList] = useState<VetVoucher[]>([]);
-  const [unCompletedCatList, setUnCompletedCatList] = useState<{ id: string, name: string, numId: string, fields: string}[]>([]);
+  const [unCompletedCatList, setUnCompletedCatList] = useState<{ slug: string, name: string, numId: string, fields: string[]}[]>([]);
   const [vaccineBoosterList, setVaccineBoosterList] = useState<[]>([]);
   const [preVisitList, setPreVisitList] = useState<[]>([]);
 
@@ -58,6 +63,14 @@ export default function MyAlerts() {
     (async () => {
         const res = await unreadMessageListByUserId(token, user?.id as string);
         setUnreadMessage(res);
+    })();
+    (async () => {
+        const res = await getCatNotFullyCompletedList(token);
+        setUnCompletedCatList(res);
+    })();
+    (async () => {
+      const res = await getHasPreVisitWithoutDateList(token);
+      setPreVisitList(res);
     })();
   }, [user]);
 
@@ -117,11 +130,11 @@ export default function MyAlerts() {
                     <span className="text-(--white) border-l w-150 px-5">N° identification</span>
                     <span className="text-(--white) border-l flex-1 px-5">Champs manquants</span>
                 </div>
-                {unCompletedCatList.length > 0 ? unCompletedCatList.map((cat: { id: string, name: string, numId: string, fields: string}, idx: number) => (
-                  <div key={cat.id} className={"flex w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
-                        <span className="w-100 px-5 text-(--text)">{formatDDMMY(new Date(cat.name))}</span>
+                {unCompletedCatList.length > 0 ? unCompletedCatList.map((cat: { slug: string, name: string, numId: string, fields: string[]}, idx: number) => (
+                  <div key={cat.slug} className={"flex w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
+                        <Link url={"/admin/cat/" + cat.slug} className="w-100 px-5 text-(--text)" text={cat.name} />
                         <span className="border-l w-150 px-5 text-(--text)">{cat.numId}</span>
-                        <span className="border-l w-100 px-5 text-(--text)">{cat.fields}</span>
+                        <span className="border-l flex-1 px-5 text-(--text)">{cat.fields.join(', ')}</span>
                     </div>
                 )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de fiche de chat en FA incompléte</div>}
               </div>
@@ -148,21 +161,16 @@ export default function MyAlerts() {
               </div>
           </div>}
           {user && hasRoles(user?.roles, [UserRole.Admin, UserRole.Assistant]) && <div className='flex flex-col'>
-            <span className='text-lg text-(--primary)'>Pré visites :</span>
+            <span className='text-lg text-(--primary)'>Pré visites sans date :</span>
             <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
                 <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
-                    <span className="text-(--white) w-100 px-5">Date</span>
-                    <span className="text-(--white) border-l w-100 px-5">Pour</span>
+                    <span className="text-(--white) w-100 px-5">Nom</span>
                 </div>
                 {preVisitList.length > 0 ? preVisitList.map((preVisit: any, idx: number) => (
                   <div key={preVisit.id} className={"flex w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
-                        <span className="w-100 px-5 text-(--text)">{formatDDMMY(new Date(preVisit.date))}</span>
-                        <span className="border-l w-150 px-5 text-(--text)">{preVisit.cat_name}</span>
-                        {/* <span className="border-l w-100 px-5 text-(--text)">{preVisit.}</span>
-                        <span className="border-l flex-1 px-5 text-(--text)">{preVisit.}</span>
-                        <span className="border-l w-250 px-5 text-(--text)">{preVisit.}</span> */}
+                        <Link url={"/admin/cat/" + preVisit.slug} className="w-100 px-5 text-(--text)" text={preVisit.name} />
                     </div>
-                )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de pré visite à prévoir / en retard</div>}
+                )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de date de pré visite</div>}
               </div>
           </div>}
         </div>

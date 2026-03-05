@@ -25,6 +25,13 @@ import {
   hasRoles,
   prepareBodyToShowModal,
 } from '@/app/lib/utils';
+import {
+  getCatNotFullyCompletedCount,
+} from '@/app/services/client/catsService';
+import {
+  getUnreadMessageByUserId,
+} from '@/app/services/client/messagingService';
+import { getVetVouchersCount } from '@/app/services/client/vetVouchersService';
 
 /**
  * Interface pour des paramétres pour l'affichage du menu actif
@@ -49,29 +56,23 @@ export default function Header({ activeMenu }: HeaderProps) {
     const [vetVoucherCount, setVetVoucherCount] = useState<number>(0);
     const [catNotFullyCompletedCount, setCatNotFullyCompletedCount] = useState<number>(0);
     const cookies: Cookies = useCookies();
-    const token: string | undefined = cookies.get("token");
+    const token: string = cookies.get("token") as string;
 
     useEffect(() => {
         if (token) {
-            fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/messaging/unread/${user?.id}`, {
-                method: "GET",
-                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
-            }).then(async (response) => {
-                setUnreadMsg(await response.json());
-            });
+            (async () => {
+                const res = await getUnreadMessageByUserId(token, user?.id as string);
+                setUnreadMsg(res);
+            })();
             if (user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant])) {
-                fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/vetvoucherscount`, {
-                    method: "GET",
-                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
-                }).then(async (response) => {
-                    setVetVoucherCount(await response.json());
-                });
-                fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/catnotfullycompletedcount`, {
-                    method: "GET",
-                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
-                }).then(async (response) => {
-                    setCatNotFullyCompletedCount(await response.json());
-                });
+                (async () => {
+                    const res = await getVetVouchersCount(token);
+                    setVetVoucherCount(res);
+                })();
+                (async () => {
+                    const res = await getCatNotFullyCompletedCount(token);
+                    setCatNotFullyCompletedCount(res);
+                })();
             }
         }
     }, [user]);
@@ -96,7 +97,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.CatsForAdoption}
                 url="/catsForAdoption"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />
-            {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant]) && <MenuItem
+            {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant, UserRole.HostFamily]) && <MenuItem
                 text="Mes alertes"
                 isActive={activeMenu === HeaderMenuItems.Alerts}
                 url="/myAlerts"

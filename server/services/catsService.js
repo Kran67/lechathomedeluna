@@ -182,15 +182,15 @@ async function updateCatFavoriteCount(slug) {
 async function getAllCatsNotFullyCompletedCount() {
   const res = await pool.query(`SELECT COUNT(*) AS count
     FROM cats
-    WHERE
-      description       IS NULL OR description       = '' OR
+    WHERE isadoptable = false AND
+      (description       IS NULL OR description       = '' OR
       numIdentification IS NULL OR numIdentification = '' OR
       dress             IS NULL OR dress             = '' OR
       race              IS NULL OR race              = '' OR
       sterilizationDate IS NULL OR
       birthDate         IS NULL OR
       adoptionDate      IS NULL OR
-      hostfamily_id     IS NULL;`);
+      hostfamily_id     IS NULL);`);
   return res.rows[0].count;
 }
 

@@ -56,7 +56,7 @@ interface NewCatProps {
 export default function NewCat({ hostFamilies} : NewCatProps) {
     const { user } = useUser();
     const cookies: Cookies = useCookies();
-    const token: string | undefined = cookies.get("token");
+    const token: string = cookies.get("token") as string;
     const [status, setStatus] = useState<string | null>("Non testé");
     const [sex, setSex] = useState<string | null>(null);
     const [isSterilized, setIsSterilized] = useState<boolean | null>(null);

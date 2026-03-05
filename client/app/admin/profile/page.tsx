@@ -43,7 +43,7 @@ const Select = dynamic(() => import("react-select"), { ssr: false });
 export default function Profile() {
     const { user, clear } = useUser();
     const cookies: Cookies = useCookies();
-    const token: string | undefined = cookies.get("token");
+    const token: string = cookies.get("token") as string;
     const [profile, setProfile] = useState<User | null>(null);
     const [city, setCity] = useState<string>(user?.city || "");
     const [capacity, setCapacity] = useState<string>(user?.capacity || "Empty");

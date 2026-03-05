@@ -53,7 +53,7 @@ export default function HomePage() {
   const { user } = useUser();
   const service = newsService(period);
     const cookies: Cookies = useCookies();
-    const token: string | undefined = cookies.get("token");
+    const token: string = cookies.get("token") as string;
 
   useEffect(() => {
     service.refresh(period);

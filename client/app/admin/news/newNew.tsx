@@ -29,7 +29,7 @@ import { create } from '@/app/services/server/newsService';
 
 export default function NewCat() {
     const cookies: Cookies = useCookies();
-    const token: string | undefined = cookies.get("token");
+    const token: string = cookies.get("token") as string;
     const [pictures, setPictures] = useState<any>([]);
     const [picturesPreview, setPicturesPreview] = useState<string[]>([]);
 

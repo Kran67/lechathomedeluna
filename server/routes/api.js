@@ -46,6 +46,7 @@ router.get('/vetvoucherscount', requireRole(['Admin', 'Assistant']), vetVouchers
 // Messaging
 router.get('/messaging/:userid', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.getByUserId);
 router.get('/messaging/unread/:userid', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.unreadMessageCountByUserId);
+router.get('/messaging/unreadlist/:userid', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.unreadMessageListByUserId);
 router.post('/messaging', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.create);
 router.post('/messaging/createandsendmessage', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.createAndSendMessage);
 router.delete('/messaging/:id', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.remove);

@@ -67,3 +67,17 @@ export function vetVouchersService(token: string | undefined, year: number = 0, 
 
     return { vetVouchers, loading, refresh, error };
 }
+
+export const getVetVouchersCount = async (
+    token: string,
+) => {
+    try {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/vetvoucherscount`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+        });
+        return await res.json();
+    } catch (err) {
+        return { error: err };
+    }
+};

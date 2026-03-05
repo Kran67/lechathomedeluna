@@ -59,7 +59,7 @@ const Select = dynamic(() => import("react-select"), { ssr: false });
 export default function VetVouchers() {
     const { user } = useUser();
     const cookieStore = useCookies();
-    const token: string | undefined = cookieStore.get("token");
+    const token: string = cookieStore.get("token") as string;
     const [year, setYear] = useState<number>(new Date().getFullYear());
     const [clinic, setClinic] = useState<string>('-');
     const [voucherObject, setVoucherObject] = useState<string>('-');
@@ -104,64 +104,64 @@ export default function VetVouchers() {
     return (
         <main className="flex flex-col gap-20 w-full items-center md:pt-20 md:px-140">
             <Header activeMenu={HeaderMenuItems.VeterinaryVouchers} />
-                <div className="flex flex-col gap-51 md:gap-20 px-16 md:p-0 w-full xl:w-1115">
-                    <div className="flex flex-col gap-8 w-full xl:w-1115 lg:w-800 items-center text-center">
-                        <span className="text-[32px] text-(--primary) w-full">Bons vétérinaires</span>
-                        <div className="flex gap-5 w-full items-center justify-center">
-                            <Select
-                                options={Clinics}
-                                className="select"
-                                classNamePrefix="select"
-                                name="clinical"
-                                id="clinical"
-                                isMulti={false}
-                                isClearable={true}
-                                isSearchable={true}
-                                placeholder="Clinique"
-                                onChange={(e:any) => { setVetVoucherId(null); setClinic(e?.value ?? null)}}
-                                styles={{container: provided => ({
-                                    ...provided,
-                                    width: 370,
-                                    textAlign: "left"
-                                })}}
-                            />
-                            <Select
-                                options={voucherObjects}
-                                className="select"
-                                classNamePrefix="select"
-                                name="voucherObjet"
-                                id="voucherObjet"
-                                isMulti={false}
-                                isClearable={true}
-                                isSearchable={true}
-                                placeholder="Objet du bon"
-                                onChange={(e:any) => { setVetVoucherId(null); setVoucherObject(e?.value ?? null) }}
-                                styles={{container: provided => ({
-                                    ...provided,
-                                    width: 200,
-                                    textAlign: "left"
-                                })}}
-                            />
-                            <Select
-                                options={Years}
-                                className="select"
-                                classNamePrefix="select"
-                                name="role"
-                                id="role"
-                                isMulti={false}
-                                isClearable={false}
-                                isSearchable={false}
-                                placeholder="Année d'adoption"
-                                value={Years.find(c => c.value === year)}
-                                onChange={(e:any) => setYear(e?.value ?? "")}
-                                styles={{container: provided => ({
-                                    ...provided,
-                                    width: 170
-                                })}}
-                            />
+            <div className="flex flex-col gap-51 md:gap-20 px-16 md:p-0 w-full xl:w-1115">
+                <div className="flex flex-col gap-8 w-full xl:w-1115 lg:w-800 items-center text-center">
+                    <span className="text-[32px] text-(--primary) w-full">Bons vétérinaires</span>
+                    <div className="flex gap-5 w-full items-center justify-center">
+                        <Select
+                            options={Clinics}
+                            className="select"
+                            classNamePrefix="select"
+                            name="clinical"
+                            id="clinical"
+                            isMulti={false}
+                            isClearable={true}
+                            isSearchable={true}
+                            placeholder="Clinique"
+                            onChange={(e:any) => { setVetVoucherId(null); setClinic(e?.value ?? null)}}
+                            styles={{container: provided => ({
+                                ...provided,
+                                width: 370,
+                                textAlign: "left"
+                            })}}
+                        />
+                        <Select
+                            options={voucherObjects}
+                            className="select"
+                            classNamePrefix="select"
+                            name="voucherObjet"
+                            id="voucherObjet"
+                            isMulti={false}
+                            isClearable={true}
+                            isSearchable={true}
+                            placeholder="Objet du bon"
+                            onChange={(e:any) => { setVetVoucherId(null); setVoucherObject(e?.value ?? null) }}
+                            styles={{container: provided => ({
+                                ...provided,
+                                width: 200,
+                                textAlign: "left"
+                            })}}
+                        />
+                        <Select
+                            options={Years}
+                            className="select"
+                            classNamePrefix="select"
+                            name="role"
+                            id="role"
+                            isMulti={false}
+                            isClearable={false}
+                            isSearchable={false}
+                            placeholder="Année d'adoption"
+                            value={Years.find(c => c.value === year)}
+                            onChange={(e:any) => setYear(e?.value ?? "")}
+                            styles={{container: provided => ({
+                                ...provided,
+                                width: 170
+                            })}}
+                        />
 
-                        </div>
                     </div>
+                </div>
                 <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
                     <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
                         <span className="text-(--white) w-100 px-5">Date</span>
@@ -188,7 +188,7 @@ export default function VetVouchers() {
                         </div>
                     ))}
                 </div>
-                </div>
+            </div>
             <Footer />
         </main>
     );

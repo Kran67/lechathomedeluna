@@ -59,7 +59,7 @@ interface ProfileProps {
 export default function Profile({ profile, users, isNew }: ProfileProps) {
     const { user } = useUser();
     const cookies: Cookies = useCookies();
-    const token: string | undefined = cookies.get("token");
+    const token: string = cookies.get("token") as string;
     const [city, setCity] = useState<string>(profile?.city || "");
     const [roles, setRoles] = useState<string>(profile?.roles || "");
     const [blacklisted, setBlacklisted] = useState<boolean>(profile?.blacklisted ?? false);

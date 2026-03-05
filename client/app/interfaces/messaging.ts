@@ -26,4 +26,6 @@ export interface Message {
     sent_at: Date;
     is_readed: boolean;
     attachments: MessageAttachment[];
+    groupName: string;
+    threadType: string;
 }

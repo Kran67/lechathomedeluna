@@ -13,6 +13,9 @@ import { toast } from 'react-toastify';
 
 import { useUser } from '@/app/contexts/userContext';
 import { IconButtonImages } from '@/app/enums/enums';
+import {
+  createThreadAndSendMessage,
+} from '@/app/services/client/messagingService';
 
 import Button from '../ui/Button';
 import IconButton from '../ui/IconButton';
@@ -27,7 +30,7 @@ export default function ModalMessage({
     onSuccess: () => void;
 }) {
     const cookies: Cookies = useCookies();
-    const token: string | undefined = cookies.get("token");
+    const token: string = cookies.get("token") as string;
     const { user } = useUser();
 
     const handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void> = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -35,18 +38,7 @@ export default function ModalMessage({
         const form: EventTarget & HTMLFormElement = e.currentTarget;
         const formData: FormData = new FormData(form);
 
-        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/messaging/createandsendmessage`, {
-            method: "POST",
-            body: JSON.stringify({
-                fromUserId: user?.id,
-                userIds,
-                message: formData.get("message")?.toString()
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-            }
-        });
+        const res: Response = await createThreadAndSendMessage(token, user?.id as string, userIds, formData.get("message") as string);
 
         if (res.ok) {
             toast.success(`Le message a bien été envoyé avec succès.`);

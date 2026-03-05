@@ -68,7 +68,7 @@ interface EditCatProps {
 export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const { user } = useUser();
     const cookies: Cookies = useCookies();
-    const token: string | undefined = cookies.get("token");
+    const token: string = cookies.get("token") as string;
     const [status, setStatus] = useState<string | null>(cat?.status ?? null);
     const [sex, setSex] = useState<string | null>(cat?.sex ?? null);
     const [isSterilized, setIsSterilized] = useState<boolean>(cat?.isSterilized ?? false);
@@ -320,7 +320,6 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     }
 
     useEffect(() => {
-        console.log(birthDate);
         setSterilizationDateError(isTodayGreaterThanDatePlus6Months(birthDate));
     }, [birthDate]);
 

@@ -4,6 +4,7 @@ const fs = require('fs');
 const {
     getAllThreadsByUserId,
     getUnreadMessageCountByUserId,
+    getUnreadMessageListByUserId,
     getAllMessagesById,
     createMessaging,
     deleteMessaging,
@@ -209,6 +210,15 @@ async function unreadMessageCountByUserId(req, res) {
   }
 }
 
+async function unreadMessageListByUserId(req, res) {
+  try {
+    const rows = await getUnreadMessageListByUserId(req.params.userid);
+      res.json(rows);
+  } catch (e) {
+    res.status(statusFromError(e)).json({ error: e.message });
+  }
+}
+
 module.exports = {
   getByUserId,
   create,
@@ -222,5 +232,6 @@ module.exports = {
   leaveThread,
   uploadMessageAttachment,
   createAndSendMessage,
-  unreadMessageCountByUserId
+  unreadMessageCountByUserId,
+  unreadMessageListByUserId
 };

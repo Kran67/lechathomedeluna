@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 
 import { useUser } from '@/app/contexts/userContext';
 import { IconButtonImages } from '@/app/enums/enums';
+import { leaveThread } from '@/app/services/client/messagingService';
 
 import Button from '../ui/Button';
 import IconButton from '../ui/IconButton';
@@ -29,24 +30,13 @@ export default function ModalLeaveThread({
     onSuccess: () => void;
 }) {
     const cookies: Cookies = useCookies();
-    const token: string | undefined = cookies.get("token");
+    const token: string = cookies.get("token") as string;
     const { user } = useUser();
 
     const handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void> = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/messaging/leaveThread`, {
-            method: "POST",
-            body: JSON.stringify({
-                threadId,
-                userId: user?.id,
-                isLastMember
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-            }
-        });
+        const res: Response = await leaveThread(token, threadId, user?.id as string,isLastMember);
 
         if (res.ok) {
             toast.success(`Vous avez bien quitté le groupe.`);

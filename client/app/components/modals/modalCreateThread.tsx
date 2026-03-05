@@ -17,6 +17,7 @@ import {
   IconButtonImages,
   InputTypes,
 } from '@/app/enums/enums';
+import { createThread } from '@/app/services/client/messagingService';
 
 import Button from '../ui/Button';
 import IconButton from '../ui/IconButton';
@@ -34,7 +35,7 @@ export default function ModalCreateThread({
     onSuccess: () => void;
 }) {
     const cookies: Cookies = useCookies();
-    const token: string | undefined = cookies.get("token");
+    const token: string = cookies.get("token") as string;
     const { user } = useUser();
 
     const handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void> = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -42,20 +43,14 @@ export default function ModalCreateThread({
         const form: EventTarget & HTMLFormElement = e.currentTarget;
         const formData: FormData = new FormData(form);
 
-        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/messaging`, {
-            method: "POST",
-            body: JSON.stringify({
-                type,
-                toUserId:formData.getAll("participants")[0], // For private thread, we take the first participant as the recipient
-                fromUserId : user?.id,
-                groupName: type === "group" ? formData.get("name"): undefined,
-                memberIds: type === "group" ? formData.getAll("participants") : [],
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-            }
-        });
+        const res: Response = await createThread(
+            token,
+            type,
+            formData.getAll("participants")[0] as string,
+            user?.id as string,
+            type === "group" ? formData.get("name") as string: undefined,
+            type === "group" ? formData.getAll("participants") as string[] : []
+        );
 
         if (res.ok) {
             toast.success("La discussion a bien été créée.\nRedirection vers la page de messagerie...");

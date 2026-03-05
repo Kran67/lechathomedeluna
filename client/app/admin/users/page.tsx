@@ -13,8 +13,8 @@ import UsersList from './users';
 
 export default async function UsersPage() {
     const cookieStore = await cookies()
-    const userId: string | undefined = cookieStore.get("userId")?.value;
-    const token: string | undefined = cookieStore.get("token")?.value;
+    const userId: string = cookieStore.get("userId")?.value as string;
+    const token: string = cookieStore.get("token")?.value as string;
     const user = await getById(token, userId ?? '');
     let users: User[] = [];
 

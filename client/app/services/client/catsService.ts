@@ -76,3 +76,17 @@ export function catsService(type: "adopted" | "adoptable" | undefined, numIdOrNa
 
     return { cats, loading, refresh, error };
 }
+
+export const getCatNotFullyCompletedCount = async (
+    token: string,
+) => {
+    try {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/catnotfullycompletedcount`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+        });
+        return await res.json();
+    } catch (err) {
+        return { error: err };
+    }
+};

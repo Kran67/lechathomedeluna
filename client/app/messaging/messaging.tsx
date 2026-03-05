@@ -79,7 +79,7 @@ interface MessagingProps {
 export default function MessagingPage({ threads, userList } : MessagingProps) {
     const { user } = useUser();
     const cookieStore = useCookies();
-    const token: string | undefined = cookieStore.get("token");
+    const token: string = cookieStore.get("token") as string;
     const [search, setSearch] = useState<string>("");
     const [threadId, setThreadId] = useState<string>(threads && threads.length > 0 ? threads[0].id : "-1");
     const [messages, setMessages] = useState<Message[]>([]);
@@ -197,7 +197,7 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
                 <ModalAddRemoveMembers
                     threadId={currentThread?.id ?? "-1"}
                     userList={!removeMembers ? potentialNewMemberList : currentThread?.members?.map((member: { id: string, name: string }) => ({ value: member.id, label: member.name })) ?? []}
-                    removeMembers={removeMembers}
+                    isRemoveMembers={removeMembers}
                     closeModal={() => setShowModalAddRemoveMembers(false)}
                     onSuccess={(members: string[]) => {
                         setShowModalAddRemoveMembers(false);

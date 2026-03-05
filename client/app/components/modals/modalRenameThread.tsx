@@ -12,6 +12,7 @@ import {
 import { toast } from 'react-toastify';
 
 import { IconButtonImages } from '@/app/enums/enums';
+import { renameThread } from '@/app/services/client/messagingService';
 
 import Button from '../ui/Button';
 import IconButton from '../ui/IconButton';
@@ -29,7 +30,7 @@ export default function ModalRenameThread({
     onSuccess: (newName: string) => void;
 }) {
     const cookies: Cookies = useCookies();
-    const token: string | undefined = cookies.get("token");
+    const token: string = cookies.get("token") as string;
 
     const handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void> = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -37,18 +38,7 @@ export default function ModalRenameThread({
         const formData: FormData = new FormData(form);
         const newGroupName: string = formData.get("groupName")?.toString() || groupName;
 
-        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/messaging/renameThread`, {
-            method: "POST",
-            body: JSON.stringify({
-                threadId,
-                groupName: newGroupName,
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-            }
-        });
-
+        const res: Response = await renameThread(token, threadId, newGroupName);
         if (res.ok) {
             toast.success(`Le groupe a été renommé avec succès.`);
             onSuccess(newGroupName);

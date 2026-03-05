@@ -23,7 +23,9 @@ function mapMessageRow(row) {
     nickname: row.nickname,
     content: row.content ? decodeURIComponent(row.content) : "",
     sent_at: row.sent_at,
-    is_readed: row.is_readed
+    is_readed: row.is_readed,
+    groupName: row.groupname ?? null,
+    threadType: row.thread_type ?? null,
   };
 }
 
@@ -150,6 +152,33 @@ async function getUnreadMessageCountByUserId(userid) {
   `, [userid]);
   if (res.rows.length === 0) return null;
   return res.rows[0];
+}
+
+async function getUnreadMessageListByUserId(userid) {
+  const res = await pool.query(`
+    SELECT
+      m.id                                          AS id,
+      mt.id                                         AS thread_id,
+      CONCAT(u.name, ' ', u.lastname)               AS nickname,
+      CASE
+        WHEN mt.type = 'private' THEN NULL
+        ELSE mt.name
+      END                                           AS groupname,
+      mt.type                                       AS thread_type,
+      m.content                                     AS content,
+      m.sent_at                                     AS sent_at
+    FROM messages m
+    JOIN message_threads mt      ON mt.id = m.thread_id
+    JOIN thread_participants tp  ON tp.thread_id = mt.id AND tp.user_id = $1
+    JOIN users u                 ON u.id = m.sender_id
+    LEFT JOIN message_reads mr   ON mr.message_id = m.id AND mr.user_id = $1
+    WHERE
+      m.sender_id <> $1
+      AND mr.message_id IS NULL
+    ORDER BY m.sent_at DESC;
+  `, [userid]);
+  if (res.rows.length === 0) return [];
+  return res.rows.map(row => mapMessageRow(row));
 }
 
 async function getAllMessagesById(id, userId) {
@@ -430,6 +459,7 @@ async function setNewAdmin(threadId) {
 module.exports = {
   getAllThreadsByUserId,
   getUnreadMessageCountByUserId,
+  getUnreadMessageListByUserId,
   getAllMessagesById,
   createMessaging,
   deleteMessaging,

@@ -37,8 +37,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const cookieStore = await cookies();
-  const userId: string | undefined = cookieStore.get("userId")?.value;
-  const token: string | undefined = cookieStore.get("token")?.value;
+  const userId: string = cookieStore.get("userId")?.value as string;
+  const token: string = cookieStore.get("token")?.value as string;
   const user: User | null = token ? await getById(token, userId ?? "") : null;
 
   return (

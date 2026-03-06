@@ -32,6 +32,8 @@ interface InputProps {
     multipleFile?: boolean;
     ref?: any
     pattern?: string;
+    min?: number;
+    max?: number;
 }
 
 /**
@@ -58,9 +60,11 @@ interface InputProps {
  * @param {boolean?} InputProps.multipleFile - Indique si on peut sélectionner plusieurs fichiers ou non
  * @param {any?} InputProps.ref - 
  * @param {string?} InputProps.pattern - 
+ * @param {number?} InputProps.min - 
+ * @param {number?} InputProps.max - 
  */
 export default function Input({ name, label, type, value, imageType, placeHolder, required, width, onChange, hasError, autoComplete = "on", maxLength, className, 
-    showLabel = true, readOnly = false, hidden = false, multipleFile = false, ref = undefined, pattern = undefined }: InputProps) {
+    showLabel = true, readOnly = false, hidden = false, multipleFile = false, ref = undefined, pattern = undefined, min, max }: InputProps) {
     const classNames: string = [
         "input",
         "flex",
@@ -68,7 +72,7 @@ export default function Input({ name, label, type, value, imageType, placeHolder
         "flex-1",
         showLabel && type !== InputTypes.File ? "gap-7" : "",
         "justify-start",
-        showLabel ? "h-77" : "",
+        showLabel ? "h-66" : "",
         className ?? ""
     ].join(" ");
 
@@ -120,6 +124,8 @@ export default function Input({ name, label, type, value, imageType, placeHolder
                         multiple={multipleFile}
                         ref={ref}
                         pattern={pattern}
+                        min={min}
+                        max={max}
                     />
                     {imageType &&
                         <Image src={"/images/" + imageType + ".svg"} width={15} height={imgHeight} alt={" Image " + imageType} />

@@ -243,6 +243,44 @@ async function catsHasPreVisitWithoutDateList() {
   return res.rows.map(mapCatRow);
 }
 
+async function createAdoptionRequestForCat(payload) {
+  const {
+    catId = null,
+    lastName = null,
+    firstName = null,
+    email = null,
+    facebook = null,
+    lifePlace = null,
+    area = null,
+    isOutsideAccess = null,
+    householdPeopleNumber = null,
+    alreadyPresenAnimalsNumber = null,
+    dailyTimeOff = null,
+    holidaysChildcareSolution = null,
+    baseUrl = null,
+    slug = null,
+    name = null,
+  } = payload || {};
+
+  if (!catId) throw new Error('Le chat est requis');
+  if (!lastName) throw new Error('Nom est requis');
+  if (!firstName) throw new Error('Prénom est requis');
+  if (!email) throw new Error('Email est requis');
+  if (!lifePlace) throw new Error('Lieu de vie est requis');
+  if (!area) throw new Error('Superficie est requise');
+  if (!isOutsideAccess) throw new Error('Accès à l’extérieur est requis');
+  if (!householdPeopleNumber) throw new Error('Nombre de personnes dans le foyer est requis');
+  if (!alreadyPresenAnimalsNumber) throw new Error('Nombre d’animaux déjà présent est requis');
+  if (!dailyTimeOff) throw new Error('Temps d’absence quotidien est requis');
+  if (!holidaysChildcareSolution) throw new Error('Solution de garde pendant les congés est requis');
+  
+  await pool.query(
+    `INSERT INTO cat_request_adoptions(cat_id, date, last_name, first_name, email, facebook, lifePlace, area, isOutsideAccess, householdPeopleNumber, alreadyPresenAnimalsNumber, dailyTimeOff, holidaysChildcareSolution)
+     VALUES ($1,NOW(),$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+    [catId, lastName, firstName, email, facebook, lifePlace, area, isOutsideAccess, householdPeopleNumber, alreadyPresenAnimalsNumber, dailyTimeOff, holidaysChildcareSolution]
+  );
+}
+
 module.exports = {
   listCats,
   getCatDetails,
@@ -253,5 +291,6 @@ module.exports = {
   updateCatFavoriteCount,
   getAllCatsNotFullyCompletedCount,
   getAllCatsNotFullyCompletedList,
-  catsHasPreVisitWithoutDateList
+  catsHasPreVisitWithoutDateList,
+  createAdoptionRequestForCat
 };

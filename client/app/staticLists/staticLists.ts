@@ -700,7 +700,7 @@ export const Clinics: {
     },
 ];
 
-export const voucherObjects: {
+export const VoucherObjects: {
     value: string;
     label: string;
 }[] = [
@@ -746,7 +746,7 @@ export const voucherObjects: {
     },
 ];
 
-export const newsPeriods: {
+export const NewsPeriods: {
     value: string;
     label: string;
 }[] = [
@@ -778,5 +778,81 @@ export const Capacities: readonly ColourOption[] = [
         value: "Full",
         label: "Full",
         color: "#FF0000"
+    },
+];
+
+export const DailyTimes: {
+    value: string;
+    label: string;
+}[] = [
+    {
+        value: "Aucun",
+        label: "Aucun"
+    },
+    {
+        value: "1 heure",
+        label: "1 heure"
+    },
+    {
+        value: "2 heures",
+        label: "2 heures"
+    },
+    {
+        value: "3 heures",
+        label: "3 heures"
+    },
+    {
+        value: "demi-journée",
+        label: "demi-journée"
+    },
+    {
+        value: "5 heures",
+        label: "5 heures"
+    },
+    {
+        value: "6 heures",
+        label: "6 heures"
+    },
+    {
+        value: "7 heures",
+        label: "7 heures"
+    },
+    {
+        value: "Journée",
+        label: "Journée"
+    },
+    {
+        value: "Soirée",
+        label: "Soirée"
+    },
+    {
+        value: "Nuit",
+        label: "Nuit"
+    },
+];
+
+export const LifePlaces : {
+    value: string;
+    label: string;
+}[] = [
+    {
+        value: "Maison",
+        label: "Maison"
+    },
+    {
+        value: "Appartement",
+        label: "Appartement"
+    },
+    {
+        value: "Studio",
+        label: "Studio"
+    },
+    {
+        value: "Loft",
+        label: "Loft"
+    },
+    {
+        value: "Duplex, triplex ou souplex",
+        label: "Duplex, triplex ou souplex"
     },
 ];

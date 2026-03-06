@@ -7,8 +7,12 @@ const {
   updateCatFavoriteCount,
   getAllCatsNotFullyCompletedCount,
   getAllCatsNotFullyCompletedList,
-  catsHasPreVisitWithoutDateList
+  catsHasPreVisitWithoutDateList,
+  createAdoptionRequestForCat
 } = require('../services/catsService');
+const {
+  createSystemMessage
+} = require('../services/messagingService');
 const { statusFromError } = require('../utils/lib');
 
 async function list(req, res) {
@@ -128,6 +132,19 @@ async function hasPreVisitWithoutDateList(req, res) {
   }
 }
 
+async function createAdoptionRequest(req, res) {
+  try {
+    await createAdoptionRequestForCat(req.body || {});
+    const baseUrl = req.body.baseUrl;
+    const slug = req.body.catSlug;
+    const name = req.body.catName;
+    createSystemMessage(1, 1, `La demande d'adoption pour le 🐈 ${baseUrl}/admin/cat/${slug}[${name}] vient d'être créée.`);
+    res.status(201).end();
+  } catch (e) {
+    res.status(statusFromError(e)).json({ error: e.message });
+  }
+}
+
 module.exports = {
   list,
   listAdoptable,
@@ -140,5 +157,6 @@ module.exports = {
   updateFavoriteCount,
   notFullyCompletedCount,
   notFullyCompletedList,
-  hasPreVisitWithoutDateList
+  hasPreVisitWithoutDateList,
+  createAdoptionRequest
 };

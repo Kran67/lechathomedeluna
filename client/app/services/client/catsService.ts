@@ -118,4 +118,48 @@ export const getHasPreVisitWithoutDateList = async (
     } catch (err) {
         return { error: err };
     }
-};  
+};
+
+export const createAdoptionRequest = async (
+    catId: string,
+    lastName: string,
+    firstName: string,
+    email: string,
+    facebook: string,
+    lifePlace: string,
+    area: string,
+    isOutsideAccess: boolean,
+    householdPeopleNumber: string,
+    alreadyPresenAnimalsNumber: string,
+    dailyTimeOff: string,
+    holidaysChildcareSolution: string,
+    catName: string,
+    catSlug: string
+) => {
+    try {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/createadoptionrequest`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                catId,
+                lastName,
+                firstName,
+                email,
+                facebook,
+                lifePlace,
+                area,
+                isOutsideAccess,
+                householdPeopleNumber,
+                alreadyPresenAnimalsNumber,
+                dailyTimeOff,
+                holidaysChildcareSolution,
+                baseUrl: process.env.NEXT_PUBLIC_APP_BASE_URL,
+                catName,
+                catSlug
+            })
+        });
+        return await res.json();
+    } catch (err) {
+        return { error: err };
+    }
+}

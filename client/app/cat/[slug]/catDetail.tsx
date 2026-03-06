@@ -6,11 +6,18 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 
+import {
+  Cookies,
+  useCookies,
+} from 'next-client-cookies';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 import Carousel from '@/app/components/data/Carousel';
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
+import ModalCreateAdoptionRequest
+  from '@/app/components/modals/ModalCreateAdoptionRequest';
 import CollapseElement from '@/app/components/ui/CollapseElement';
 import IconButton from '@/app/components/ui/IconButton';
 import { useUser } from '@/app/contexts/userContext';
@@ -43,11 +50,14 @@ interface CatProps {
  * @param { string } slug - Identifiant du chat
  */
 export default function Property({ cat }: CatProps) {
+    const cookies: Cookies = useCookies();
+    const token: string = cookies.get("token") as string;
     const [viewCarousel, setViewCarousel] = useState(false);
     const [carouselImageIndex, setCarouselImageIndex] = useState(0);
     const router = useRouter();
     const { user } = useUser();
     const [favoriteCount, setFavoriteCount] = useState<number>(cat?.favoriteCount ?? 0);
+    const [showModalAdoptionRequest, setShowModalAdoptionRequest] = useState<boolean>(false);
 
     const viewCarouselAndActiveImage = (viewCarousel: boolean, index: number) => {
         setViewCarousel(viewCarousel);
@@ -112,7 +122,7 @@ export default function Property({ cat }: CatProps) {
             
             setTimeout(() => {
                 paw.remove();
-                //router.push(url);
+                setShowModalAdoptionRequest(true);
             }, 2100);
         }
     }
@@ -124,6 +134,20 @@ export default function Property({ cat }: CatProps) {
                     <Carousel images={cat?.pictures ?? []} imageIndex={carouselImageIndex} closeCarousel={() => setViewCarousel(false)} onIndexChange={setCarouselImageIndex} />,
                     document.body
                 )}
+            {showModalAdoptionRequest && cat && createPortal(
+                <ModalCreateAdoptionRequest
+                    catName={cat.name}
+                    catSlug={cat.slug}
+                    catId={cat.id}
+                    closeModal={() => setShowModalAdoptionRequest(false)}
+                    onSuccess={async () => {
+                        setShowModalAdoptionRequest(false);
+                        toast.success(`La demande d'adoption pour ${cat.name} a bien été créée.`);
+                        //await sendMessage(token, CONSTANTS.THREAD_GROUPS.ADOPTION.toString(), "-1", `La demande d'adoption pour le 🐈 ${baseUrl}/admin/cat/${cat.slug}[${cat.name}] vient d'être créée.\n`, []);
+                    }}
+                />,
+                document.body
+            )}
             <Header activeMenu={cat?.isAdoptable && cat?.adoptionDate ? HeaderMenuItems.AdoptedCats : HeaderMenuItems.Home} />
             <div className="flex flex-col w-full gap-10 lg:gap-24 lg:w-970 px-16 pb-80 lg:px-0 lg:pb-0">
                 <div className="lg:flex lg:flex-row lg:gap-10 w-full lg:py-16 lg:px-7 border-b-0 lg:border-b-1 border-solid border-b-(--pink)">

@@ -61,7 +61,8 @@ export enum InputTypes {
     Date = 'date',
     Hidden = 'hidden',
     File = "file",
-    Checkbox = "checkbox"
+    Checkbox = "checkbox",
+    Number = "number"
 }
 
 export enum InputImageTypes {

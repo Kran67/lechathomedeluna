@@ -23,6 +23,7 @@ router.delete('/cats/:id', requireRole(['Admin']), cats.remove);
 router.get('/catnotfullycompletedcount', requireRole(['Admin', 'Assistant']), cats.notFullyCompletedCount);
 router.get('/catnotfullycompletedlist', requireRole(['Admin', 'Assistant']), cats.notFullyCompletedList);
 router.get('/hasprevisitwithoutdatelist', requireRole(['Admin', 'Assistant']), cats.hasPreVisitWithoutDateList);
+router.post('/createadoptionrequest', cats.createAdoptionRequest);
 
 // Users
 router.get('/users', requireAuth, users.list);

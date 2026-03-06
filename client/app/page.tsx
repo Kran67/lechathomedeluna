@@ -25,7 +25,7 @@ import {
   deleteNew,
   newsService,
 } from '@/app/services/client/newsService';
-import { newsPeriods } from '@/app/staticLists/staticLists';
+import { NewsPeriods } from '@/app/staticLists/staticLists';
 
 import IconButton from './components/ui/IconButton';
 import { New } from './interfaces/new';
@@ -74,7 +74,7 @@ export default function HomePage() {
         <div className="flex gap-8 w-full lg:w-260 items-center justify-center">
           <span className="text-[32px] text-(--primary)">Actualités</span>
           <Select
-            options={newsPeriods}
+            options={NewsPeriods}
             className="select"
             classNamePrefix="select"
             name="period"
@@ -83,7 +83,7 @@ export default function HomePage() {
             isClearable={false}
             isSearchable={false}
             placeholder="Période"
-            value={period ? newsPeriods.find((option) => option.value === period) : null}
+            value={period ? NewsPeriods.find((option) => option.value === period) : null}
             onChange={(e:any) => setPeriod(e?.value ?? null)}
             styles={{container: provided => ({
                 ...provided,

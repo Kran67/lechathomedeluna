@@ -456,6 +456,14 @@ async function setNewAdmin(threadId) {
   }
 }
 
+async function createSystemMessage(threadId, senderId, content) {
+  await pool.query(
+    `INSERT INTO messages(thread_id, sender_id, content)
+     VALUES (${threadId},${senderId},$1)`,
+    [content]
+  );
+}
+
 module.exports = {
   getAllThreadsByUserId,
   getUnreadMessageCountByUserId,
@@ -470,5 +478,6 @@ module.exports = {
   removeMembersToThread,
   renameMessagingThread,
   leaveMessagingThread,
-  setNewAdmin
+  setNewAdmin,
+  createSystemMessage
 };

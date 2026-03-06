@@ -48,7 +48,7 @@ import {
   CatSexes,
   CatStatus,
   Clinics,
-  voucherObjects,
+  VoucherObjects,
   YesNo,
 } from '@/app/staticLists/staticLists';
 
@@ -680,7 +680,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 <label className="text-sm text-(--text) font-medium " htmlFor="voucherObjet">Objet du bon</label>
                                 <Select
                                     ref={voucherObjectInputRef}
-                                    options={voucherObjects}
+                                    options={VoucherObjects}
                                     className="select"
                                     classNamePrefix="select"
                                     name="voucherObjet"

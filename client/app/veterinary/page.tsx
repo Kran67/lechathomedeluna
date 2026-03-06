@@ -35,7 +35,7 @@ import { vetVouchersService } from '../services/client/vetVouchersService';
 import { update } from '../services/server/vetVouchersService';
 import {
   Clinics,
-  voucherObjects,
+  VoucherObjects,
 } from '../staticLists/staticLists';
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
@@ -126,7 +126,7 @@ export default function VetVouchers() {
                             })}}
                         />
                         <Select
-                            options={voucherObjects}
+                            options={VoucherObjects}
                             className="select"
                             classNamePrefix="select"
                             name="voucherObjet"

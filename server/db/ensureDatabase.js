@@ -200,6 +200,24 @@ async function initSchema(pool) {
   );`);
 
   await pool.query(`
+    CREATE TABLE IF NOT EXISTS cat_request_adoptions (
+      id SERIAL PRIMARY KEY,
+      cat_id INTEGER NOT NULL REFERENCES cats(id) ON DELETE CASCADE,
+      date DATE NOT NULL,
+      last_name VARCHAR(30) NOT NULL,
+      first_name VARCHAR(30) NOT NULL,
+      email VARCHAR(100) NOT NULL,
+      facebook VARCHAR(100),
+      lifePlace VARCHAR(26) NOT NULL CHECK (lifePlace IN ('Maison','Appartement', 'Studio', 'Loft', 'Duplex, triplex ou souplex')),
+      area INTEGER NOT NULL,
+      isOutsideAccess BOOLEAN DEFAULT false,
+      householdPeopleNumber INTEGER NOT NULL,
+      alreadyPresenAnimalsNumber INTEGER NOT NULL,
+      dailyTimeOff VARCHAR(12) NOT NULL CHECK (dailyTimeOff IN ('Aucun', '1 heure', '2 heures', '3 heures', 'demi-journée', '5 heures', '6 heures', '7 heures', 'Journée', 'Soirée', 'Nuit')),
+      holidaysChildcareSolution BOOLEAN DEFAULT false
+    );`);  
+
+  await pool.query(`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email);
   `);
 

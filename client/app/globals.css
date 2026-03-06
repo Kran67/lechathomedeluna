@@ -29,7 +29,7 @@ body {
 
 .select .select__control,
 .select .select__control:hover {
-  border-radius: 0;
+  border-radius: 4px;
   border-color: var(--pink);
   box-shadow: none;
 }
@@ -78,7 +78,8 @@ body {
     }
 }
 
-.error > div, div:has(>input:invalid) {
+.error > div, div:not(.select):has(>input:invalid),
+div.select:has(>input:invalid) .select__control {
   border: red solid 1px;
 }
 

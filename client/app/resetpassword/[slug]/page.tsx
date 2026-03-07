@@ -29,7 +29,6 @@ export default async function ResetPasswordPage({ params }: { params: Promise<{ 
   const { slug } = await params;
   // on va vérifier que le token est valide et qu'il n'a pas expiré
   const tokenValid: { valid: boolean } = await checkResetTokenValidity(slug);
-  console.log("tokenValid", tokenValid);
 
   return <ResetPassword token={slug} tokenValid={tokenValid.valid} />
 }

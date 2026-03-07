@@ -1,18 +1,28 @@
 const pool = require("../db/pool");
 
 async function listUsers() {
-  return await pool.query('SELECT * FROM users WHERE id > 1 AND blacklisted = false ORDER BY id DESC');
+  return await pool.query(`SELECT u.*, pc.code as postalCode, pc.city, pc.id as cityId
+    FROM users u
+    LEFT JOIN postal_codes pc ON pc.id = u.cityId
+    WHERE u.id > 1 AND u.blacklisted = false
+    ORDER BY u.id DESC`);
 }
 
 async function getUser(id) {
-  return await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+  return await pool.query(`SELECT u.*, pc.code as postalCode, pc.city, pc.id as cityId
+    FROM users u
+    LEFT JOIN postal_codes pc ON pc.id = u.cityId
+    WHERE u.id = $1`, [id]);
 }
 
 async function getUserByEmail(email) {
-  return await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+  return await pool.query(`SELECT u.*, pc.code as postalCode, pc.city, pc.id as cityId
+    FROM users u
+    LEFT JOIN postal_codes pc ON pc.id = u.cityId
+    WHERE u.email = $1`, [email]);
 }
 
-async function createUser({ email, name, lastName, social_number, phone, address, city, roles, blacklisted, referrer_id, capacity }) {
+async function createUser({ email, name, lastName, social_number, phone, address, cityId, roles, blacklisted, referrer_id, capacity }) {
   if (!email) {
     const err = new Error("L'email est requis");
     err.status = 400;
@@ -35,8 +45,8 @@ async function createUser({ email, name, lastName, social_number, phone, address
     throw err;
   }
   try {
-    const r = await pool.query('INSERT INTO users(email, name, lastName, social_number, roles, phone, address, city, blacklisted, referrer_id, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id',
-      [email, name, lastName, social_number , roles, phone, address, city, blacklisted, referrer_id, capacity]);
+    const r = await pool.query('INSERT INTO users(email, name, lastName, social_number, roles, phone, address, cityId, blacklisted, referrer_id, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id',
+      [email, name, lastName, social_number , roles, phone, address, cityId, blacklisted, referrer_id, capacity]);
     return await getUser(r.rows[0].id);
   } catch (e) {
     if (/UNIQUE/i.test(e.message)) {
@@ -49,7 +59,7 @@ async function createUser({ email, name, lastName, social_number, phone, address
 }
 
 async function updateUser(id, changes = {}) {
-  const allowedFields = ['name', 'lastName', 'social_number', 'phone', 'address', 'city', 'roles', 'blacklisted', 'referrer_id', 'capacity'];
+  const allowedFields = ['name', 'lastName', 'social_number', 'phone', 'address', 'cityId', 'roles', 'blacklisted', 'referrer_id', 'capacity'];
   const fields = [];
   const params = [];
   for (const key of allowedFields) {

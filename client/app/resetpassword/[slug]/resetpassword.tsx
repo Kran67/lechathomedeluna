@@ -5,6 +5,7 @@ import {
   useState,
 } from 'react';
 
+import { useCookies } from 'next-client-cookies';
 import {
   AppRouterInstance,
 } from 'next/dist/shared/lib/app-router-context.shared-runtime';
@@ -15,6 +16,7 @@ import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
 import Button from '@/app/components/ui/Button';
 import Input from '@/app/components/ui/Input';
+import { useUser } from '@/app/contexts/userContext';
 import { InputTypes } from '@/app/enums/enums';
 import { validatePassword } from '@/app/lib/utils';
 import { updatePassword } from '@/app/services/server/usersService';
@@ -35,15 +37,20 @@ interface ResetPasswordProps {
  * @function ResetPassword
  */
 export default function ResetPassword({ token, tokenValid }: ResetPasswordProps) {
+    const { clear } = useUser();
     const [password, setPassword] = useState("");
     const [confirmpassword, setConfirmPassword] = useState("");
     const [error, setError] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
     const router: AppRouterInstance = useRouter();
-
+    const cookies = useCookies();
+    
     const handleResetPassword: (e: FormEvent<Element>) => Promise<void> = async (e: React.FormEvent) => {
         e.preventDefault();
-
+        cookies.set("token", "", { expires: Date.now() });
+        cookies.set("userId", "", { expires: Date.now() });
+        clear();
+        
         if (!validatePassword(password) && !validatePassword(confirmpassword)) {
             setError(true);
             setErrorMsg("Le mot de passe / confirmation du mot de passe doivent comporter au moins 8 caractères, dont une majuscule, une minuscule, un chiffre et un caractère spécial !");
@@ -55,7 +62,7 @@ export default function ResetPassword({ token, tokenValid }: ResetPasswordProps)
             setErrorMsg("");
             // on va appeler l'api pour réinitialiser le mot de passe
             await updatePassword(token, password);
-            toast.success("Mot de passe réinitialisé avec succès !`nVous allez être redirigé vers la page de connexion dans une seconde.");
+            toast.success("Mot de passe réinitialisé avec succès !\nVous allez être redirigé vers la page de connexion dans une seconde.");
             setTimeout(() => {
                 router.push(`/login`);
             }, 1000);

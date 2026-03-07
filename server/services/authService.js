@@ -14,6 +14,8 @@ function mapUserRow(row) {
     social_number: row.social_number ?? "",
     phone: row.phone ?? "",
     address: row.address ?? "",
+    postalCode: row.postalcode ?? "",
+    cityId: row.cityid ?? "",
     city: row.city ?? "",
     roles: row.roles,
     email: row.email,

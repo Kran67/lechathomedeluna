@@ -166,7 +166,7 @@ export default function VetVouchers() {
                     <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
                         <span className="text-(--white) w-100 px-5">Date</span>
                         <span className="text-(--white) border-l w-150 px-5">Demandeur</span>
-                        <span className="text-(--white) border-l w-100 px-5">Pour</span>
+                        <span className="text-(--white) border-l w-150 px-5">Pour</span>
                         <span className="text-(--white) border-l flex-1 px-5">Clinique</span>
                         <span className="text-(--white) border-l w-250 px-5">Objet</span>
                         <span className="text-(--white) border-l w-70 px-5">Actions</span>
@@ -175,7 +175,7 @@ export default function VetVouchers() {
                         <div key={voucher.id} className={"flex w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
                             <span className="w-100 px-5 text-(--text)">{formatDDMMY(new Date(voucher.date))}</span>
                             <span className="border-l w-150 px-5 text-(--text)">{voucher.user_name}</span>
-                            <span className="border-l w-100 px-5 text-(--text)">{voucher.cat.numId ?? voucher.cat.name}</span>
+                            <span className="border-l w-150 px-5 text-(--text)">{voucher.cat.numId} / {voucher.cat.name}</span>
                             <span className="border-l flex-1 px-5 text-(--text)">{voucher.clinic}</span>
                             <span className="border-l w-250 px-5 text-(--text)">{voucher.object}</span>
                             <span className="flex justify-center gap-5 border-(--pink) border-l w-70 px-5">

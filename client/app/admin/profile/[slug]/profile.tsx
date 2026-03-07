@@ -16,6 +16,7 @@ import {
 } from 'next/navigation';
 import { toast } from 'react-toastify';
 
+import PostalCodeSelect from '@/app/components/data/PostalCodeSelect';
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
 import Button from '@/app/components/ui/Button';
@@ -26,18 +27,19 @@ import {
   HeaderMenuItems,
   IconButtonImages,
 } from '@/app/enums/enums';
+import { City } from '@/app/interfaces/postalCode';
 import { User } from '@/app/interfaces/user';
 import {
   hasRoles,
-  redirectWithDelay,
+  sendResetPasswordEmail,
 } from '@/app/lib/utils';
 import {
   create,
+  resetPassword,
   update,
 } from '@/app/services/server/usersService';
 import {
   Capacities,
-  Cities,
   ColourOption,
   Roles,
   YesNo,
@@ -60,7 +62,8 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
     const { user } = useUser();
     const cookies: Cookies = useCookies();
     const token: string = cookies.get("token") as string;
-    const [city, setCity] = useState<string>(profile?.city || "");
+    const [postalCode, setPostalCode] = useState<string>(profile?.postalCode || "");
+    const [cityId, setCityId] = useState<string>(profile?.cityId || "");
     const [roles, setRoles] = useState<string>(profile?.roles || "");
     const [blacklisted, setBlacklisted] = useState<boolean>(profile?.blacklisted ?? false);
     const [referrer, setReferrer] = useState<string>(profile?.referrer_id || "");
@@ -77,18 +80,19 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
 
         const form: EventTarget & HTMLFormElement = e.currentTarget;
         const formData: FormData = new FormData(form);
+        const email: string = formData.get("email") as string;
         let res;
 
         if (isNew) {
             res = await create(
                 token,
-                formData.get("email") as string,
+                email,
                 formData.get("name") as string,
                 formData.get("lastname") as string,
                 formData.get("social_number") as string,
                 formData.get("phone") as string,
                 formData.get("address") as string,
-                city,
+                cityId,
                 roles,
                 blacklisted,
                 referrer !== "" ? referrer : null,
@@ -103,7 +107,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                 formData.get("social_number") as string,
                 formData.get("phone") as string,
                 formData.get("address") as string,
-                city,
+                cityId,
                 roles,
                 blacklisted,
                 referrer !== "" ? referrer : null,
@@ -111,7 +115,15 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
             );
         }
         if (!res.error) {
-            redirectWithDelay(`${hasRoles(user.roles, ["Admin"]) ? "/admin" : ""}/profile/${res.id}`, 1000);
+            //redirectWithDelay(`${hasRoles(user.roles, ["Admin"]) ? "/admin" : ""}/profile/${res.id}`, 1000);
+            if (isNew) {
+                const result = await resetPassword(email);
+                if (result.error) {
+                    toast.error(`Une erreur est survenue lors de l'envoi de l'email pour la réinitialisation du mot de passe : ${result.error.message}`);
+                } else {
+                    await sendResetPasswordEmail(email, result.token);
+                }
+            }
         } else {
             toast.error(res.error);
         }
@@ -150,22 +162,14 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                             <Input name="social_number" label="N° sécurité sociale" value={profile?.social_number} required={true} maxLength={13} pattern={"[0-9]{13}"} />
                             <Input name="phone" label="Téléphone" value={profile?.phone} maxLength={10} />
                             <Input name="address" label="Adresse" value={profile?.address} maxLength={255} />
-                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
-                                <label className="text-sm text-(--text) font-medium " htmlFor="city">Ville</label>
-                                <Select
-                                    options={Cities}
-                                    className="select"
-                                    classNamePrefix="select"
-                                    name="city"
-                                    id="city"
-                                    isMulti={false}
-                                    isClearable={true}
-                                    isSearchable={true}
-                                    placeholder="Ville"
-                                    value={Cities.find(c => c.value === city)}
-                                    onChange={(e:any) => setCity(e?.value as string ?? "")}
-                                />
-                            </div>
+                            <PostalCodeSelect
+                                defaultCode={postalCode}
+                                defaultCityId={cityId}
+                                onSelect={(code: string, city: City) => {
+                                    setCityId(city.id);
+                                    setPostalCode(code);
+                                }}
+                            />                                
                             {hasRoles(user?.roles, ["Admin"]) && 
                                 <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                     <label className="text-sm text-(--text) font-medium " htmlFor="roles">Rôles {isNew ? "*": ""}</label>
@@ -203,10 +207,10 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                                     />
                                 </div>
                             }
-                            {hasRoles(user?.roles, ["Admin"]) && hasRoles(profile?.roles as string, ["HostFamily"]) && 
+                            
                                 <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                     <label className="text-sm text-(--text) font-medium " htmlFor="capacity">Capacité</label>
-                                    <Select
+                                    {user.id === profile?.id ? <Select
                                         options={Capacities}
                                         className="select"
                                         classNamePrefix="select"
@@ -236,8 +240,11 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                                         }}
                                         value={Capacities?.find(c => c.value === capacity)}
                                         onChange={(e:any) => setCapacity(e?.value ?? "")}
-                                    />
-                                </div>}
+                                    /> : <div
+                                        className={'select flex flex-col flex-1 gap-7 justify-start min-h-40' + 
+                                        (capacity === "Empty" ? " bg-[#008000]" : capacity === "PartiallyFull" ? " bg-[#FFFF00]" : " bg-[#FF0000]")}>
+                                    </div>}
+                                </div>
                             {hasRoles(user?.roles, ["Admin"]) && 
                                 <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                     <label className="text-sm text-(--text) font-medium " htmlFor="referrer_id">Référent</label>

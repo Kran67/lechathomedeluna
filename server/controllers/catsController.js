@@ -138,7 +138,7 @@ async function createAdoptionRequest(req, res) {
     const baseUrl = req.body.baseUrl;
     const slug = req.body.catSlug;
     const name = req.body.catName;
-    createSystemMessage(1, 1, `La demande d'adoption pour le 🐈 ${baseUrl}/admin/cat/${slug}[${name}] vient d'être créée.`);
+    createSystemMessage(1, 1, `La demande d'adoption pour le 🐈 ${baseUrl}/admin/cat/${slug}[${name}] vient d'être créée.\nEmail de l'adoptant : ${req.body.email}`);
     res.status(201).end();
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });

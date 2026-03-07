@@ -713,8 +713,8 @@ export const VoucherObjects: {
         label: "Autre"
     },
     {
-        value: "Écographie",
-        label: "Écographie"
+        value: "Échographie",
+        label: "Échographie"
     },
     {
         value: "Examens radiographique",
@@ -772,12 +772,17 @@ export const Capacities: readonly ColourOption[] = [
     {
         value: "Empty",
         label: "Empty",
-        color: "#00FF00"
+        color: "green"
+    },
+    {
+        value: "PartiallyFull",
+        label: "PartiallyFull",
+        color: "orange"
     },
     {
         value: "Full",
         label: "Full",
-        color: "#FF0000"
+        color: "red"
     },
 ];
 

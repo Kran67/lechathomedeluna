@@ -19,7 +19,7 @@
             "lastName": "Daout",
             "phone": "0601020304",
             "address": "10 rue des Fleurs",
-            "city": "Strasbourg",
+            "cityId": 4653,
             "roles": "HostFamily",
             "email": "faref@exemple.com"
         },
@@ -49,7 +49,7 @@
             "lastName": "Bohner",
             "phone": "0601020304",
             "address": "10 rue des Fleurs",
-            "city": "Strasbourg",
+            "cityId": 4402,
             "roles": "HostFamily",
             "email": "fa@exemple.com",
             "referrerId": 2

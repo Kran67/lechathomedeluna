@@ -40,13 +40,13 @@ export default function ModalMessage({
 
         const res: Response = await createThreadAndSendMessage(token, user?.id as string, userIds, formData.get("message") as string);
 
-        if (res.ok) {
+        //if (res.ok) {
             toast.success(`Le message a bien été envoyé avec succès.`);
             onSuccess();
-        } else {
-            const data = await res.json();
-            toast.error(<div>Erreur dans l'envoi du message<br />{data.message}</div>);
-        }
+        //} else {
+        //    const data = await res.json();
+        //    toast.error(<div>Erreur dans l'envoi du message<br />{data.message}</div>);
+        //}
     };
 
     useEffect(() => {

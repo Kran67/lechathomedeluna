@@ -43,13 +43,13 @@ export default function ModalAddRemoveMembers({
         const formData: FormData = new FormData(form);
         const res = await (isRemoveMembers ? removeMembers : addMembers)(token, threadId, formData.getAll("participants") as string[]);
 
-        if (res.ok) {
+        //if (res.ok) {
             toast.success(`Les participants ont été ${isRemoveMembers ? "retirés" : "ajoutés"} avec succès.`);
             onSuccess(formData.getAll("participants").map((id) => id.toString()));
-        } else {
-            const data = await res.json();
-            toast.error(<div>Erreur dans la modification des participants<br />{data.message}</div>);
-        }
+        //} else {
+        //    const data = await res.json();
+        //    toast.error(<div>Erreur dans la modification des participants<br />{data.message}</div>);
+        //}
     };
 
     useEffect(() => {

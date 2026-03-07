@@ -30,6 +30,7 @@ import {
   IconButtonImages,
   InputImageTypes,
   InputTypes,
+  UserRole,
 } from '../enums/enums';
 import {
   Message,
@@ -40,6 +41,7 @@ import {
   formatDDMMY,
   formatHHMMSS,
   getInitials,
+  hasRoles,
   prepareBodyToShowModal,
   redirectWithDelay,
   truncate,
@@ -243,11 +245,11 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
                             svgFill='#902677'
                             title='Créer une discussion privée'
                             onClick={() => createNewThread("private")} />
-                        <IconButton
+                        {user && hasRoles(user.roles, [UserRole.Admin]) && <IconButton
                             icon={IconButtonImages.Group}
                             svgFill='#902677'
                             title='Créer une discussion groupée'
-                            onClick={() => createNewThread("group")} />
+                            onClick={() => createNewThread("group")} />}
                         <Input
                             name="search"
                             placeHolder="Rechercher un utilisateur"

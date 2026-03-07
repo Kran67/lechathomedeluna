@@ -34,7 +34,7 @@ export default function AboutPage() {
                 <div className="text-xl text-(--primary) self-start">Tu étais une force de la nature, portée par <span className="text-[24px] font-bold">mon amour inconditionnel</span>.</div><br />
                 <div className="text-xl text-(--primary) self-start">Aujourd’hui, tu nous a quitté, à l’aube de tes 20 ans, dans mes bras.</div>
                 <div className="text-xl text-(--primary) self-start">Ton dernier souffle sur mon cou m’a insufflé <span className="text-[24px] font-bold">la force</span> pour continuer.</div>
-                <div className="text-xl text-(--primary) self-start">J’ai compris, mon amour, mon trésor que tu serai là, <span className="text-[24px] font-bold">pour toujours</span>.</div><br />
+                <div className="text-xl text-(--primary) self-start">J’ai compris, mon amour, mon trésor que tu seras là, <span className="text-[24px] font-bold">pour toujours</span>.</div><br />
                 <div className="text-xl text-(--primary) self-start"><span className="text-[24px] font-bold">En ton honneur</span>, et pour tout l’amour que je te porte à jamais, ce combat sera dorénavant <span className="text-[24px] font-bold">plus fort et plus intense encore</span>.</div><br />
                 <div className="text-xl text-(--primary) self-start">Grace à toi, nous avons sauvé tant d’autres chats qui vivaient la même détresse que ta maman que nous avons recueilli juste avant ta naissance.</div>
                 <div className="text-xl text-(--primary) self-start"><span className="text-[24px] font-bold">Cette mission</span>, je vais la poursuivre aussi longtemps que possible, avec toujours toi dans mes pensées.</div>

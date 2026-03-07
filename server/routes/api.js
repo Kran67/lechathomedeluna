@@ -9,6 +9,7 @@ const uploads = require('../controllers/uploadsController');
 const vetVouchers = require('../controllers/vetVouchersController');
 const messaging = require('../controllers/messagingController');
 const news = require('../controllers/newsController');
+const postalCodes = require('../controllers/postalCodeController');
 
 // Properties
 router.get('/cats', cats.list); // non adoptable
@@ -73,6 +74,10 @@ router.post('/uploads/image', requireRole(['Admin']), uploads.uploadImage);
 
 // Delete one or multiple uploaded images by filename or URL
 router.delete('/uploads/images', requireRole(['Admin']), uploads.deleteImages);
+
+// Codes postaux
+router.get('/postalcodes/search', requireAuth, postalCodes.search);
+router.get('/postalcodes/:code/cities', requireAuth, postalCodes.getCities);
 
 router.get("/health", async (req, res) => {
   try {

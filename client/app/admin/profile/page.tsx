@@ -14,6 +14,7 @@ import dynamic from 'next/dynamic';
 import { redirect } from 'next/navigation';
 import { toast } from 'react-toastify';
 
+import PostalCodeSelect from '@/app/components/data/PostalCodeSelect';
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
 import Button from '@/app/components/ui/Button';
@@ -21,6 +22,7 @@ import Input from '@/app/components/ui/Input';
 import Link from '@/app/components/ui/Link';
 import { useUser } from '@/app/contexts/userContext';
 import { HeaderMenuItems } from '@/app/enums/enums';
+import { City } from '@/app/interfaces/postalCode';
 import { User } from '@/app/interfaces/user';
 import {
   hasRoles,
@@ -34,7 +36,6 @@ import {
 } from '@/app/services/server/usersService';
 import {
   Capacities,
-  Cities,
   ColourOption,
 } from '@/app/staticLists/staticLists';
 
@@ -45,7 +46,8 @@ export default function Profile() {
     const cookies: Cookies = useCookies();
     const token: string = cookies.get("token") as string;
     const [profile, setProfile] = useState<User | null>(null);
-    const [city, setCity] = useState<string>(user?.city || "");
+    const [postalCode, setPostalCode] = useState<string>(user?.postalCode || "");
+    const [cityId, setCityId] = useState<string>(user?.cityId || "");
     const [capacity, setCapacity] = useState<string>(user?.capacity || "Empty");
 
     if (!user) {
@@ -77,7 +79,7 @@ export default function Profile() {
             formData.get("social_number") as string,
             formData.get("phone") as string,
             formData.get("address") as string,
-            formData.get("city") as string,
+            cityId,
             profile!.roles,
             profile!.blacklisted,
             profile!.referrer_id ?? null,
@@ -102,7 +104,7 @@ export default function Profile() {
         if (result.error) {
             toast.error(`Une erreur est survenue lors de l'envoi de l'email pour la réinitialisation du mot de passe : ${result.error.message}`);
         } else {
-            sendResetPasswordEmail(profile!.email, result.token);
+            await sendResetPasswordEmail(profile!.email, result.token);
         }
     }
     
@@ -123,22 +125,14 @@ export default function Profile() {
                             <Input name="social_number" label="N° sécurité sociale" value={profile?.social_number} required={true} maxLength={13} />
                             <Input name="phone" label="Téléphone" value={profile?.phone} maxLength={10} />
                             <Input name="address" label="Adresse" value={profile?.address} maxLength={255} />
-                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
-                                <label className="text-sm text-(--text) font-medium " htmlFor="city">Ville</label>
-                                <Select
-                                    options={Cities}
-                                    className="select"
-                                    classNamePrefix="select"
-                                    name="city"
-                                    id="city"
-                                    isMulti={false}
-                                    isClearable={true}
-                                    isSearchable={true}
-                                    placeholder="Ville"
-                                    value={Cities.find(c => c.value === city)}
-                                    onChange={(e:any) => setCity(e?.value as string ?? "")}
-                                />
-                            </div>
+                            <PostalCodeSelect
+                                defaultCode={postalCode}
+                                defaultCityId={cityId}
+                                onSelect={(code: string, city: City) => {
+                                    setCityId(city.id);
+                                    setPostalCode(code);
+                                }}
+                            />                                
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="capacity">Capacité</label>
                                 <Select

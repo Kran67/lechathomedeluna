@@ -140,20 +140,17 @@ export default function MyAlerts() {
               </div>
           </div>}
           {user && hasRoles(user?.roles, [UserRole.Admin, UserRole.HostFamily]) && <div className='flex flex-col'>
-            <span className='text-lg text-(--primary)'>Rappel de vaccin :</span>
+            <span className='text-lg text-(--primary)'>Rappels :</span>
             <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
                 <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
-                    <span className="text-(--white) w-100 px-5">Date</span>
-                    <span className="text-(--white) border-l w-150 px-5">Demandeur</span>
-                    <span className="text-(--white) border-l w-100 px-5">Pour</span>
-                    <span className="text-(--white) border-l flex-1 px-5">Clinique</span>
-                    <span className="text-(--white) border-l w-250 px-5">Objet</span>
+                    <span className="text-(--white) w-100 px-5">Concerne</span>
+                    <span className="text-(--white) border-l flex-1 px-5">Objet (Rappel vaccin / stérilisation)</span>
+                    <span className="text-(--white) border-l w-250 px-5"></span>
                 </div>
                 {vaccineBoosterList.length > 0 ? vaccineBoosterList.map((vaccineBooster: any, idx: number) => (
                   <div key={vaccineBooster.id} className={"flex w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
-                        <span className="w-100 px-5 text-(--text)">{formatDDMMY(new Date(vaccineBooster.date))}</span>
-                        {/* <span className="border-l w-150 px-5 text-(--text)">{voucher.user_name}</span>
-                        <span className="border-l w-100 px-5 text-(--text)">{voucher.cat.numId ?? voucher.cat.name}</span>
+                        <span className="w-100 px-5 text-(--text)">le chat</span>
+                        {/* <span className="border-l w-100 px-5 text-(--text)">{voucher.cat.numId} / {voucher.cat.name}</span>
                         <span className="border-l flex-1 px-5 text-(--text)">{voucher.clinic}</span>
                         <span className="border-l w-250 px-5 text-(--text)">{voucher.object}</span> */}
                     </div>

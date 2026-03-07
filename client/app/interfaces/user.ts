@@ -11,4 +11,6 @@ export interface User {
     blacklisted: boolean;
     referrer_id?: string;
     capacity?: string;
+    postalCode?: string;
+    cityId?: string;
 }

@@ -3,6 +3,7 @@ const fs = require('fs');
 const { Client } = require("pg");
 const pool = require("./pool");
 const tools = require("../utils/lib");
+const https = require('https');
 
 const PROPS_JSON_PATH = path.join(__dirname, '../data', 'cats.json');
 
@@ -63,6 +64,16 @@ async function executeQueries(queries) {
 
 async function initSchema(pool) {
   await pool.query(`
+    CREATE TABLE IF NOT EXISTS postal_codes (
+      id          SERIAL PRIMARY KEY,
+      code        VARCHAR(5)  NOT NULL,
+      city        VARCHAR(100) NOT NULL,
+      department  VARCHAR(20)  NOT NULL,
+      region      VARCHAR(50) NOT NULL DEFAULT 'Grand Est',
+      UNIQUE(code, city, department)
+    );`);
+
+    await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         name VARCHAR(50) NOT NULL,
@@ -70,7 +81,7 @@ async function initSchema(pool) {
         social_number VARCHAR(13),
         phone VARCHAR(10) NOT NULL,
         address VARCHAR(255) NOT NULL,
-        city VARCHAR(30) NOT NULL,
+        cityId INTEGER NOT NULL REFERENCES postal_codes(id),
         roles VARCHAR(40) NOT NULL,
         email VARCHAR(100),
         password_hash VARCHAR(255),
@@ -215,8 +226,8 @@ async function initSchema(pool) {
       alreadyPresenAnimalsNumber INTEGER NOT NULL,
       dailyTimeOff VARCHAR(12) NOT NULL CHECK (dailyTimeOff IN ('Aucun', '1 heure', '2 heures', '3 heures', 'demi-journée', '5 heures', '6 heures', '7 heures', 'Journée', 'Soirée', 'Nuit')),
       holidaysChildcareSolution BOOLEAN DEFAULT false
-    );`);  
-
+    );`);
+  
   await pool.query(`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email);
   `);
@@ -262,34 +273,42 @@ async function initSchema(pool) {
   await pool.query(`
     CREATE INDEX IF NOT EXISTS idx_message_attachments_message_id ON message_attachments(message_id);
   `);
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_postal_codes_code ON postal_codes(code);
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_postal_codes_city ON postal_codes(city);
+  `);
 }
 
 async function seedBaseData() {
-  // utiisateurs de base
-  await pool.query('INSERT INTO users(name, lastname, phone, address, city, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
+  // uitisateurs de base
+  await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
           [
             'super',
             'admin',
             '----------',
             '-',
-            '-',
+            4200,
             'Admin',
             'superadmin@exemple.com',
             'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
             'Empty'
           ]);
-  await pool.query('INSERT INTO users(name, lastname, phone, address, city, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
+  await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
           [
             'Sylvie',
             'Présidente',
             '0000000000',
             'Unknown',
-            'Unknown',
+            4200,
             'Admin',
             'admin@exemple.com',
             'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
             'Empty'
           ]);
+
   // groupes de discussion de base
   await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'Adoption', 1]);
   await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'Bons vétérinaire', 1]);
@@ -302,6 +321,47 @@ async function seedBaseData() {
   await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [3, 2, 'admin']);
   await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [4, 2, 'admin']);
   await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [5, 2, 'admin']);
+}
+
+async function importPostalCodes() {
+  const GRAND_EST_DEPTS = ['08','10','51','52','54','55','57','67','68','88'];
+  const GRAND_EST_DEPT_NAMES = ['Ardennes','Aube','Marne','Haute-Marne','Meurthe-et-Moselle','Meuse','Moselle','Bas-Rhin','Haut-Rhin','Vosges'];
+  const CSV_URL = 'https://datanova.laposte.fr/data-fair/api/v1/datasets/laposte-hexasmal/raw';
+  const csv = await fetchCSV(CSV_URL);
+  const lines = csv.split('\n').slice(1); // skip header
+
+  for (const line of lines) {
+    const cols = line.split(';');
+    if (cols.length < 3) continue;
+
+    const city = cols[1]?.trim();   // ← Nom_commune  (index 1, pas 0)
+    const code = cols[2]?.trim();   // ← Code_postal  (index 2, pas 0)
+    const dept = code?.slice(0, 2);
+    const deptName = GRAND_EST_DEPT_NAMES[GRAND_EST_DEPTS.indexOf(dept)];
+
+    if (!code || !city) continue;
+    if (!GRAND_EST_DEPTS.includes(dept)) continue;
+
+    await pool.query(
+      `INSERT INTO postal_codes (code, city, department)
+      VALUES ($1, $2, $3)
+      ON CONFLICT DO NOTHING`,
+      [code, city, deptName]
+    );
+  }
+  console.log('Import terminé');
+  //process.exit(0);
+}
+
+function fetchCSV(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, res => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => resolve(data));
+      res.on('error', reject);
+    });
+  });
 }
 
 async function seedIfEmpty(pool) {
@@ -320,7 +380,8 @@ async function seedIfEmpty(pool) {
 
   try {
     const usedSlugs = new Set();
-    seedBaseData();
+    await importPostalCodes();
+    await seedBaseData();
     for (const p of data) {
       // Ensure owner user exists
       let user = null;
@@ -330,13 +391,13 @@ async function seedIfEmpty(pool) {
           user = { id: rows[0].id };
         }
         if (!user) {
-          const ins = await pool.query('INSERT INTO users(name, lastname, phone, address, city, roles, email, referrer_id, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id',
+          const ins = await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, referrer_id, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id',
             [
               p.hostFamily && p.hostFamily.name,
               p.hostFamily && p.hostFamily.lastName,
               p.hostFamily && p.hostFamily.phone ? p.hostFamily.phone : '0000000000',
               p.hostFamily && p.hostFamily.address ? p.hostFamily.address : null,
-              p.hostFamily && p.hostFamily.city ? p.hostFamily.city : null,
+              p.hostFamily && p.hostFamily.cityId ? p.hostFamily.cityId : null,
               p.hostFamily && p.hostFamily.roles ? p.hostFamily.roles : 'hostfamily',
               p.hostFamily && p.hostFamily.email ? p.hostFamily.email : `unknown${Date.now()}@example.com`,
               p.hostFamily && p.hostFamily.referrerId ? p.hostFamily.referrerId : null,

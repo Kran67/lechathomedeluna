@@ -8,6 +8,7 @@ import { createPortal } from 'react-dom';
 
 import dynamic from 'next/dynamic';
 import { redirect } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
@@ -15,6 +16,7 @@ import ModalMessage from '@/app/components/modals/modalMessage';
 import Button from '@/app/components/ui/Button';
 import IconButton from '@/app/components/ui/IconButton';
 import Input from '@/app/components/ui/Input';
+import { CONSTANTS } from '@/app/consts/constants';
 import { useUser } from '@/app/contexts/userContext';
 import {
   HeaderMenuItems,
@@ -22,7 +24,11 @@ import {
   InputImageTypes,
 } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
-import { hasRoles } from '@/app/lib/utils';
+import {
+  hasRoles,
+  sendResetPasswordEmail,
+} from '@/app/lib/utils';
+import { resetPassword } from '@/app/services/server/usersService';
 import {
   Roles,
   YesNo,
@@ -47,7 +53,7 @@ export default function UsersList({ users }: UsersListProps) {
     const [blacklisted, setBlacklisted] = useState<boolean>(false);
     const [checkedUser, setCheckedUser] = useState<string[]>([]);
     const [showModalMessage, setShowModalMessage] = useState<boolean>(false);
-
+console.log(filteredUsers);
     if (!user || !hasRoles(user?.roles, ["Admin"])) {
         redirect("/");
     }
@@ -71,6 +77,17 @@ export default function UsersList({ users }: UsersListProps) {
             setCheckedUser(checkedUser.filter((v) => v !== value));
         }
     }
+
+    const resetUserPassword = async (e:React.MouseEvent<HTMLButtonElement>, email: string) => {
+        e.preventDefault();
+        const result = await resetPassword(email);
+        if (result.error) {
+            toast.error(`Une erreur est survenue lors de l'envoi de l'email pour la réinitialisation du mot de passe : ${result.error.message}`);
+        } else {
+            await sendResetPasswordEmail(email, result.token);
+        }
+    }
+
 
     return (
         <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 xl:px-140 relative">
@@ -150,12 +167,13 @@ export default function UsersList({ users }: UsersListProps) {
                     <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
                         <span className="text-(--white) w-20 px-5"></span>
                         <span className="text-(--white) w-150 px-5">Prénom Nom</span>
-                        <span className="text-(--white) border-l w-150 px-5">N° sécurité sociale</span>
+                        <span className="text-(--white) border-l w-100 px-5">N° sécu</span>
                         <span className="text-(--white) border-l w-200 px-5">Email</span>
                         <span className="text-(--white) border-l w-100 px-5 text-center">Téléphone</span>
                         <span className="text-(--white) border-l flex-1 px-5">Adresse</span>
-                        <span className="text-(--white) border-l w-150 px-5">Ville</span>
-                        <span className="text-(--white) border-l w-90 px-5">Roles</span>
+                        <span className="text-(--white) border-l w-50 px-5">CP</span>
+                        <span className="text-(--white) border-l w-165 px-5">Ville</span>
+                        <span className="text-(--white) border-l w-120 px-5">Roles</span>
                         <span className="text-(--white) border-l w-90 px-5">Capacité</span>
                         <span className="text-(--white) border-l w-70 px-5">Actions</span>
                     </div>
@@ -166,18 +184,19 @@ export default function UsersList({ users }: UsersListProps) {
                                 {u.blacklisted ? <IconButton url="#" icon={IconButtonImages.BlackListed} svgFill="#CE25A6" imgWidth={20} title="Sur la liste noire" /> : null}
                             </span>
                             <span className={"w-150 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.name} {u.lastName}</span>
-                            <span className={"border-l w-150 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.social_number}</span>
+                            <span className={"border-l w-100 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.social_number}</span>
                             <span className={"border-l w-200 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.email}</span>
                             <span className={"border-l w-100 px-5 text-center" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.phone}</span>
                             <span className={"border-l flex-1 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.address}</span>
-                            <span className={"border-l w-150 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.city}</span>
-                            <span className={"border-l w-90 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.roles.split("|").map(r => `${r}\n`)}</span>
+                            <span className={"border-l w-50 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.postalCode}</span>
+                            <span className={"border-l w-165 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.city}</span>
+                            <span className={"border-l w-120 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.roles.split("|").map((r:string) => `${CONSTANTS.ROLE_LABELS[r]}\n`)}</span>
                             <span className={"border-l w-90 px-5 border-(--pink)" + (u.capacity === "Empty" ? " bg-[#00ff00]": " bg-[#ff0000]")}>&nbsp;</span>
                             <span className="flex justify-center gap-5 border-(--pink) border-l w-70 px-5">
                                 {u && !hasRoles(u.roles, ["Admin"]) &&
                                     <>
                                         <IconButton url={`/admin/profile/${u.id}`} icon={IconButtonImages.Pen} svgFill="#CE25A6" imgWidth={20} title="Editer le profile" />
-                                        <IconButton url={`/admin/resetpassword/${u.id}`} icon={IconButtonImages.ChangePassword} svgFill="#CE25A6" imgWidth={20} title="Changer le mot de passe" />
+                                        <IconButton onClick={(e:React.MouseEvent<HTMLButtonElement>) => resetUserPassword(e, u.email) } icon={IconButtonImages.ChangePassword} svgFill="#CE25A6" imgWidth={20} title="Changer le mot de passe" />
                                     </>
                                 }
                             </span>

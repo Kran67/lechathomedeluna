@@ -5,6 +5,7 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { createPortal } from 'react-dom';
 
 import {
   Cookies,
@@ -17,12 +18,15 @@ import { toast } from 'react-toastify';
 import PostalCodeSelect from '@/app/components/data/PostalCodeSelect';
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
+import ModalMessage from '@/app/components/modals/modalMessage';
 import Button from '@/app/components/ui/Button';
+import IconButton from '@/app/components/ui/IconButton';
 import Input from '@/app/components/ui/Input';
 import Link from '@/app/components/ui/Link';
 import { useUser } from '@/app/contexts/userContext';
 import {
   HeaderMenuItems,
+  IconButtonImages,
   InputTypes,
 } from '@/app/enums/enums';
 import { City } from '@/app/interfaces/postalCode';
@@ -34,6 +38,7 @@ import {
   sendResetPasswordEmail,
 } from '@/app/lib/utils';
 import {
+  getAll,
   getById,
   resetPassword,
   update,
@@ -54,19 +59,30 @@ export default function Profile() {
     const [cityId, setCityId] = useState<string>(user?.cityId || "");
     const [capacity, setCapacity] = useState<string>(user?.capacity || "Empty");
     const [birthDate, setBirthDate] = useState<string | null>(user?.birthDate ?? null);
+    const [referrer, setReferrer] = useState<User | null>(null);
+    const [showModalMessage, setShowModalMessage] = useState<boolean>(false);
 
     if (!user) {
         redirect("/");
     }
 
     useEffect(() => {
-        getById(token, user!.id).then((res) => {
+        (async () => {
+            const res = await getById(token, user!.id);
             if (!res.error) {
                 setProfile(res);
             } else {
                 throw new Error(res.error);
             }
-        });
+        })();
+        (async () => {
+            const res = await getAll(token);
+            if (!res.error) {
+                setReferrer(res.find((u: User) => u.id === user?.referrer_id));
+            } else {
+                throw new Error(res.error);
+            }
+        })();
     }, [token, user]);
 
     // Avant chaque soumission, vérification des données fournies valides.
@@ -118,6 +134,16 @@ export default function Profile() {
     return (
         <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 lg:px-140 relative">
             <Header activeMenu={HeaderMenuItems.Profile} />
+            {showModalMessage && createPortal(
+                <ModalMessage
+                    userIds={[profile!.referrer_id as string]}
+                    closeModal={() => setShowModalMessage(false)}
+                    onSuccess={() => {
+                        setShowModalMessage(false);
+                    }}
+                />,
+                document.body
+            )}
             <div className="flex flex-col w-full gap-10 lg:gap-24 lg:w-970 px-16 pb-80 lg:px-0 lg:pb-0">
                 <div className="flex flex-col flex-1 gap-20 md:gap-41 rounded-[10px] border border-solid border-(--pink) bg-(--white) py-20 px-30 md:py-40 md:px-59">
                     <form onSubmit={handleSubmit} className="flex flex-col gap-20 md:gap-41" role="form" aria-label="Information du compte">
@@ -176,6 +202,20 @@ export default function Profile() {
                                     onChange={(e:any) => setCapacity(e?.value ?? "")}
                                 />
                             </div>
+                            {profile?.referrer_id && <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                                <label className="text-sm text-(--text) font-medium " htmlFor="referrer_id">Référent</label>
+                                <div className='flex text-sm text-(--text) '>
+                                    {referrer?.name} {referrer?.lastName} (<IconButton
+                                        icon={IconButtonImages.Message}
+                                        onClick={(e:React.MouseEvent<HTMLButtonElement>) => {
+                                            e.preventDefault();
+                                            setShowModalMessage(true)
+                                        }}
+                                        text='Lui envoyer un message'
+                                        svgFill='#902677'
+                                    />)
+                                </div>
+                            </div>}
                         </div>
                         <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
                             <Button text="Modifier les informations" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />

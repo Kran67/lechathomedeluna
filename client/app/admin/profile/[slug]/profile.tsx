@@ -72,7 +72,6 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
     const [capacity, setCapacity] = useState<string>(profile?.capacity || "Empty");
     const router = useRouter();
     const [birthDate, setBirthDate] = useState<string | null>(profile?.birthDate ?? null);
-    console.log(profile);
 
     if (!user || !hasRoles(user?.roles, ["Admin"])) {
         redirect("/");

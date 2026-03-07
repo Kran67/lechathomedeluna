@@ -53,7 +53,7 @@ export default function UsersList({ users }: UsersListProps) {
     const [blacklisted, setBlacklisted] = useState<boolean>(false);
     const [checkedUser, setCheckedUser] = useState<string[]>([]);
     const [showModalMessage, setShowModalMessage] = useState<boolean>(false);
-console.log(filteredUsers);
+
     if (!user || !hasRoles(user?.roles, ["Admin"])) {
         redirect("/");
     }

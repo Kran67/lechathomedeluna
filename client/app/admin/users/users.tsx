@@ -16,7 +16,6 @@ import ModalMessage from '@/app/components/modals/modalMessage';
 import Button from '@/app/components/ui/Button';
 import IconButton from '@/app/components/ui/IconButton';
 import Input from '@/app/components/ui/Input';
-import { CONSTANTS } from '@/app/consts/constants';
 import { useUser } from '@/app/contexts/userContext';
 import {
   HeaderMenuItems,
@@ -25,6 +24,7 @@ import {
 } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
 import {
+  getRoleLabel,
   hasRoles,
   sendResetPasswordEmail,
 } from '@/app/lib/utils';
@@ -190,7 +190,7 @@ export default function UsersList({ users }: UsersListProps) {
                             <span className={"border-l flex-1 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.address}</span>
                             <span className={"border-l w-50 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.postalCode}</span>
                             <span className={"border-l w-165 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.city}</span>
-                            <span className={"border-l w-120 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.roles.split("|").map((r:string) => `${CONSTANTS.ROLE_LABELS[r]}\n`)}</span>
+                            <span className={"border-l w-120 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.roles.split("|").map((r:string) => `${getRoleLabel(r as "Admin" | "HostFamily" | "Assistant" | "Volunteer")}\n`)}</span>
                             <span className={"border-l w-90 px-5 border-(--pink)" + (u.capacity === "Empty" ? " bg-[#00ff00]": " bg-[#ff0000]")}>&nbsp;</span>
                             <span className="flex justify-center gap-5 border-(--pink) border-l w-70 px-5">
                                 {u && !hasRoles(u.roles, ["Admin"]) &&

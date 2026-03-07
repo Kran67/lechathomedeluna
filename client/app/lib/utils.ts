@@ -1,6 +1,7 @@
 import { toast } from 'react-toastify';
 
 import emailjs from '@emailjs/browser';
+import { CONSTANTS } from '../consts/constants';
 
 /**
  * Prépare le corps du document html pour l'affichage de fenêtre modale, enlève la scrollbar
@@ -133,3 +134,6 @@ export const sendResetPasswordEmail = async (email: string, token: string) => {
 }
 
 export const baseUrl = process.env.NEXT_PUBLIC_APP_BASE_URL ?? (typeof window !== 'undefined' ? window.location.origin : '');
+
+export const getRoleLabel = (r: keyof typeof CONSTANTS.ROLE_LABELS) => CONSTANTS.ROLE_LABELS[r];
+

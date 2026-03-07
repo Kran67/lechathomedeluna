@@ -26,10 +26,12 @@ import { useUser } from '@/app/contexts/userContext';
 import {
   HeaderMenuItems,
   IconButtonImages,
+  InputTypes,
 } from '@/app/enums/enums';
 import { City } from '@/app/interfaces/postalCode';
 import { User } from '@/app/interfaces/user';
 import {
+  formatYMMDD,
   hasRoles,
   sendResetPasswordEmail,
 } from '@/app/lib/utils';
@@ -69,7 +71,9 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
     const [referrer, setReferrer] = useState<string>(profile?.referrer_id || "");
     const [capacity, setCapacity] = useState<string>(profile?.capacity || "Empty");
     const router = useRouter();
-    
+    const [birthDate, setBirthDate] = useState<string | null>(profile?.birthDate ?? null);
+    console.log(profile);
+
     if (!user || !hasRoles(user?.roles, ["Admin"])) {
         redirect("/");
     }
@@ -81,6 +85,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
         const form: EventTarget & HTMLFormElement = e.currentTarget;
         const formData: FormData = new FormData(form);
         const email: string = formData.get("email") as string;
+        const birthDate: string | null = formData.get("birthDate") as string !== '' ? formData.get("birthDate") as string : null;
         let res;
 
         if (isNew) {
@@ -96,7 +101,8 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                 roles,
                 blacklisted,
                 referrer !== "" ? referrer : null,
-                capacity
+                capacity,
+                birthDate
             );
         } else {
             res = await update(
@@ -111,7 +117,8 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                 roles,
                 blacklisted,
                 referrer !== "" ? referrer : null,
-                capacity
+                capacity,
+                birthDate
             );
         }
         if (!res.error) {
@@ -159,6 +166,8 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                             <Input name="email" label="Email" value={profile?.email} readOnly={!isNew} required={isNew} maxLength={100} />
                             <Input name="name" label="Prénom" value={profile?.name} required={isNew} maxLength={50} />
                             <Input name="lastname" label="Nom" value={profile?.lastName} required={isNew} maxLength={50} />
+                            <Input name="birthDate" label="Date de naissance" type={InputTypes.Date} value={birthDate ? formatYMMDD(new Date(birthDate)) : ''}
+                                onChange={(e) => setBirthDate(e.currentTarget.value)} />
                             <Input name="social_number" label="N° sécurité sociale" value={profile?.social_number} required={true} maxLength={13} pattern={"[0-9]{13}"} />
                             <Input name="phone" label="Téléphone" value={profile?.phone} maxLength={10} />
                             <Input name="address" label="Adresse" value={profile?.address} maxLength={255} />

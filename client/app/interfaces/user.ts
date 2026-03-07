@@ -13,4 +13,5 @@ export interface User {
     capacity?: string;
     postalCode?: string;
     cityId?: string;
+    birthDate?: string;
 }

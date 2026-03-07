@@ -45,7 +45,7 @@ async function createUser({ email, name, lastName, social_number, phone, address
     throw err;
   }
   try {
-    const r = await pool.query('INSERT INTO users(email, name, lastName, social_number, roles, phone, address, cityId, blacklisted, referrer_id, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id',
+    const r = await pool.query('INSERT INTO users(email, name, lastName, social_number, roles, phone, address, cityId, blacklisted, referrer_id, capacity, birthdate) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id',
       [email, name, lastName, social_number , roles, phone, address, cityId, blacklisted, referrer_id, capacity]);
     return await getUser(r.rows[0].id);
   } catch (e) {
@@ -59,7 +59,7 @@ async function createUser({ email, name, lastName, social_number, phone, address
 }
 
 async function updateUser(id, changes = {}) {
-  const allowedFields = ['name', 'lastName', 'social_number', 'phone', 'address', 'cityId', 'roles', 'blacklisted', 'referrer_id', 'capacity'];
+  const allowedFields = ['name', 'lastName', 'social_number', 'phone', 'address', 'cityId', 'roles', 'blacklisted', 'referrer_id', 'capacity', 'birthDate'];
   const fields = [];
   const params = [];
   for (const key of allowedFields) {
@@ -73,7 +73,11 @@ async function updateUser(id, changes = {}) {
         }
       }
       fields.push(`${key} = $${allowedFields.indexOf(key) + 1}`);
-      params.push(changes[key]);
+      if (["birthDate"].includes(key) && changes[key] === "") {
+        params.push(null);
+      } else {
+        params.push(changes[key]);
+      }
     }
   }
   if (fields.length === 0) {

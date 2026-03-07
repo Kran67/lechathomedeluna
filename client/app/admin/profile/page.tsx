@@ -21,10 +21,14 @@ import Button from '@/app/components/ui/Button';
 import Input from '@/app/components/ui/Input';
 import Link from '@/app/components/ui/Link';
 import { useUser } from '@/app/contexts/userContext';
-import { HeaderMenuItems } from '@/app/enums/enums';
+import {
+  HeaderMenuItems,
+  InputTypes,
+} from '@/app/enums/enums';
 import { City } from '@/app/interfaces/postalCode';
 import { User } from '@/app/interfaces/user';
 import {
+  formatYMMDD,
   hasRoles,
   redirectWithDelay,
   sendResetPasswordEmail,
@@ -49,6 +53,7 @@ export default function Profile() {
     const [postalCode, setPostalCode] = useState<string>(user?.postalCode || "");
     const [cityId, setCityId] = useState<string>(user?.cityId || "");
     const [capacity, setCapacity] = useState<string>(user?.capacity || "Empty");
+    const [birthDate, setBirthDate] = useState<string | null>(user?.birthDate ?? null);
 
     if (!user) {
         redirect("/");
@@ -70,6 +75,7 @@ export default function Profile() {
 
         const form: EventTarget & HTMLFormElement = e.currentTarget;
         const formData: FormData = new FormData(form);
+        const birthDate: string | null = formData.get("birthDate") as string !== '' ? formData.get("birthDate") as string : null;
 
         const res = await update(
             token,
@@ -83,7 +89,8 @@ export default function Profile() {
             profile!.roles,
             profile!.blacklisted,
             profile!.referrer_id ?? null,
-            capacity
+            capacity,
+            birthDate
         );
         if (!res.error) {
             redirectWithDelay("/admin/profile", 1000);
@@ -122,6 +129,8 @@ export default function Profile() {
                             <Input name="email" label="Email" value={profile?.email} readOnly={true}maxLength={100} />
                             <Input name="name" label="Prénom" value={profile?.name} maxLength={50} />
                             <Input name="lastname" label="Nom" value={profile?.lastName} maxLength={50} />
+                            <Input name="birthDate" label="Date de naissance" type={InputTypes.Date} value={birthDate ? formatYMMDD(new Date(birthDate)) : ''}
+                                onChange={(e) => setBirthDate(e.currentTarget.value)} />
                             <Input name="social_number" label="N° sécurité sociale" value={profile?.social_number} required={true} maxLength={13} />
                             <Input name="phone" label="Téléphone" value={profile?.phone} maxLength={10} />
                             <Input name="address" label="Adresse" value={profile?.address} maxLength={255} />

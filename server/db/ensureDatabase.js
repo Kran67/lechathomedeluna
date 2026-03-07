@@ -88,6 +88,7 @@ async function initSchema(pool) {
         blacklisted BOOLEAN DEFAULT false,
         referrer_id INTEGER REFERENCES users(id) ON DELETE RESTRICT,
         capacity VARCHAR(5) NOT NULL CHECK (capacity IN ('Empty','Full')),
+        birthDate DATE,
         reset_token VARCHAR(255),
         reset_expires TIMESTAMPTZ,
         UNIQUE(email)

@@ -23,7 +23,8 @@ function mapUserRow(row) {
     referrer_id: row.referrer_id ?? null,
     reset_token: row.reset_token ?? null,
     reset_expires: row.reset_expires ?? null,
-    capacity: row.capacity ?? "Empty"
+    capacity: row.capacity ?? "Empty",
+    birthDate: row.birthdate,
   };
 }
 

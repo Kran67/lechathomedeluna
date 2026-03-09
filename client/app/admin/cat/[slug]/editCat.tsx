@@ -111,6 +111,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         label: `${u.lastName} ${u.name}`,
     }));
 
+    const isReadonly: boolean = !hasRoles(user?.roles as string, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily]);
+
     // Avant chaque soumission, vérification des données fournies valides.
     const handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void> = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -351,7 +353,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                         <div className="flex flex-col gap-12 md:gap-24">
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="hostFamilyId">Famille d'accueil</label>
-                                <Select
+                                {!isReadonly ? <Select
                                     options={filteredHostFamilies}
                                     className="select"
                                     classNamePrefix="select"
@@ -363,21 +365,29 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     placeholder="Famille d'accueil"
                                     value={filteredHostFamilies?.find(c => c.value === hostFamilyId)}
                                     onChange={(e:any) => setHostFamilyId(e?.value ?? null)}
-                                />
+                                /> : <div className='flex text-sm text-(--text) border border-1 border-(--pink) h-40 rounded-[4px] items-center px-10 py-16 bg-[#eee]'>{filteredHostFamilies?.find(c => c.value === hostFamilyId)?.label}</div>}
                             </div>
-                            <Input name="name" label="Nom" required={true} value={cat?.name} maxLength={20} />
+                            <Input
+                                name="name"
+                                label="Nom"
+                                required={true}
+                                value={cat?.name}
+                                maxLength={20}
+                                readOnly={isReadonly}
+                            />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="status">Description</label>
                                 <textarea
-                                    className='text-sm text-(--text) w-full outline-0 border border-(--pink) px-10 py-5'
+                                    className={'text-sm text-(--text) w-full outline-0 border border-(--pink) px-10 py-5' + (isReadonly ? " bg-[#eee]" : "")}
                                     name="description"
                                     rows={5}
                                     defaultValue={cat?.description}
+                                    readOnly={isReadonly}
                                 />
                             </div>
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="status">Statut (FIV & FELV)</label>
-                                <Select
+                                {!isReadonly ? <Select
                                     options={CatStatus}
                                     className="select"
                                     classNamePrefix="select"
@@ -389,12 +399,12 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     placeholder="Statut"
                                     value={CatStatus.find(c => c.value === status)}
                                     onChange={(e:any) => setStatus(e?.value as string ?? "")}
-                                />
+                                /> : <div className='flex text-sm text-(--text) border border-1 border-(--pink) h-40 rounded-[4px] items-center px-10 py-16 bg-[#eee]'>{CatStatus?.find(c => c.value === status)?.label}</div>}
                             </div>
-                            <Input name="numIdentification" label="N° d'identification" value={cat?.numIdentification} maxLength={20} />
+                            <Input name="numIdentification" label="N° d'identification" value={cat?.numIdentification} maxLength={20} readOnly={isReadonly} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="sex">Sexe *</label>
-                                <Select
+                                {!isReadonly ? <Select
                                     options={CatSexes}
                                     className="select"
                                     classNamePrefix="select"
@@ -407,19 +417,20 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     value={CatSexes.find(c => c.value === sex)}
                                     onChange={(e:any) => setSex(e?.value as string ?? "")}
                                     required={true}
-                                />
+                                /> : <div className='flex text-sm text-(--text) border border-1 border-(--pink) h-40 rounded-[4px] items-center px-10 py-16 bg-[#eee]'>{CatSexes?.find(c => c.value === sex)?.label}</div>}
                             </div>
-                            <Input name="dress" label="Robe" value={cat?.dress} maxLength={10} />
-                            <Input name="race" label="Race" value={cat?.race} maxLength={10} />
+                            <Input name="dress" label="Robe" value={cat?.dress} maxLength={10} readOnly={isReadonly} />
+                            <Input name="race" label="Race" value={cat?.race} maxLength={10} readOnly={isReadonly} />
                             <Input name="entryDate"
                                 label="Date d'entrée"
                                 type={InputTypes.Date}
                                 value={cat?.entryDate ? formatYMMDD(new Date(cat?.entryDate)) : ''}
-                                onChange={(e) => setEntryDate(e.currentTarget.value)} />
-                            <Input name="provenance" label="Provenance"  value={cat?.provenance} maxLength={50}  />
+                                onChange={(e) => setEntryDate(e.currentTarget.value)}
+                                readOnly={isReadonly} />
+                            <Input name="provenance" label="Provenance"  value={cat?.provenance} maxLength={50} readOnly={isReadonly} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="isSterilized">Est stérilisé</label>
-                                <Select
+                                {!isReadonly ? <Select
                                     options={YesNo}
                                     className="select"
                                     classNamePrefix="select"
@@ -431,19 +442,25 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     placeholder="Stérilisé ?"
                                     value={YesNo.find(c => c.value === isSterilized)}
                                     onChange={(e:any) => setIsSterilized(e?.value as boolean ?? false)}
-                                />
+                                /> : <div className='flex text-sm text-(--text) border border-1 border-(--pink) h-40 rounded-[4px] items-center px-10 py-16 bg-[#eee]'>{YesNo?.find(c => c.value === isSterilized)?.label}</div>}
                             </div>
                             <Input 
                                 name="sterilizationDate"
                                 label="Date de la stérilisation  / castration"
                                 type={InputTypes.Date} value={cat?.sterilizationDate ? formatYMMDD(new Date(cat?.sterilizationDate)) : ''}
                                 className={ sterilizationDateError ? "error" : "" }
+                                readOnly={isReadonly}
                             />
-                            <Input name="birthDate" label="Date de naissance" type={InputTypes.Date} value={birthDate ? formatYMMDD(new Date(birthDate)) : ''}
-                                onChange={(e) => setBirthDate(e.currentTarget.value)} />
+                            <Input
+                                name="birthDate"
+                                label="Date de naissance"
+                                type={InputTypes.Date}
+                                value={birthDate ? formatYMMDD(new Date(birthDate)) : ''}
+                                onChange={(e) => setBirthDate(e.currentTarget.value)}
+                                readOnly={isReadonly} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="isDuringVisit">En cours de visite</label>
-                                <Select
+                                {!isReadonly ? <Select
                                     options={YesNo}
                                     className="select"
                                     classNamePrefix="select"
@@ -455,32 +472,32 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     placeholder="En cours de visite ?"
                                     value={YesNo.find(c => c.value === isDuringVisit)}
                                     onChange={(e:any) => setIsDuringVisit(e?.value as boolean ?? "")}
-                                />
+                                /> : <div className='flex text-sm text-(--text) border border-1 border-(--pink) h-40 rounded-[4px] items-center px-10 py-16 bg-[#eee]'>{YesNo?.find(c => c.value === isDuringVisit)?.label}</div>}
                             </div>
-                            {/* <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
-                                <label className="text-sm text-(--text) font-medium " htmlFor="isAdopted">Est adopté</label>
-                                <Select
-                                    options={YesNo}
-                                    className="select"
-                                    classNamePrefix="select"
-                                    name="isAdopted"
-                                    id="isAdopted"
-                                    isMulti={false}
-                                    isClearable={false}
-                                    isSearchable={false}
-                                    placeholder="Est adopté ?"
-                                    value={YesNo.find(c => c.value === isAdopted)}
-                                    onChange={(e:any) => setIsAdopted(e?.value as boolean ?? "")}
-                                />
-                            </div> */}
-                            <Input name="adoptionDate" label="Date d'adoption" type={InputTypes.Date} value={cat?.adoptionDate ? formatYMMDD(new Date(cat?.adoptionDate)) : ''} />
-                            <Input name="preVisitDate" label="Date de la pré visite" type={InputTypes.Date} value={cat?.preVisitDate ? formatYMMDD(new Date(cat?.preVisitDate)) : ''} />
-                            <Input name="catPictures" label="Photos" type={InputTypes.File} multipleFile={true} onChange={(e: React.ChangeEvent<HTMLInputElement>) => picturesChange(e)} />
+                            <Input
+                                name="adoptionDate"
+                                label="Date d'adoption"
+                                type={InputTypes.Date}
+                                value={cat?.adoptionDate ? formatYMMDD(new Date(cat?.adoptionDate)) : ''}
+                                readOnly={isReadonly} />
+                            <Input
+                                name="preVisitDate"
+                                label="Date de la pré visite"
+                                type={InputTypes.Date}
+                                value={cat?.preVisitDate ? formatYMMDD(new Date(cat?.preVisitDate)) : ''}
+                                readOnly={isReadonly} />
+                            {!isReadonly ? <Input
+                                name="catPictures"
+                                label="Photos"
+                                type={InputTypes.File}
+                                multipleFile={true}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => picturesChange(e)}
+                                /> : <div className="text-sm text-(--text) font-medium ">Photos</div>}
                             <div className='flex flex-wrap w-full gap-7'>
                                 {picturesPreview.map((picture: string, idx: number) => (
                                     <div key={idx} className="rounded-[10px] h-100 w-100 overflow-hidden relative">
-                                        <IconButton className='absolute right-3 top-3 w-16 h-16 z-1 bg-(--primary) flex justify-center items-center rounded-[5px]'
-                                            icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removePicture(e, idx)} />
+                                        {!isReadonly && <IconButton className='absolute right-3 top-3 w-16 h-16 z-1 bg-(--primary) flex justify-center items-center rounded-[5px]'
+                                            icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removePicture(e, idx)} />}
                                         <img
                                             data-testid={"chat-image-" + (idx + 1)}
                                             src={(picture.includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + picture}
@@ -630,7 +647,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                             </div></>}
                         </div>
                         <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
-                            <Button ref={primaryButton} text="Valider les modifications" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />
+                            {user && !hasRoles(user.roles, [UserRoles.VetVoucherReferent]) && <Button ref={primaryButton} text="Valider les modifications" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />}
                             {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent]) && !isAdoptable && 
                             <Button 
                                 text="Valider la fiche pour l'adoption"

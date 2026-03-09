@@ -33,5 +33,5 @@ export interface Cat {
     favoriteCount: number;
     preVisitDate?: string;
     entryDate?: string;
-    provenance: string;
+    provenance?: string;
 }

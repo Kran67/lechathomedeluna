@@ -82,7 +82,7 @@ async function initSchema(pool) {
         phone VARCHAR(10) NOT NULL,
         address VARCHAR(255) NOT NULL,
         cityId INTEGER NOT NULL REFERENCES postal_codes(id),
-        roles VARCHAR(40) NOT NULL,
+        roles VARCHAR(200) NOT NULL,
         email VARCHAR(100),
         password_hash VARCHAR(255),
         blacklisted BOOLEAN DEFAULT false,
@@ -112,9 +112,10 @@ async function initSchema(pool) {
       isAdoptable BOOLEAN DEFAULT false,
       adoptionDate DATE,
       favoriteCount INTEGER DEFAULT 0,
-      isPreVisit BOOLEAN DEFAULT false,
       preVisitDate DATE,
       hostfamily_id INTEGER REFERENCES users(id) ON DELETE RESTRICT,
+      entryDate DATE,
+      provenance VARCHAR(50),
       created_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       created_at TIMESTAMPTZ NOT NULL,
       updated_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -144,7 +145,7 @@ async function initSchema(pool) {
     CREATE TABLE IF NOT EXISTS vet_vouchers (
       id SERIAL PRIMARY KEY,
       date DATE NOT NULL,
-      user_name VARCHAR(101) NOT NULL,
+      user_id  INTEGER NOT NULL REFERENCES users(id),
       cat_id INTEGER NOT NULL REFERENCES cats(id) ON DELETE CASCADE,
       clinic VARCHAR(51) NOT NULL,
       object VARCHAR(175) NOT NULL,
@@ -304,12 +305,73 @@ async function seedBaseData() {
             '0000000000',
             'Unknown',
             4200,
-            'Admin',
+            'Admin|CommitteeMember',
             'admin@exemple.com',
             'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
             'Empty'
           ]);
+  await pool.query("INSERT INTO news (date, url) VALUES ('2026-03-29','/images/news/Loto29-03-2026.jpeg')");
 
+  await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
+          [ //3
+            'Marine',
+            'Schneider',
+            '0632272078',
+            'Unknown',
+            4697,
+            'CommitteeMember|AdoptionReferent',
+            'marine.schneider@exemple.com',
+            'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
+            'Empty'
+          ]);
+  await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
+          [ //4
+            'Amandine',
+            'List',
+            '0680578792',
+            'Unknown',
+            4653,
+            'CommitteeMember|HealthRegisterReferent',
+            'amandine.list@exemple.com',
+            'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
+            'Empty'
+          ]);
+  await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
+          [ //5
+            'Thibaut',
+            'B',
+            '0626196258',
+            'Unknown',
+            4200,
+            'CommitteeMember|VetVoucherReferent',
+            'thibaut.b@exemple.com',
+            'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
+            'Empty'
+          ]);
+  await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
+          [ //6
+            'Patricia',
+            'Belloni',
+            '0626196258',
+            'Unknown',
+            4465,
+            'CommitteeMember|ICADReferent',
+            'patricia.belloni@exemple.com',
+            'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
+            'Empty'
+          ]);
+  await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
+          [ //7
+            'Dominique',
+            'Cometti',
+            '0661348002',
+            'Unknown',
+            4435,
+            'CommitteeMember|PreVisitReferent',
+            'dominique.cometti@exemple.com',
+            'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
+            'Empty'
+          ]);
   // groupes de discussion de base
   await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'Adoption', 1]);
   await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'Bons vétérinaire', 1]);
@@ -318,10 +380,16 @@ async function seedBaseData() {
   await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'ICAD', 1]);
   // participants sur les groupes de discussion de base
   await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [1, 2, 'admin']);
+  await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [1, 3, 'member']);
   await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [2, 2, 'admin']);
+  await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [2, 5, 'member']);
   await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [3, 2, 'admin']);
+  await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [3, 4, 'member']);
   await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [4, 2, 'admin']);
+  await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [4, 7, 'member']);
   await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [5, 2, 'admin']);
+  await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [5, 6, 'member']);
+
 }
 
 async function importPostalCodes() {
@@ -381,6 +449,7 @@ async function seedIfEmpty(pool) {
 
   try {
     const usedSlugs = new Set();
+    console.log('Début Import');
     await importPostalCodes();
     await seedBaseData();
     for (const p of data) {

@@ -71,9 +71,14 @@ export enum InputImageTypes {
     Search = "search",
 }
 
-export enum UserRole {
+export enum UserRoles {
     Admin = "Admin",
-    Assistant = "Assistant",
+    CommitteeMember = "CommitteeMember",
+    AdoptionReferent = "AdoptionReferent",
+    HealthRegisterReferent = "HealthRegisterReferent",
+    VetVoucherReferent = "VetVoucherReferent",
+    PreVisitReferent = "PreVisitReferent",
+    ICADReferent = "ICADReferent",
     HostFamily = "HostFamily",
     Volunteer = "Volunteer"
 }

@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { UserRole } from '@/app/enums/enums';
+import { UserRoles } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
 import { hasRoles } from '@/app/lib/utils';
 import {
@@ -22,7 +22,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ slug: 
     let users: User[] = [];
     let res;
 
-    if (!user || (user && !hasRoles(user.roles, [UserRole.Admin]))) {
+    if (!user || (user && !hasRoles(user.roles, [UserRoles.Admin]))) {
         redirect("/");
     }
 

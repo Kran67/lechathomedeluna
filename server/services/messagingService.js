@@ -45,7 +45,7 @@ async function getAllThreadsByUserId(userid) {
 
         -- nickname : autre participant si private
         CASE 
-            WHEN mt.type = 'private' THEN CONCAT(u_other.name, ' ', u_other.lastname)
+            WHEN mt.type = 'private' THEN CONCAT(u_other.lastname, ' ', u_other.name)
             ELSE mt.name
         END AS nickname,
 
@@ -92,7 +92,7 @@ async function getAllThreadsByUserId(userid) {
         SELECT json_agg(
             json_build_object(
                 'id', u.id,
-                'name', CONCAT(u.name, ' ', u.lastname)
+                'name', CONCAT(u.lastname, ' ', u.name)
             )
         ) AS members_json
         FROM thread_participants tp2
@@ -159,7 +159,7 @@ async function getUnreadMessageListByUserId(userid) {
     SELECT
       m.id                                          AS id,
       mt.id                                         AS thread_id,
-      CONCAT(u.name, ' ', u.lastname)               AS nickname,
+      CONCAT(u.lastname, ' ', u.name)               AS nickname,
       CASE
         WHEN mt.type = 'private' THEN NULL
         ELSE mt.name
@@ -192,7 +192,7 @@ async function getAllMessagesById(id, userId) {
             m.sent_at,
 
             u.id AS user_id,
-            CONCAT(u.name, ' ', u.lastname) AS nickname,
+            CONCAT(u.lastname, ' ', u.name) AS nickname,
 
             CASE 
                 WHEN m.sender_id = $2 THEN true

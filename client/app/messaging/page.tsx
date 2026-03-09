@@ -13,7 +13,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { UserRole } from '../enums/enums';
+import { UserRoles } from '../enums/enums';
 import { Messaging } from '../interfaces/messaging';
 import { User } from '../interfaces/user';
 import { hasRoles } from '../lib/utils';
@@ -36,7 +36,7 @@ export default async function Page() {
     const user = await getById(token, userId ?? '');
     let threads: Messaging[] = [];
 
-    if (!user || (user && !hasRoles(user.roles, [UserRole.Admin, UserRole.HostFamily]))) {
+    if (!user || (user && !hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]))) {
         redirect("/");
     }
 
@@ -49,7 +49,7 @@ export default async function Page() {
     }
 
     res = await getAll(token);
-    const users = res ? res.map((u: User) => ({ value: u.id, label: u.name + " " + u.lastName })) : [];
+    const users = res ? res.map((u: User) => ({ value: u.id, label: u.lastName + " " + u.name })) : [];
     
     return (<MessagingPage threads={threads ?? []} userList={users} />);
 }

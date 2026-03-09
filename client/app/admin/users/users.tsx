@@ -21,6 +21,7 @@ import {
   HeaderMenuItems,
   IconButtonImages,
   InputImageTypes,
+  UserRoles,
 } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
 import {
@@ -54,7 +55,7 @@ export default function UsersList({ users }: UsersListProps) {
     const [checkedUser, setCheckedUser] = useState<string[]>([]);
     const [showModalMessage, setShowModalMessage] = useState<boolean>(false);
 
-    if (!user || !hasRoles(user?.roles, ["Admin"])) {
+    if (!user || !hasRoles(user?.roles, [UserRoles.Admin])) {
         redirect("/");
     }
 
@@ -165,41 +166,50 @@ export default function UsersList({ users }: UsersListProps) {
                 </div>
                 <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
                     <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
-                        <span className="text-(--white) w-20 px-5"></span>
-                        <span className="text-(--white) w-150 px-5">Prénom Nom</span>
-                        <span className="text-(--white) border-l w-100 px-5">N° sécu</span>
-                        <span className="text-(--white) border-l w-200 px-5">Email</span>
-                        <span className="text-(--white) border-l w-100 px-5 text-center">Téléphone</span>
-                        <span className="text-(--white) border-l flex-1 px-5">Adresse</span>
-                        <span className="text-(--white) border-l w-50 px-5">CP</span>
-                        <span className="text-(--white) border-l w-165 px-5">Ville</span>
-                        <span className="text-(--white) border-l w-120 px-5">Roles</span>
-                        <span className="text-(--white) border-l w-90 px-5">Capacité</span>
-                        <span className="text-(--white) border-l w-70 px-5">Actions</span>
+                        <div className="text-(--white) w-20 px-5"></div>
+                        <div className="text-(--white) w-150 px-5">Nom Prénom</div>
+                        <div className="text-(--white) border-l w-100 px-5">N° sécu</div>
+                        <div className="text-(--white) border-l w-150 px-5">Email</div>
+                        <div className="text-(--white) border-l w-100 px-5 text-center">Téléphone</div>
+                        <div className="text-(--white) border-l flex-1 px-5">Adresse</div>
+                        <div className="text-(--white) border-l w-50 px-5">CP</div>
+                        <div className="text-(--white) border-l w-170 px-5">Ville</div>
+                        <div className="text-(--white) border-l w-180 px-5">Roles</div>
+                        <div className="text-(--white) border-l w-70 px-5">Capacité</div>
+                        <div className="text-(--white) border-l w-70 px-5">Actions</div>
                     </div>
                     {filteredUsers?.map((u, idx) => (
                         <div key={u.id} className={"flex w-full border-solid border-(--pink) border-b " + (u.blacklisted ? " italic" : "") + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
-                            <span className="flex justify-center items-center px-5 w-20">
+                            <div className="flex justify-center items-center px-5 w-20">
                                 {user.id !== u.id && <input type="checkbox" name={"check-" + u.id} value={u.id} onChange={(e) => { addOrRemoveUserToMessage(e.currentTarget.checked, e.currentTarget.value)}} />}
                                 {u.blacklisted ? <IconButton url="#" icon={IconButtonImages.BlackListed} svgFill="#CE25A6" imgWidth={20} title="Sur la liste noire" /> : null}
-                            </span>
-                            <span className={"w-150 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.name} {u.lastName}</span>
-                            <span className={"border-l w-100 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.social_number}</span>
-                            <span className={"border-l w-200 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.email}</span>
-                            <span className={"border-l w-100 px-5 text-center" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.phone}</span>
-                            <span className={"border-l flex-1 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.address}</span>
-                            <span className={"border-l w-50 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.postalCode}</span>
-                            <span className={"border-l w-165 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.city}</span>
-                            <span className={"border-l w-120 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.roles.split("|").map((r:string) => `${getRoleLabel(r as "Admin" | "HostFamily" | "Assistant" | "Volunteer")}\n`)}</span>
-                            <span className={"border-l w-90 px-5 border-(--pink)" + (u.capacity === "Empty" ? " bg-[#00ff00]": " bg-[#ff0000]")}>&nbsp;</span>
-                            <span className="flex justify-center gap-5 border-(--pink) border-l w-70 px-5">
-                                {u && !hasRoles(u.roles, ["Admin"]) &&
+                            </div>
+                            <div className={"w-150 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.lastName} {u.name}</div>
+                            <div className={"border-l w-100 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.social_number}</div>
+                            <div className={"border-l w-150 px-5 break-all" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.email}</div>
+                            <div className={"border-l w-100 px-5 text-center" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.phone}</div>
+                            <div className={"border-l flex-1 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.address}</div>
+                            <div className={"border-l w-50 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.postalCode}</div>
+                            <div className={"border-l w-170 px-5 break-all" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.city}</div>
+                            <div className={"border-l w-180 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>
+                                {u.roles.split("|").map((r:string, idx: number) => (<div key={u.id + idx}>{getRoleLabel(r as UserRoles.Admin |
+                                        UserRoles.CommitteeMember |
+                                        UserRoles.AdoptionReferent |
+                                        UserRoles.HealthRegisterReferent |
+                                        UserRoles.VetVoucherReferent |
+                                        UserRoles.ICADReferent |
+                                        UserRoles.HostFamily |
+                                        UserRoles.Volunteer)}</div>))}
+                            </div>
+                            <div className={"border-l w-70 px-5 border-(--pink)" + (u.capacity === "Empty" ? " bg-[#00ff00]": " bg-[#ff0000]")}>&nbsp;</div>
+                            <div className="flex justify-center gap-5 border-(--pink) border-l w-70 px-5">
+                                {u &&
                                     <>
                                         <IconButton url={`/admin/profile/${u.id}`} icon={IconButtonImages.Pen} svgFill="#CE25A6" imgWidth={20} title="Editer le profile" />
                                         <IconButton onClick={(e:React.MouseEvent<HTMLButtonElement>) => resetUserPassword(e, u.email) } icon={IconButtonImages.ChangePassword} svgFill="#CE25A6" imgWidth={20} title="Changer le mot de passe" />
                                     </>
                                 }
-                            </span>
+                            </div>
                         </div>
                     ))}
                 </div>

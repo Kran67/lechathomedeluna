@@ -14,15 +14,6 @@
         "isDuringVisit": false,
         "isAdoptable": true,
         "adoptionDate": "2026-01-06",
-        "hostFamily": {
-            "name": "Sandra",
-            "lastName": "Daout",
-            "phone": "0601020304",
-            "address": "10 rue des Fleurs",
-            "cityId": 4653,
-            "roles": "HostFamily",
-            "email": "faref@exemple.com"
-        },
         "pictures": [
             "/images/chats/calypso/calypso-1.jpg",
             "/images/chats/calypso/calypso-2.jpg",
@@ -44,16 +35,6 @@
         "birthDate": "2015-01-01",
         "isAdoptable": true,
         "adoptionDate": "2026-02-15",
-        "hostFamily": {
-            "name": "Sandra",
-            "lastName": "Bohner",
-            "phone": "0601020304",
-            "address": "10 rue des Fleurs",
-            "cityId": 4402,
-            "roles": "HostFamily",
-            "email": "fa@exemple.com",
-            "referrerId": 2
-        },
         "pictures": [
             "/images/chats/réglisse/reglisse-1.jpg",
             "/images/chats/réglisse/reglisse-2.jpg",
@@ -121,7 +102,16 @@
             "/images/chats/stocky/stocky-4.jpg",
             "/images/chats/stocky/stocky-5.jpg"
         ],
-        "documents": []
+        "documents": [],
+        "hostFamily": {
+            "name": "Sandra",
+            "lastName": "Daout",
+            "phone": "0601020304",
+            "address": "10 rue des Fleurs",
+            "cityId": 4653,
+            "roles": "CommitteeMember|HostFamily",
+            "email": "faref@exemple.com"
+        }
     },
     {
         "slug": "6ff132c6",
@@ -133,6 +123,16 @@
         "race": "Européen",
         "birthDate": "2016-01-01",
         "numIdentification": "250269609",
+        "hostFamily": {
+            "name": "Sandra",
+            "lastName": "Bohner",
+            "phone": "0601020304",
+            "address": "10 rue des Fleurs",
+            "cityId": 4402,
+            "roles": "HostFamily",
+            "email": "fa@exemple.com",
+            "referrerId": 8
+        },
         "isAdoptable": false,
         "pictures": [
             "/images/chats/salem/salem-1.jpg",

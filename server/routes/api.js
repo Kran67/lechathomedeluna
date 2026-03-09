@@ -17,13 +17,13 @@ router.get('/catsadoptable', cats.listAdoptable);
 router.get('/catsadopted/:year', cats.listAdopted);
 router.get('/catsmine/:id', cats.listMine);
 router.get('/cats/:id', cats.getById);
-router.post('/cats', requireRole(['Admin','Assistant', 'HostFamily']), cats.create);
+router.post('/cats', requireRole(['Admin','AdoptionReferent', 'HostFamily']), cats.create);
 router.patch('/cats/favorite/:slug', cats.updateFavoriteCount);
-router.patch('/cats/:slug', requireRole(['Admin','Assistant', 'HostFamily']), cats.update);
+router.patch('/cats/:slug', requireRole(['Admin', 'AdoptionReferent', 'HealthRegisterReferentReferent', 'VetVoucherReferent', 'ICADReferent', 'HostFamily']), cats.update);
 router.delete('/cats/:id', requireRole(['Admin']), cats.remove);
-router.get('/catnotfullycompletedcount', requireRole(['Admin', 'Assistant']), cats.notFullyCompletedCount);
-router.get('/catnotfullycompletedlist', requireRole(['Admin', 'Assistant']), cats.notFullyCompletedList);
-router.get('/hasprevisitwithoutdatelist', requireRole(['Admin', 'Assistant']), cats.hasPreVisitWithoutDateList);
+router.get('/catnotfullycompletedcount', requireRole(['Admin', 'AdoptionReferent']), cats.notFullyCompletedCount);
+router.get('/catnotfullycompletedlist', requireRole(['Admin', 'AdoptionReferent']), cats.notFullyCompletedList);
+router.get('/hasprevisitwithoutdatelist', requireRole(['Admin', 'CommitteeMember']), cats.hasPreVisitWithoutDateList);
 router.post('/createadoptionrequest', cats.createAdoptionRequest);
 
 // Users
@@ -38,31 +38,31 @@ router.get('/resetpassword/validate/:token', users.checkResetTokenValidity);
 router.post('/profile/updatepassword', users.updatePassword);
 
 // Vet vouchers
-router.get('/vetvouchers', requireRole(['Admin', 'Assistant']), vetVouchers.list);
-router.get('/vetvouchers/:year/:clinic/:object', requireRole(['Admin', 'Assistant']), vetVouchers.listByParams);
-router.get('/vetvouchers/:id', requireRole(['Admin', 'Assistant']), vetVouchers.listByParams);
-router.post('/vetvouchers', requireRole(['Admin', 'Assistant']), vetVouchers.create);
-router.patch('/vetvouchers/:id', requireRole(['Admin', 'Assistant']), vetVouchers.update);
-router.delete('/vetvouchers/:id', requireRole(['Admin', 'Assistant']), vetVouchers.remove);
-router.get('/vetvoucherscount', requireRole(['Admin', 'Assistant']), vetVouchers.count);
+router.get('/vetvouchers', requireRole(['Admin', 'VetVoucherReferent']), vetVouchers.list);
+router.get('/vetvouchers/:year/:clinic/:object', requireRole(['Admin', 'VetVoucherReferent']), vetVouchers.listByParams);
+router.get('/vetvouchers/:id', requireRole(['Admin', 'VetVoucherReferent']), vetVouchers.listByParams);
+router.post('/vetvouchers', requireRole(['Admin', 'VetVoucherReferent']), vetVouchers.create);
+router.patch('/vetvouchers/:id', requireRole(['Admin', 'VetVoucherReferent']), vetVouchers.update);
+router.delete('/vetvouchers/:id', requireRole(['Admin', 'VetVoucherReferent']), vetVouchers.remove);
+router.get('/vetvoucherscount', requireRole(['Admin', 'VetVoucherReferent']), vetVouchers.count);
 
 // Messaging
-router.get('/messaging/:userid', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.getByUserId);
-router.get('/messaging/unread/:userid', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.unreadMessageCountByUserId);
-router.get('/messaging/unreadlist/:userid', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.unreadMessageListByUserId);
-router.post('/messaging', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.create);
-router.post('/messaging/createandsendmessage', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.createAndSendMessage);
-router.delete('/messaging/:id', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.remove);
-router.post('/sendmessage', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.createMsg);
-router.delete('/message/:id', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.removeMsg);
+router.get('/messaging/:userid', requireRole(['Admin', 'CommitteeMember', 'HostFamily', 'Volunteer']), messaging.getByUserId);
+router.get('/messaging/unread/:userid', requireRole(['Admin', 'CommitteeMember', 'HostFamily', 'Volunteer']), messaging.unreadMessageCountByUserId);
+router.get('/messaging/unreadlist/:userid', requireRole(['Admin', 'CommitteeMember', 'HostFamily', 'Volunteer']), messaging.unreadMessageListByUserId);
+router.post('/messaging', requireRole(['Admin', 'CommitteeMember', 'HostFamily', 'Volunteer']), messaging.create);
+router.post('/messaging/createandsendmessage', requireRole(['Admin', 'CommitteeMember', 'HostFamily', 'Volunteer']), messaging.createAndSendMessage);
+router.delete('/messaging/:id', requireRole(['Admin', 'CommitteeMember', 'HostFamily', 'Volunteer']), messaging.remove);
+router.post('/sendmessage', requireRole(['Admin', 'CommitteeMember', 'HostFamily', 'Volunteer']), messaging.createMsg);
+router.delete('/message/:id', requireRole(['Admin', 'CommitteeMember', 'HostFamily', 'Volunteer']), messaging.removeMsg);
 router.post('/messaging/addmembers', requireAuth, messaging.addMembers);
 router.post('/messaging/removemembers', requireAuth, messaging.removeMembers);
 router.post('/messaging/renamethread', requireAuth, messaging.renameThread);
 router.post('/messaging/leavethread', requireAuth, messaging.leaveThread);
 
-router.get('/messaging/all/:id/:userid', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.getAllMessagesByThreadId);
+router.get('/messaging/all/:id/:userid', requireRole(['Admin', 'CommitteeMember', 'HostFamily', 'Volunteer']), messaging.getAllMessagesByThreadId);
 // Ajouter après les routes messaging existantes :
-router.post('/messaging/upload', requireRole(['Admin', 'Assistant', 'HostFamily', 'Volunteer']), messaging.uploadMessageAttachment);
+router.post('/messaging/upload', requireRole(['Admin', 'CommitteeMember', 'HostFamily', 'Volunteer']), messaging.uploadMessageAttachment);
 
 // News
 router.get('/news/:period', news.getNews);

@@ -19,7 +19,7 @@ import {
   HeaderMenuItems,
   IconButtonImages,
   LogoSizes,
-  UserRole,
+  UserRoles,
 } from '@/app/enums/enums';
 import {
   hasRoles,
@@ -64,11 +64,13 @@ export default function Header({ activeMenu }: HeaderProps) {
                 const res = await getUnreadMessageByUserId(token, user?.id as string);
                 setUnreadMsg(res);
             })();
-            if (user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant])) {
+            if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent])) {
                 (async () => {
                     const res = await getVetVouchersCount(token);
                     setVetVoucherCount(res);
                 })();
+            }
+            if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent])) {
                 (async () => {
                     const res = await getCatNotFullyCompletedCount(token);
                     setCatNotFullyCompletedCount(res);
@@ -87,7 +89,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.Home}
                 url="/"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />
-            {user && hasRoles(user.roles, [UserRole.HostFamily]) && <MenuItem
+            {user && hasRoles(user.roles, [UserRoles.HostFamily]) && <MenuItem
                 text="Mes chats"
                 isActive={activeMenu === HeaderMenuItems.MyCats}
                 url="/myCats"
@@ -97,13 +99,13 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.CatsForAdoption}
                 url="/catsForAdoption"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />
-            {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant, UserRole.HostFamily]) && <MenuItem
+            {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <MenuItem
                 text="Mes alertes"
                 isActive={activeMenu === HeaderMenuItems.Alerts}
                 url="/myAlerts"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
                 badge={unreadMsg + vetVoucherCount + catNotFullyCompletedCount} />}
-            {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant]) && <MenuItem
+            {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent]) && <MenuItem
                 text="Bons vétérinaires"
                 isActive={activeMenu === HeaderMenuItems.VeterinaryVouchers}
                 url="/veterinary"
@@ -114,12 +116,12 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.Events}
                 url="/events"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />} */}
-            {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant]) && <MenuItem
+            {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HealthRegisterReferent, UserRoles.VetVoucherReferent]) && <MenuItem
                 text="Chats en FA"
                 isActive={activeMenu === HeaderMenuItems.Adoption}
                 url="/faCats"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                badge={catNotFullyCompletedCount} />}
+                badge={hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent]) ? catNotFullyCompletedCount : 0} />}
             {/* {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant, UserRole.Volunteer]) && <MenuItem
                 text="Bénévoles"
                 isActive={activeMenu === HeaderMenuItems.Volunteers}
@@ -130,7 +132,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.AdoptedCats}
                 url="/adoptedCats"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />
-            {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant, UserRole.HostFamily]) && <MenuItem
+            {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <MenuItem
                 text="Messagerie"
                 isActive={activeMenu === HeaderMenuItems.Messaging}
                 url="/messaging"
@@ -147,7 +149,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                 url="/login"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
             {user && <MenuItem
-                text={user.name + " " + user.lastName}
+                text={user.lastName + " " + user.name}
                 isActive={activeMenu === HeaderMenuItems.Profile}
                 url="/admin/profile"
                 className="hidden md:flex text-lg cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold w-90 catpaw" />}

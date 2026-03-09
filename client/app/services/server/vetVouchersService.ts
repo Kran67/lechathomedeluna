@@ -1,7 +1,7 @@
 export const create = async (
     token: string | undefined,
     date: string,
-    user_name: string,
+    user_id: string,
     cat_id: string,
     clinic: string,
     object: string,
@@ -13,7 +13,7 @@ export const create = async (
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
             body: JSON.stringify({
                 date,
-                user_name,
+                user_id,
                 cat_id,
                 clinic,
                 object,

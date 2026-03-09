@@ -5,7 +5,7 @@ async function listUsers() {
     FROM users u
     LEFT JOIN postal_codes pc ON pc.id = u.cityId
     WHERE u.id > 1 AND u.blacklisted = false
-    ORDER BY u.id DESC`);
+    ORDER BY u.lastname, u.name DESC`);
 }
 
 async function getUser(id) {
@@ -105,6 +105,12 @@ async function changePassword(id, newPassword) {
   await pool.query(`UPDATE users SET password_hash = $2, reset_token = NULL, reset_expires = NULL WHERE id = $1`, [id, `scrypt:salt:${hash}`]);
 }
 
+async function getByReferentId(id) {
+  return await pool.query(`SELECT u.id
+    FROM users u
+    WHERE u.referrer_id = $1`, [id]);
+}
+
 module.exports = {
   listUsers,
   getUser,
@@ -112,5 +118,6 @@ module.exports = {
   updateUser,
   resetMyPassword,
   getUserByEmail,
-  changePassword
+  changePassword,
+  getByReferentId
 };

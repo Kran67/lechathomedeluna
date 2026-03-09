@@ -31,6 +31,7 @@ export interface Cat {
     documents: CatDocument[];
     pictures: string[];
     favoriteCount: number;
-    isPreVisit?: boolean;
     preVisitDate?: string;
+    entryDate?: string;
+    provenance: string;
 }

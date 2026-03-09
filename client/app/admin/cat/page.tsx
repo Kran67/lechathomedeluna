@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import NewCat from '@/app/admin/cat/newCat';
-import { UserRole } from '@/app/enums/enums';
+import { UserRoles } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
 import { hasRoles } from '@/app/lib/utils';
 import {
@@ -17,7 +17,7 @@ export default async function Page() {
     const user = await getById(token, userId ?? '');
     let hostFamilies: User[] = [];
 
-    if (!user || (user && !hasRoles(user.roles, [UserRole.Admin, UserRole.HostFamily]))) {
+    if (!user || (user && !hasRoles(user.roles, [UserRoles.Admin, UserRoles.HostFamily]))) {
         redirect("/");
     }
 

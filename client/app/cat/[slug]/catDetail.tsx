@@ -25,10 +25,13 @@ import {
   HeaderMenuItems,
   IconButtonImagePositions,
   IconButtonImages,
+  UserRoles,
 } from '@/app/enums/enums';
 import { Cat } from '@/app/interfaces/cat';
+import { DateUtils } from '@/app/lib/dateUtils';
 import {
   dateAge,
+  hasRoles,
   prepareBodyToShowModal,
 } from '@/app/lib/utils';
 import { updateFavorite } from '@/app/services/server/catsService';
@@ -77,17 +80,23 @@ export default function Property({ cat }: CatProps) {
     if (cat?.status) {
         collapseElementContent.push({ name: cat?.status});
     }
+    if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember]) && cat?.entryDate) {
+        collapseElementContent.push({ name: `Entrée ${DateUtils.differenceDate(new Date(cat?.entryDate)).text}`});
+    }
+    if (cat?.provenance) {
+        collapseElementContent.push({ name: cat?.provenance });
+    }
 
-    const collapseElementDocuments: { name:string, url:string }[] = [
-        {
-            name: "",
-            url: ""
-        },
-        {
-            name: "",
-            url: ""
-        }
-    ];
+    //const collapseElementDocuments: { name:string, url:string }[] = [
+    //    {
+    //        name: "",
+    //        url: ""
+    //    },
+    //    {
+    //        name: "",
+    //        url: ""
+    //    }
+    //];
 
     useEffect(() => {
         prepareBodyToShowModal(viewCarousel ? "hidden" : "");
@@ -143,7 +152,6 @@ export default function Property({ cat }: CatProps) {
                     onSuccess={async () => {
                         setShowModalAdoptionRequest(false);
                         toast.success(`La demande d'adoption pour ${cat.name} a bien été créée.`);
-                        //await sendMessage(token, CONSTANTS.THREAD_GROUPS.ADOPTION.toString(), "-1", `La demande d'adoption pour le 🐈 ${baseUrl}/admin/cat/${cat.slug}[${cat.name}] vient d'être créée.\n`, []);
                     }}
                 />,
                 document.body
@@ -194,7 +202,7 @@ export default function Property({ cat }: CatProps) {
                             <p className="text-sm text-(--text) font-normal whitespace-break-spaces">{cat?.description}</p>
                         </div>
                         <CollapseElement title="Informations" content={collapseElementContent} />
-                        <CollapseElement title="Documents" content={collapseElementDocuments} />
+                        {/* <CollapseElement title="Documents" content={collapseElementDocuments} /> */}
                         { !user && !cat?.adoptionDate &&
                             <>
                                 <IconButton

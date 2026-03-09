@@ -16,7 +16,7 @@ function mapVetVoucherRow(row) {
 async function listVetVoucher(year = 0, clinic = '', object = '', id = null) {
   const params = [year];
   let sql = `
-      SELECT v.id, v.date, v.user_name, v.clinic, v.object, v.processed_on, c.slug, c.name, c.numId
+      SELECT v.id, v.date, u.user_name, v.clinic, v.object, v.processed_on, c.slug, c.name, c.numId
       FROM vet_vouchers v
       LEFT JOIN LATERAL (
         SELECT slug, name, numIdentification as numId
@@ -24,6 +24,12 @@ async function listVetVoucher(year = 0, clinic = '', object = '', id = null) {
         WHERE id = v.cat_id
         LIMIT 1
       ) c ON true
+      LEFT JOIN LATERAL (
+        SELECT CONCAT(users.lastName, ' ', users.name) as user_name
+        FROM users
+        WHERE users.id = v.user_id
+        LIMIT 1
+      ) u ON true
       WHERE v.processed_on IS NULL `;
     if (id) {
       sql += ' AND v.id = $1';
@@ -54,7 +60,7 @@ async function listVetVoucher(year = 0, clinic = '', object = '', id = null) {
 
 async function getVetVoucherById(id) {
   const res = await pool.query(`
-    SELECT v.id, v.date, v.user_name, v.clinic, v.object, v.processed_on, c.slug, c.name
+    SELECT v.id, v.date, u.user_name, v.clinic, v.object, v.processed_on, c.slug, c.name
     FROM vet_vouchers v
     LEFT JOIN LATERAL (
       SELECT slug, name
@@ -62,6 +68,12 @@ async function getVetVoucherById(id) {
       WHERE cat_id = v.id
       LIMIT 1
     ) c ON true
+    LEFT JOIN LATERAL (
+      SELECT CONCAT(lastname, ' ', name) as user_name
+      FROM users
+      WHERE v.user_id = users.id
+      LIMIT 1
+    ) u ON true
     WHERE v.id = $1
   `, [id]);
   if (res.rows.length === 0) return null;
@@ -71,7 +83,7 @@ async function getVetVoucherById(id) {
 async function createVetVoucher(payload) {
   const {
     date,
-    user_name,
+    user_id,
     cat_id,
     clinic,
     object,
@@ -79,15 +91,15 @@ async function createVetVoucher(payload) {
   } = payload || {};
 
   if (!date) throw new Error('La date est requise');
-  if (!user_name) throw new Error("Le nom de l'utilisateur initiateur de la demande est requis");
+  if (!user_id) throw new Error("L'utilisateur initiateur de la demande est requis");
   if (!cat_id) throw new Error('Le chat est requis');
   if (!clinic) throw new Error('La clinique est requiss');
   if (!object) throw new Error("L'object est requis");
 
   const res = await pool.query(
-    `INSERT INTO vet_vouchers(date, user_name, cat_id, clinic, object, created_by, created_at, updated_by, updated_at) 
+    `INSERT INTO vet_vouchers(date, user_id, cat_id, clinic, object, created_by, created_at, updated_by, updated_at) 
      VALUES ($1,$2,$3,$4,$5,$6,NOW(),$6,NOW()) RETURNING id`,
-    [date, user_name, cat_id, clinic, object, created_by]
+    [date, user_id, cat_id, clinic, object, created_by]
   );
   const lastId = res.rows[0].id;
 

@@ -26,7 +26,7 @@ import {
   HeaderMenuItems,
   IconButtonImages,
   InputTypes,
-  UserRole,
+  UserRoles,
 } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
 import {
@@ -67,7 +67,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
 
     const filteredHostFamilies = hostFamilies?.map(u => ({
         value: u.id,
-        label: `${u.name} ${u.lastName}`,
+        label: `${u.lastName} ${u.name}`,
     }));
 
     // Avant chaque soumission, vérification des données fournies valides.
@@ -79,6 +79,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
         const sterilizationDate: string | null = formData.get("sterilizationDate") as string !== '' ? formData.get("sterilizationDate") as string : null;
         const birthDate: string | null = formData.get("birthDate") as string !== '' ? formData.get("birthDate") as string : null;
         const adoptionDate: string | null = formData.get("adoptionDate") as string !== '' ? formData.get("adoptionDate") as string : null;
+        const entryDate: string | null = formData.get("entryDate") as string !== '' ? formData.get("entryDate") as string : null;
         const catName: string = formData.get("name") as string;
 
         const res = await create(
@@ -97,7 +98,9 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
             adoptionDate,
             hostFamilyId,
             pictures,
-            user?.id as string
+            user?.id as string,
+            entryDate,
+            formData.get("provenance") as string
         );
         if (!res.error) {
             await sendMessage(token, CONSTANTS.THREAD_GROUPS.ADOPTION.toString(), user?.id as string, `La fiche pour le 🐈 ${baseUrl}/admin/cat/${res.slug}[${catName}] vient d'être créée.\n`, []);
@@ -203,6 +206,8 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                                     onChange={(e:any) => setIsSterilized(e?.value as boolean ?? false)}
                                 />
                             </div>
+                            <Input name="entryDate" label="Date d'entrée" type={InputTypes.Date}  />
+                            <Input name="provenance" label="Provenance" type={InputTypes.Text} maxLength={50}  />
                             <Input name="sterilizationDate" label="Date de la stérilisation / castration" type={InputTypes.Date}  />
                             <Input name="birthDate" label="Date de naissance" type={InputTypes.Date}  />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
@@ -220,25 +225,8 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                                     onChange={(e:any) => setIsDuringVisit(e?.value as boolean ?? "")}
                                 />
                             </div>
-                            { user && hasRoles(user.roles, [UserRole.Admin]) &&
-                            <>
-                                {/* <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
-                                    <label className="text-sm text-(--text) font-medium " htmlFor="isAdopted">Est adopté</label>
-                                    <Select
-                                        options={YesNo}
-                                        className="select"
-                                        classNamePrefix="select"
-                                        name="isAdopted"
-                                        id="isAdopted"
-                                        isMulti={false}
-                                        isClearable={false}
-                                        isSearchable={false}
-                                        placeholder="Est adopté ?"
-                                        onChange={(e:any) => setIsAdopted(e?.value as boolean ?? "")}
-                                    />
-                                </div> */}
+                            { user && hasRoles(user.roles, [UserRoles.Admin]) &&
                                 <Input name="adoptionDate" label="Date d'adoption" type={InputTypes.Date} />
-                                </>
                             }
                             <Input name="catPictures" label="Photos" type={InputTypes.File} multipleFile={true} onChange={picturesChange} />
                             <div className='flex flex-wrap w-full gap-7' data-p={picturesPreview.length}>

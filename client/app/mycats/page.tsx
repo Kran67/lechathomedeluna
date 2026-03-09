@@ -3,10 +3,15 @@
 import Gallery from '@/app/components/data/Gallery';
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
-import { HeaderMenuItems } from '@/app/enums/enums';
+import {
+  HeaderMenuItems,
+  UserRoles,
+} from '@/app/enums/enums';
 import { catsService } from '@/app/services/client/catsService';
 
+import Button from '../components/ui/Button';
 import { useUser } from '../contexts/userContext';
+import { hasRoles } from '../lib/utils';
 
 /**
  * Ajout les métadata à la page
@@ -35,13 +40,19 @@ export default function MyCats() {
   for (let i = 2026; i <= new Date().getFullYear(); i++) {
     Years.push({ value: i, label: i});
   }
+  const isFaRef: boolean = service.cats?.some((u) => u.hostFamily?.id !== user?.id) as boolean;
   
   return (
     <main className="flex flex-col gap-51 md:gap-20 w-full items-center md:pt-20 md:px-140">
       <Header activeMenu={HeaderMenuItems.MyCats} />
       <div className="flex flex-col gap-51 md:gap-20 px-16 md:p-0 w-full xl:w-1115">
         <div className="flex flex-col gap-8 w-full xl:w-1115 lg:w-800 items-center text-center">
-          <span className="text-[32px] text-(--primary) w-full">Mes chats</span>
+          <span className="text-[32px] text-(--primary) w-full">Mes chats {isFaRef && " et ceux des FA dont je suis le référent"}</span>
+            {user && hasRoles(user.roles, [UserRoles.HostFamily]) && <Button
+                text='Ajouter une fiche chat'
+                url='/admin/cat'
+                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-16 text-(--white) md:w-170' />
+            }
         </div>
       </div>
       <Gallery cats={service.cats ?? []} />

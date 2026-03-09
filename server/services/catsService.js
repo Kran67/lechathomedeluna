@@ -1,5 +1,6 @@
 const pool = require("../db/pool");
 const tools = require("../utils/lib");
+const { getByReferentId } = require("../services/usersService");
 
 function mapCatRow(row) {
   if (!row) return null;
@@ -24,9 +25,10 @@ function mapCatRow(row) {
     adoptionDate: row.adoptiondate,
     hostFamily: row.hostfamily_id ? { id: row.hostfamily_id, name: row.hostfamily_name } : undefined,
     favoriteCount: row.favoritecount,
-    isPreVisit: row.isprevisit,
     preVisitDate: row.previsitdate,
     pictures: [row.url],
+    entryDate: row.entrydate,
+    provenance: row.provenance
   };
 }
 
@@ -55,7 +57,7 @@ async function ensureUniqueSlug(base, excludeId = null) {
 
 async function listCats(isAdoptable = false, year = 0, hostFamilyId = null) {
   let sql = `
-      SELECT DISTINCT c.*, cp.url
+      SELECT DISTINCT c.*, cp.url, u.hostfamily_name
       FROM cats c
       LEFT JOIN LATERAL (
         SELECT url
@@ -63,9 +65,21 @@ async function listCats(isAdoptable = false, year = 0, hostFamilyId = null) {
         WHERE cat_id = c.id
         ORDER BY id ASC
         LIMIT 1
-      ) cp ON true`;
+      ) cp ON true
+      LEFT JOIN LATERAL (
+        SELECT CONCAT(users.name, ' ', users.lastname) AS hostfamily_name
+        FROM users
+        WHERE c.hostfamily_id = users.id
+        LIMIT 1
+      ) u on true`;
     if (hostFamilyId) {
-      sql += ` WHERE c.hostfamily_id = ${hostFamilyId}`;
+      const res = await getByReferentId(hostFamilyId);
+      if (res.rowCount > 0) {
+        sql += ` WHERE c.hostfamily_id IN (${hostFamilyId}, ${res.rows.map((u) => u.id).join(",")})`;
+      } else {
+        sql += ` WHERE c.hostfamily_id = ${hostFamilyId}`;
+      }
+      sql += ` AND c.adoptionDate IS NULL`;
     } else if (year > 0) {
       sql += ` WHERE c.adoptionDate IS NOT NULL AND DATE_PART('year',  c.adoptionDate) = ${year}`;
     } else if (isAdoptable) {
@@ -73,7 +87,11 @@ async function listCats(isAdoptable = false, year = 0, hostFamilyId = null) {
     } else {
       sql += ' WHERE c.isAdoptable = false AND c.adoptionDate IS NULL ';
     }
-    sql += ' ORDER BY c.name ASC';
+    if (hostFamilyId) {
+      sql += ' ORDER BY c.hostfamily_id, c.name ASC';
+    } else {
+      sql += ' ORDER BY c.name ASC';
+    }
   const res = await pool.query(sql);
   return res.rows.map(mapCatRow);
 }
@@ -116,6 +134,8 @@ async function createCat(payload) {
     hostFamilyId = null,
     pictures = [],
     userId = null,
+    entryDate = null,
+    provenance = null
   } = payload || {};
 
   if (!name) throw new Error('Nom est requis');
@@ -125,9 +145,9 @@ async function createCat(payload) {
   const base = tools.uuid();
   const uniqueSlug = await ensureUniqueSlug(base);
   const res = await pool.query(
-    `INSERT INTO cats(name, slug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdoptable, adoptionDate, hostFamily_id, created_by, created_at, updated_by, updated_at) 
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,false,$13,$14, $15, NOW(), $16, NOW()) RETURNING id`,
-    [name, uniqueSlug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, adoptionDate, hostFamilyId, userId, userId]
+    `INSERT INTO cats(name, slug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdoptable, adoptionDate, hostFamily_id, entryDate, provenance, created_by, created_at, updated_by, updated_at) 
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,false,$13,$14, $15, $16, $17, NOW(), $17, NOW()) RETURNING id`,
+    [name, uniqueSlug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, adoptionDate, hostFamilyId, entryDate, provenance, userId]
   );
   const lastId = res.rows[0].id;
 
@@ -141,14 +161,14 @@ async function createCat(payload) {
 }
 
 async function updateCat(slug, changes) {
-  const allowed = ['name', 'description', 'status', 'numIdentification', 'sex', 'dress', 'race', 'isSterilized', 'sterilizationDate', 'birthDate', 'isDuringVisit', 'isAdoptable', 'adoptionDate', 'hostFamily_Id', 'isPreVisit', 'preVisitDate'];
+  const allowed = ['name', 'description', 'status', 'numIdentification', 'sex', 'dress', 'race', 'isSterilized', 'sterilizationDate', 'birthDate', 'isDuringVisit', 'isAdoptable', 'adoptionDate', 'hostFamily_Id', 'preVisitDate', 'entryDate', 'provenance'];
   const fields = [];
   const params = [];
 
   for (const key of allowed) {
     if (key in (changes || {})) {
       fields.push(`${key} = $${allowed.indexOf(key) + 1}`);
-      if (["sterilizationDate", "birthDate", "adoptionDate", "preVisitDate"].includes(key) && changes[key] === "") {
+      if (["sterilizationDate", "birthDate", "adoptionDate", "preVisitDate", "entryDate"].includes(key) && changes[key] === "") {
         params.push(null);
       } else {
         params.push(changes[key]);
@@ -200,7 +220,9 @@ async function getAllCatsNotFullyCompletedCount() {
       sterilizationDate IS NULL OR
       birthDate         IS NULL OR
       adoptionDate      IS NULL OR
-      hostfamily_id     IS NULL);`);
+      hostfamily_id     IS NULL OR
+      entryDate        IS NULL OR
+      provenance        IS NULL);`);
   return res.rows[0].count;
 }
 
@@ -217,7 +239,9 @@ async function getAllCatsNotFullyCompletedList() {
         CASE WHEN sterilizationDate IS NULL                          THEN 'date de stérilisation' END,
         CASE WHEN birthDate         IS NULL                          THEN 'date de naissance'         END,
         CASE WHEN adoptionDate      IS NULL                          THEN 'date d''adoption'      END,
-        CASE WHEN hostfamily_id     IS NULL                          THEN 'famille d''accueil'     END
+        CASE WHEN hostfamily_id     IS NULL                          THEN 'famille d''accueil'     END,
+        CASE WHEN entryDate         IS NULL                          THEN 'Date d''entrée'      END,
+        CASE WHEN provenance        IS NULL                          THEN 'provenance'      END
       ], NULL) AS fields
     FROM cats
     WHERE
@@ -228,7 +252,9 @@ async function getAllCatsNotFullyCompletedList() {
       sterilizationDate IS NULL OR
       birthDate         IS NULL OR
       adoptionDate      IS NULL OR
-      hostfamily_id     IS NULL
+      hostfamily_id     IS NULL OR
+      entryDate        IS NULL OR
+      provenance        IS NULL
     ORDER BY name;`);
   return res.rows.map(mapCatUnCompletdRow);
 }
@@ -237,7 +263,7 @@ async function catsHasPreVisitWithoutDateList() {
   let sql = `
       SELECT DISTINCT c.*
       FROM cats c
-      WHERE isPreVisit = true AND preVisitDate IS NULL
+      WHERE preVisitDate IS NULL
       ORDER BY c.name ASC`;
   const res = await pool.query(sql);
   return res.rows.map(mapCatRow);
@@ -257,9 +283,6 @@ async function createAdoptionRequestForCat(payload) {
     alreadyPresenAnimalsNumber = null,
     dailyTimeOff = null,
     holidaysChildcareSolution = null,
-    baseUrl = null,
-    slug = null,
-    name = null,
   } = payload || {};
 
   if (!catId) throw new Error('Le chat est requis');

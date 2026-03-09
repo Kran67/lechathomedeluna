@@ -1,19 +1,39 @@
-import { UserRole } from '@/app/enums/enums';
+import { UserRoles } from '@/app/enums/enums';
 
 export const Roles: {
     value: string;
     label: string;
 }[] = [
         {
-            value: UserRole.Assistant,
+            value: UserRoles.CommitteeMember,
             label: "Membre du comité",
         },
         {
-            value: UserRole.HostFamily,
+            value: UserRoles.AdoptionReferent,
+            label: "Référent adoption",
+        },
+        {
+            value: UserRoles.HealthRegisterReferent,
+            label: "Référent registre sanitiare",
+        },
+        {
+            value: UserRoles.ICADReferent,
+            label: "Référent I-CAD",
+        },
+        {
+            value: UserRoles.VetVoucherReferent,
+            label: "Référent bons vétérinaire",
+        },
+        {
+            value: UserRoles.PreVisitReferent,
+            label: "Référent pré visiste",
+        },
+        {
+            value: UserRoles.HostFamily,
             label: "Famille d'acceuil",
         },
         {
-            value: UserRole.Volunteer,
+            value: UserRoles.Volunteer,
             label: "Bénévole",
         },
     ];

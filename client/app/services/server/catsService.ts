@@ -35,7 +35,9 @@ export const create = async (
     adoptionDate: string | null,
     hostFamilyId: string | null,
     pictures: any,
-    userId: string
+    userId: string,
+    entryDate: string | null,
+    provenance: string | null
     ) => {
     try {
         const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats`, {
@@ -55,7 +57,9 @@ export const create = async (
                 isDuringVisit,
                 adoptionDate,
                 hostFamilyId,
-                userId
+                userId,
+                entryDate,
+                provenance
             }),
         });
         const result = await res.json();
@@ -96,14 +100,15 @@ export const update = async (
     isDuringVisit: boolean | null,
     isAdoptable: boolean | null,
     adoptionDate: string | null,
-    isPreVisit: boolean | null,
     preVisitDate: string | null,
     hostFamilyId: string | null,
     newPictures: any,
     picturesToDelete: string[] | null,
     newDocuments: CatDocument[],
     documentsToDelete: string[] | null,
-    userId: string
+    userId: string,
+    entryDate: string | null,
+    provenance: string | null
     ) => {
     try {
         const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats/${slug}`, {
@@ -123,10 +128,11 @@ export const update = async (
                 isDuringVisit,
                 isAdoptable,
                 adoptionDate,
-                isPreVisit,
                 preVisitDate,
                 hostFamily_Id: hostFamilyId,
-                userId
+                userId,
+                entryDate,
+                provenance
             }),
         });
         const result = await res.json();

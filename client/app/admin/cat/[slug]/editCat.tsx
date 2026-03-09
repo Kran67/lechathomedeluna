@@ -26,7 +26,7 @@ import {
   HeaderMenuItems,
   IconButtonImages,
   InputTypes,
-  UserRole,
+  UserRoles,
 } from '@/app/enums/enums';
 import {
   Cat,
@@ -66,7 +66,6 @@ interface EditCatProps {
 }
 
 export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
-    console.log(cat);
     const { user } = useUser();
     const cookies: Cookies = useCookies();
     const token: string = cookies.get("token") as string;
@@ -76,12 +75,12 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const [isDuringVisit, setIsDuringVisit] = useState<boolean>(cat?.isDuringVisit ?? false);
     let isAdoptable = cat?.isAdoptable ?? false;
     const [birthDate, setBirthDate] = useState<string | null>(cat?.birthDate ?? null);
+    const [entryDate, setEntryDate] = useState<string | null>(cat?.entryDate ?? null);
     const [sterilizationDateError, setSterilizationDateError] = useState<boolean>(false);
     const [hostFamilyId, setHostFamilyId] = useState<string | null>(cat?.hostFamily?.id ?? null);
     const router = useRouter();
     const [pictures, setPictures] = useState<any>([...cat?.pictures ?? []]);
     const [picturesPreview, setPicturesPreview] = useState<string[]>([]);
-    const [isPreVisit, setIsPreVisit] = useState<boolean>(cat?.isPreVisit ?? false);
 
     const [clinic, setClinic] = useState<string | null>();
     const [voucherObject, setVoucherObject] = useState<string | null>();
@@ -109,7 +108,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
 
     const filteredHostFamilies = hostFamilies?.map(u => ({
         value: u.id,
-        label: `${u.name} ${u.lastName}`,
+        label: `${u.lastName} ${u.name}`,
     }));
 
     // Avant chaque soumission, vérification des données fournies valides.
@@ -122,6 +121,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         const birthDate: string | null = formData.get("birthDate") as string !== '' ? formData.get("birthDate") as string : null;
         const adoptionDate: string | null = formData.get("adoptionDate") as string !== '' ? formData.get("adoptionDate") as string : null;
         const preVisitDate: string | null = formData.get("preVisitDate") as string !== '' ? formData.get("preVisitDate") as string : null;
+        const entryDate: string | null = formData.get("entryDate") as string !== '' ? formData.get("entryDate") as string : null;
         let hasNewFiles: boolean = false;
         pictures.map((picture: any) => {
             if (typeof picture !== "string") {
@@ -152,14 +152,15 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
             isDuringVisit,
             isAdoptable,
             adoptionDate,
-            isPreVisit,
             preVisitDate,
             hostFamilyId,
             newPictureFiles,
             deletedPictureFiles,
             newCatDocumentFiles,
             deletedCatDocumentFiles,
-            user?.id as string
+            user?.id as string,
+            entryDate,
+            formData.get("provenance") as string,
         );
         if (!res.error) {
             redirectWithDelay(`/admin/cat/${res.slug}`, 1000);
@@ -180,11 +181,10 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         }
 
         const date: string = formatYMMDD(new Date());
-        const user_name: string = `${user?.name} ${user?.lastName}`;
         const res = await create(
             token,
             date,
-            user_name,
+            user?.id as string,
             cat?.id ?? "-1",
             clinic ?? "",
             voucherObject ?? "",
@@ -411,6 +411,12 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                             </div>
                             <Input name="dress" label="Robe" value={cat?.dress} maxLength={10} />
                             <Input name="race" label="Race" value={cat?.race} maxLength={10} />
+                            <Input name="entryDate"
+                                label="Date d'entrée"
+                                type={InputTypes.Date}
+                                value={cat?.entryDate ? formatYMMDD(new Date(cat?.entryDate)) : ''}
+                                onChange={(e) => setEntryDate(e.currentTarget.value)} />
+                            <Input name="provenance" label="Provenance"  value={cat?.provenance} maxLength={50}  />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="isSterilized">Est stérilisé</label>
                                 <Select
@@ -468,22 +474,6 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 />
                             </div> */}
                             <Input name="adoptionDate" label="Date d'adoption" type={InputTypes.Date} value={cat?.adoptionDate ? formatYMMDD(new Date(cat?.adoptionDate)) : ''} />
-                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
-                                <label className="text-sm text-(--text) font-medium " htmlFor="isSterilized">En pré visite</label>
-                                <Select
-                                    options={YesNo}
-                                    className="select"
-                                    classNamePrefix="select"
-                                    name="preVisit"
-                                    id="preVisit"
-                                    isMulti={false}
-                                    isClearable={false}
-                                    isSearchable={false}
-                                    placeholder="pré visite ?"
-                                    value={YesNo.find(c => c.value === isPreVisit)}
-                                    onChange={(e:any) => setIsPreVisit(e?.value as boolean ?? false)}
-                                />
-                            </div>
                             <Input name="preVisitDate" label="Date de la pré visite" type={InputTypes.Date} value={cat?.preVisitDate ? formatYMMDD(new Date(cat?.preVisitDate)) : ''} />
                             <Input name="catPictures" label="Photos" type={InputTypes.File} multipleFile={true} onChange={(e: React.ChangeEvent<HTMLInputElement>) => picturesChange(e)} />
                             <div className='flex flex-wrap w-full gap-7'>
@@ -500,7 +490,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     </div>
                                 ))}
                             </div>
-                            <div className="select flex flex-col flex-1 justify-start h-77">
+                            {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.HealthRegisterReferent]) && <><div className="select flex flex-col flex-1 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="">Vaccins</label>
                                 <div className='flex gap-10 items-center'>
                                     <Input
@@ -637,11 +627,11 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                         </div>
                                     ))}
                                 </div>
-                            </div>
+                            </div></>}
                         </div>
                         <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
                             <Button ref={primaryButton} text="Valider les modifications" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />
-                            {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant]) && !isAdoptable && 
+                            {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent]) && !isAdoptable && 
                             <Button 
                                 text="Valider la fiche pour l'adoption"
                                 className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-270'
@@ -653,54 +643,57 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 } }/>}
                         </div>
                     </form>
-                    <hr className='border-(--primary)' />
-                    <div className="flex flex-col gap-10" role="form" aria-label="Demander un bon vétérinaire">
-                         <div className="flex flex-col gap-4 md:gap-8">
-                            <h5 className="text-(--primary)">Demander un bon vétérinaire</h5>
-                        </div>
-                        <div className="flex gap-12 md:gap-24">
-                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
-                                <label className="text-sm text-(--text) font-medium " htmlFor="clinical">Clinique</label>
-                                <Select
-                                    ref={clinicInputRef}
-                                    options={Clinics}
-                                    className="select"
-                                    classNamePrefix="select"
-                                    name="clinical"
-                                    id="clinical"
-                                    isMulti={false}
-                                    isClearable={false}
-                                    isSearchable={true}
-                                    placeholder="Clinique"
-                                    onChange={(e:any) => setClinic(e?.value ?? null)}
-                                />
-                                <span className="text-sm text-(--text)">* Clinique de l'association</span>
+                    {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent]) && 
+                        <>
+                            <hr className='border-(--primary)' />
+                            <div className="flex flex-col gap-10" role="form" aria-label="Demander un bon vétérinaire">
+                                <div className="flex flex-col gap-4 md:gap-8">
+                                    <h5 className="text-(--primary)">Demander un bon vétérinaire</h5>
+                                </div>
+                                <div className="flex gap-12 md:gap-24">
+                                    <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                                        <label className="text-sm text-(--text) font-medium " htmlFor="clinical">Clinique</label>
+                                        <Select
+                                            ref={clinicInputRef}
+                                            options={Clinics}
+                                            className="select"
+                                            classNamePrefix="select"
+                                            name="clinical"
+                                            id="clinical"
+                                            isMulti={false}
+                                            isClearable={false}
+                                            isSearchable={true}
+                                            placeholder="Clinique"
+                                            onChange={(e:any) => setClinic(e?.value ?? null)}
+                                        />
+                                        <span className="text-sm text-(--text)">* Clinique de l'association</span>
+                                    </div>
+                                    <div className="select flex flex-col flex-1 gap-7 justify-start h-auto">
+                                        <label className="text-sm text-(--text) font-medium " htmlFor="voucherObjet">Objet du bon</label>
+                                        <Select
+                                            ref={voucherObjectInputRef}
+                                            options={VoucherObjects}
+                                            className="select"
+                                            classNamePrefix="select"
+                                            name="voucherObjet"
+                                            id="voucherObjet"
+                                            isMulti={true}
+                                            isClearable={true}
+                                            isSearchable={true}
+                                            placeholder="Objet du bon"
+                                            onChange={(e:any) => { setVoucherObject(e.map((e: any) => e.value).join(", ") ?? null) }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className='flex justify-center'>
+                                    <Button
+                                        text="Demander le bon"
+                                        disabled={!clinic || voucherObject?.length === 0}
+                                        className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230'
+                                        onClick={(e) => handleSubmitVoucher(e) }/>
+                                </div>
                             </div>
-                            <div className="select flex flex-col flex-1 gap-7 justify-start h-auto">
-                                <label className="text-sm text-(--text) font-medium " htmlFor="voucherObjet">Objet du bon</label>
-                                <Select
-                                    ref={voucherObjectInputRef}
-                                    options={VoucherObjects}
-                                    className="select"
-                                    classNamePrefix="select"
-                                    name="voucherObjet"
-                                    id="voucherObjet"
-                                    isMulti={true}
-                                    isClearable={true}
-                                    isSearchable={true}
-                                    placeholder="Objet du bon"
-                                    onChange={(e:any) => { setVoucherObject(e.map((e: any) => e.value).join(", ") ?? null) }}
-                                />
-                            </div>
-                        </div>
-                        <div className='flex justify-center'>
-                            <Button
-                                text="Demander le bon"
-                                disabled={!clinic || voucherObject?.length === 0}
-                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230'
-                                onClick={(e) => handleSubmitVoucher(e) }/>
-                        </div>
-                    </div>
+                        </>}
                </div>
             </div>
             <Footer />

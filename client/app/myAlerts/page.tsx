@@ -14,7 +14,7 @@ import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
 import {
   HeaderMenuItems,
-  UserRole,
+  UserRoles,
 } from '@/app/enums/enums';
 
 import Link from '../components/ui/Link';
@@ -64,10 +64,12 @@ export default function MyAlerts() {
         const res = await unreadMessageListByUserId(token, user?.id as string);
         setUnreadMessage(res);
     })();
-    (async () => {
-        const res = await getCatNotFullyCompletedList(token);
-        setUnCompletedCatList(res);
-    })();
+    if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent])) {
+      (async () => {
+          const res = await getCatNotFullyCompletedList(token);
+          setUnCompletedCatList(res);
+      })();
+    }
     (async () => {
       const res = await getHasPreVisitWithoutDateList(token);
       setPreVisitList(res);
@@ -101,7 +103,7 @@ export default function MyAlerts() {
                 )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Vous n'avez pas de messages</div>}
               </div>
             </div>
-          {user && hasRoles(user?.roles, [UserRole.Admin, UserRole.Assistant]) && <div className='flex flex-col'>
+          {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Bons vétérinaires :</span>
             <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
                 <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
@@ -122,7 +124,7 @@ export default function MyAlerts() {
                 )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de bon vétérinaire en attente</div>}
               </div>
           </div>}
-          {user && hasRoles(user?.roles, [UserRole.Admin, UserRole.Assistant]) && <div className='flex flex-col'>
+          {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.AdoptionReferent]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Fiches chats en FA incomplètes :</span>
             <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
                 <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
@@ -139,7 +141,7 @@ export default function MyAlerts() {
                 )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de fiche de chat en FA incompléte</div>}
               </div>
           </div>}
-          {user && hasRoles(user?.roles, [UserRole.Admin, UserRole.HostFamily]) && <div className='flex flex-col'>
+          {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.HostFamily]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Rappels :</span>
             <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
                 <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
@@ -157,7 +159,7 @@ export default function MyAlerts() {
                 )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de rappel de vaccin à effectuer / en retard</div>}
               </div>
           </div>}
-          {user && hasRoles(user?.roles, [UserRole.Admin, UserRole.Assistant]) && <div className='flex flex-col'>
+          {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.PreVisitReferent]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Pré visites sans date :</span>
             <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
                 <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">

@@ -28,6 +28,7 @@ import {
   HeaderMenuItems,
   IconButtonImages,
   InputTypes,
+  UserRoles,
 } from '@/app/enums/enums';
 import { City } from '@/app/interfaces/postalCode';
 import { User } from '@/app/interfaces/user';
@@ -148,7 +149,7 @@ export default function Profile() {
                 <div className="flex flex-col flex-1 gap-20 md:gap-41 rounded-[10px] border border-solid border-(--pink) bg-(--white) py-20 px-30 md:py-40 md:px-59">
                     <form onSubmit={handleSubmit} className="flex flex-col gap-20 md:gap-41" role="form" aria-label="Information du compte">
                         <div className="flex flex-col gap-4 md:gap-8">
-                            <h5 className="text-(--primary)">Mon compte ({profile?.name + " " + profile?.lastName})</h5>
+                            <h5 className="text-(--primary)">Mon compte ({profile?.lastName + " " + profile?.name})</h5>
                         </div>
                         <div className="flex flex-col gap-12 md:gap-24">
                             <Input name="id" label="Identifiant" value={profile?.id} hidden={true} />
@@ -168,7 +169,7 @@ export default function Profile() {
                                     setPostalCode(code);
                                 }}
                             />                                
-                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                            {profile && hasRoles(profile.roles, [UserRoles.HostFamily]) && <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="capacity">Capacité</label>
                                 <Select
                                     options={Capacities}
@@ -201,7 +202,7 @@ export default function Profile() {
                                     value={Capacities?.find(c => c.value === capacity)}
                                     onChange={(e:any) => setCapacity(e?.value ?? "")}
                                 />
-                            </div>
+                            </div>}
                             {profile?.referrer_id && <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="referrer_id">Référent</label>
                                 <div className='flex text-sm text-(--text) '>
@@ -224,7 +225,7 @@ export default function Profile() {
                                 className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)'
                                 onClick={(e: React.FormEvent<HTMLAnchorElement>) => resetMyPassword(e) }/>
                         </div>
-                        {hasRoles(user?.roles, ["Admin"]) && <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
+                        {hasRoles(user?.roles, [UserRoles.Admin]) && <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
                             <Link
                                 text="Administrer les utilisateurs"
                                 url="/admin/users"

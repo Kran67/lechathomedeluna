@@ -8,8 +8,13 @@ export const CONSTANTS = {
     },
     ROLE_LABELS: {
         Admin: "Adminstrateur",
+        CommitteeMember: "Membre du comité",
+        AdoptionReferent: "Référent adoption",
+        HealthRegisterReferent: "Référent registre sanitaire",
+        VetVoucherReferent: "Référent bons vétérinaire",
+        ICADReferent: "Référent I-CAD",
+        PreVisitReferent: "Référent pré visite",
         HostFamily: "Famille d'accueil",
-        Assistant: "Membre du commité",
         Volunteer: "Bénévole"
     }
 }

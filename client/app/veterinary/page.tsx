@@ -18,7 +18,7 @@ import Header from '@/app/components/layout/Header';
 import {
   HeaderMenuItems,
   IconButtonImages,
-  UserRole,
+  UserRoles,
 } from '@/app/enums/enums';
 
 import IconButton from '../components/ui/IconButton';
@@ -75,7 +75,7 @@ export default function VetVouchers() {
         Years.push({ value: i, label: i});
     }
 
-    if (!user || !hasRoles(user?.roles, [UserRole.Admin, UserRole.Assistant])) {
+    if (!user || !hasRoles(user?.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent])) {
         redirect("/");
     }
 

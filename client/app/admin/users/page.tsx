@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { UserRole } from '@/app/enums/enums';
+import { UserRoles } from '@/app/enums/enums';
 import { User } from '@/app/interfaces/user';
 import { hasRoles } from '@/app/lib/utils';
 import {
@@ -18,7 +18,7 @@ export default async function UsersPage() {
     const user = await getById(token, userId ?? '');
     let users: User[] = [];
 
-    if (!user || (user && !hasRoles(user.roles, [UserRole.Admin]))) {
+    if (!user || (user && !hasRoles(user.roles, [UserRoles.Admin]))) {
         redirect("/");
     }
 

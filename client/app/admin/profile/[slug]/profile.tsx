@@ -27,6 +27,7 @@ import {
   HeaderMenuItems,
   IconButtonImages,
   InputTypes,
+  UserRoles,
 } from '@/app/enums/enums';
 import { City } from '@/app/interfaces/postalCode';
 import { User } from '@/app/interfaces/user';
@@ -73,7 +74,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
     const router = useRouter();
     const [birthDate, setBirthDate] = useState<string | null>(profile?.birthDate ?? null);
 
-    if (!user || !hasRoles(user?.roles, ["Admin"])) {
+    if (!user || !hasRoles(user?.roles, [UserRoles.Admin])) {
         redirect("/");
     }
 
@@ -137,7 +138,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
 
     const filteredUsers = users?.filter(u => u.id !== profile?.id || !profile?.blacklisted).map(u => ({
         value: u.id,
-        label: u.name + ' ' + u.lastName,
+        label: u.lastName + ' ' + u.name,
     }));
 
     return (
@@ -158,7 +159,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                 <div className="flex flex-col flex-1 gap-20 md:gap-41 rounded-[10px] border border-solid border-(--pink) bg-(--white) py-20 px-30 md:py-40 md:px-59">
                     <form onSubmit={handleSubmit} className="flex flex-col gap-20 md:gap-41" role="form" aria-label="Information du compte">
                         <div className="flex flex-col gap-4 md:gap-8">
-                            <h5 className="text-(--primary)">{ isNew ? "Création d'un utilisateur" : "Compte de " +  profile?.name + " " + profile?.lastName}</h5>
+                            <h5 className="text-(--primary)">{ isNew ? "Création d'un utilisateur" : "Compte de " +  profile?.lastName + " " + profile?.name}</h5>
                         </div>
                         <div className="flex flex-col gap-12 md:gap-24">
                             <Input name="id" label="Identifiant" value={profile?.id} hidden={true} />
@@ -178,26 +179,24 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                                     setPostalCode(code);
                                 }}
                             />                                
-                            {hasRoles(user?.roles, ["Admin"]) && 
-                                <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
-                                    <label className="text-sm text-(--text) font-medium " htmlFor="roles">Rôles {isNew ? "*": ""}</label>
-                                    <Select
-                                        options={Roles}
-                                        className="select"
-                                        classNamePrefix="select"
-                                        name="roles"
-                                        id="roles"
-                                        isMulti={true}
-                                        isClearable={false}
-                                        isSearchable={false}
-                                        placeholder="Rôles"
-                                        value={roles.split("|").map(r => { return Roles.find(rs => rs.value === r) })}
-                                        onChange={(e:any) => setRoles(e?.map((e: { value: any; }) => e.value).join("|") ?? "")}
-                                        required={isNew}
-                                    />
-                                </div>
-                            }
-                            {hasRoles(user?.roles, ["Admin"]) && !isNew && 
+                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                                <label className="text-sm text-(--text) font-medium " htmlFor="roles">Rôles {isNew ? "*": ""}</label>
+                                <Select
+                                    options={Roles}
+                                    className="select"
+                                    classNamePrefix="select"
+                                    name="roles"
+                                    id="roles"
+                                    isMulti={true}
+                                    isClearable={false}
+                                    isSearchable={false}
+                                    placeholder="Rôles"
+                                    value={roles.split("|").map(r => { return Roles.find(rs => rs.value === r) })}
+                                    onChange={(e:any) => setRoles(e?.map((e: { value: any; }) => e.value).join("|") ?? "")}
+                                    required={isNew}
+                                />
+                            </div>
+                            {!isNew && 
                                 <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                     <label className="text-sm text-(--text) font-medium " htmlFor="blacklisted">Sur liste noire</label>
                                     <Select
@@ -216,7 +215,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                                 </div>
                             }
                             
-                                <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                            {profile && hasRoles(profile.roles, [UserRoles.HostFamily]) && <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                     <label className="text-sm text-(--text) font-medium " htmlFor="capacity">Capacité</label>
                                     {user.id === profile?.id ? <Select
                                         options={Capacities}
@@ -252,9 +251,8 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                                         className={'select flex flex-col flex-1 gap-7 justify-start min-h-40' + 
                                         (capacity === "Empty" ? " bg-[#008000]" : capacity === "PartiallyFull" ? " bg-[#FFFF00]" : " bg-[#FF0000]")}>
                                     </div>}
-                                </div>
-                            {hasRoles(user?.roles, ["Admin"]) && 
-                                <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                                </div>}
+                                {profile && hasRoles(profile.roles, [UserRoles.HostFamily]) && <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                     <label className="text-sm text-(--text) font-medium " htmlFor="referrer_id">Référent</label>
                                     <Select
                                         options={filteredUsers}

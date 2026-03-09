@@ -1,20 +1,28 @@
 // À cause de l'événement onClick
 'use client'
 
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
+
 import {
   AppRouterInstance,
 } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { useRouter } from 'next/navigation';
 
 import { useUser } from '@/app/contexts/userContext';
-import { IconButtonImages } from '@/app/enums/enums';
+import {
+  IconButtonImages,
+  UserRoles,
+} from '@/app/enums/enums';
 import { Cat } from '@/app/interfaces/cat';
+import { DateUtils } from '@/app/lib/dateUtils';
 import {
   dateAge,
   hasRoles,
   truncate,
 } from '@/app/lib/utils';
 
+import ModalMessage from '../modals/modalMessage';
 import IconButton from '../ui/IconButton';
 
 /**
@@ -36,6 +44,8 @@ interface PropsCC {
 export default function CatCard({ cat }: PropsCC) {
     const router: AppRouterInstance = useRouter();
     const { user } = useUser();
+    const [showModalMessage, setShowModalMessage] = useState<boolean>(false);
+    const [toUserId, setToUserId] = useState<string>("");
 
     // au clique sur les détails, redirection vers la page du chat
     const handleClick: () => void = () => {
@@ -44,10 +54,20 @@ export default function CatCard({ cat }: PropsCC) {
 
     return (
         <div className="flex flex-col rounded-[10px] bg-(--white) w-full md:w-355 relative cursor-pointer border border-(--primary) p-5" onClick={() => handleClick()}>
+            {showModalMessage && createPortal(
+                <ModalMessage
+                    userIds={[toUserId]}
+                    closeModal={() => setShowModalMessage(false)}
+                    onSuccess={() => {
+                        setShowModalMessage(false);
+                    }}
+                />,
+                document.body
+            )}
             {cat.isDuringVisit && <div className="absolute ruban -left-5 -top-5 w-145 h-145 z-1 overflow-hidden">
                 <span className='absolute -left-30 top-40 w-160 text-center rotate-[-45deg] text-(--white) text-sm bg-gradient-to-b from-(--pink) to-(--primary) pl-5 pr-5'>EN COURS DE VISITE</span>
             </div>}
-            {!cat.adoptionDate && user && hasRoles(user.roles, ["Admin"]) && <IconButton
+            {!cat.adoptionDate && user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <IconButton
                 icon={IconButtonImages.Pen}
                 imgWidth={16}
                 imgHeight={16}
@@ -67,7 +87,8 @@ export default function CatCard({ cat }: PropsCC) {
             </div>
             <div className="flex flex-col justify-between pt-16 pb-24">
                 <div className="flex flex-col gap-8">
-                    <span className="text-lg text-(--text)">{cat.name}</span>
+                    <span className="text-lg text-(--text)">{cat.name} {cat.hostFamily?.id !== user?.id && cat.hostFamily?.id && (<><span>(FA : </span>
+                        <span onClick={(e) => { e.stopPropagation(); setToUserId(cat.hostFamily?.id as string); setShowModalMessage(true); }}>{cat.hostFamily?.name}</span>)</>)}</span>
                     <span className="text-sm text-(--text) font-normal md:h-80">{truncate(cat.description ?? "", 210)}</span>
                 </div>
                 <div className="flex flex-col">
@@ -75,6 +96,8 @@ export default function CatCard({ cat }: PropsCC) {
                     <span className="text-sm text-(--text) font-medium">Sexe : {cat.sex}</span>
                     <span className="text-sm text-(--text) font-medium">Robe : {cat.dress}</span>
                     {user && <span className="text-sm text-(--text) font-medium">Statut (FIV & FELV) : {cat.status}</span>}
+                    <span className="text-sm text-(--text) font-medium">Date d'entrée : {cat.entryDate ? DateUtils.differenceDate(new Date(cat.entryDate)).text : ""}</span>
+                    {user && <span className="text-sm text-(--text) font-medium">Provenance : {cat.provenance}</span>}
                 </div>
             </div>
         </div>

@@ -138,6 +138,7 @@ async function initSchema(pool) {
       date DATE NOT NULL,
       url VARCHAR(50) NOT NULL,
       type VARCHAR(15) NOT NULL CHECK (type IN ('vaccin','antiparasitaire', 'examen')),
+      original_name TEXT NOT NULL,         -- nom original du fichier
       UNIQUE(cat_id, date, type)
     );`);
 

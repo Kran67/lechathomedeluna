@@ -31,6 +31,7 @@ import {
 import { User } from '@/app/interfaces/user';
 import {
   baseUrl,
+  formatDDMMY,
   hasRoles,
   redirectWithDelay,
 } from '@/app/lib/utils';
@@ -81,15 +82,18 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
         const adoptionDate: string | null = formData.get("adoptionDate") as string !== '' ? formData.get("adoptionDate") as string : null;
         const entryDate: string | null = formData.get("entryDate") as string !== '' ? formData.get("entryDate") as string : null;
         const catName: string = formData.get("name") as string;
+        const provenance: string = formData.get("provenance") as string;
+        const dress: string = formData.get("dress") as string;
+        const numId: string = formData.get("numIdentification") as string;
 
         const res = await create(
             token,
             catName,
             formData.get("description") as string,
             status,
-            formData.get("numIdentification") as string,
+            numId,
             sex,
-            formData.get("dress") as string,
+            dress,
             formData.get("race") as string,
             isSterilized,
             sterilizationDate,
@@ -100,10 +104,20 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
             pictures,
             user?.id as string,
             entryDate,
-            formData.get("provenance") as string
+            provenance
         );
         if (!res.error) {
             await sendMessage(token, CONSTANTS.THREAD_GROUPS.ADOPTION.toString(), user?.id as string, `La fiche pour le 🐈 ${baseUrl}/admin/cat/${res.slug}[${catName}] vient d'être créée.\n`, []);
+            await sendMessage(
+                token,
+                CONSTANTS.THREAD_GROUPS.ICAD.toString(),
+                user?.id as string,
+                `La fiche pour le 🐈 ${baseUrl}/admin/cat/${res.slug}[${catName}] vient d'être créée.\n
+                    Date d'entrée : ${entryDate ? formatDDMMY(new Date(entryDate)) : "-"}\n
+                    Provenance : ${provenance ?? "-"}\n
+                    Robe : ${dress ?? "-"}\n
+                    Date de naissance : ${birthDate ? formatDDMMY(new Date(birthDate)) : "-"}\n
+                    N° identification: ${numId ?? "-"}`, []);
             redirectWithDelay(`/admin/cat/${res.slug}`, 1000);
         } else {
             toast.error(res.error);

@@ -109,11 +109,11 @@ async function getCatDetails(slug) {
   if (resPic.rows.length === 0) {
       resPic.rows.push({ url:"/images/chat.png"});
   }
-  const resVac = await pool.query('SELECT date, url, type FROM cat_documents WHERE cat_id = $1 ORDER BY date ASC', [base.id]);
+  const resVac = await pool.query('SELECT date, url, type, original_name FROM cat_documents WHERE cat_id = $1 ORDER BY date ASC', [base.id]);
   return {
     ...base,
     pictures: resPic.rows.map(p => p.url),
-    documents: resVac.rows.map(v => { return { date: v.date, picture: v.url, type: v.type } }),
+    documents: resVac.rows.map(v => { return { date: v.date, picture: v.url, type: v.type, fileName: v.original_name } }),
   };
 }
 

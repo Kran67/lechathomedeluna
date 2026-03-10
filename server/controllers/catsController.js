@@ -13,7 +13,7 @@ const {
 const {
   createSystemMessage
 } = require('../services/messagingService');
-const { statusFromError } = require('../utils/lib');
+const { statusFromError, formatDDMMY } = require('../utils/lib');
 
 async function list(req, res) {
   try {
@@ -80,7 +80,17 @@ async function create(req, res) {
 
 async function update(req, res) {
   try {
+    const baseUrl = req.body.baseUrl;
     const updated = await updateCat(req.params.slug, req.body || {});
+    await createSystemMessage(
+      5,
+      1,
+      `La fiche pour le 🐈 ${baseUrl}/admin/cat/${updated.slug}[${updated.name}] vient d'être mise à jour.
+          Date d'entrée : ${updated.entryDate ? formatDDMMY(new Date(updated.entryDate)) : ""}
+          Provenance : ${updated.provenance ?? ""}
+          Robe : ${updated.dress ?? ""}
+          Date de naissance : ${updated.birthDate ? formatDDMMY(new Date(updated.birthDate)) : ""}
+          N° identification: ${updated.numId ?? ""}`, []);
     res.json(updated);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
@@ -138,7 +148,7 @@ async function createAdoptionRequest(req, res) {
     const baseUrl = req.body.baseUrl;
     const slug = req.body.catSlug;
     const name = req.body.catName;
-    createSystemMessage(1, 1, `La demande d'adoption pour le 🐈 ${baseUrl}/admin/cat/${slug}[${name}] vient d'être créée.\nEmail de l'adoptant : ${req.body.email}`);
+    await createSystemMessage(1, 1, `La demande d'adoption pour le 🐈 ${baseUrl}/admin/cat/${slug}[${name}] vient d'être créée.\nEmail de l'adoptant : ${req.body.email}`);
     res.status(201).end();
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });

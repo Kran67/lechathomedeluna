@@ -12,6 +12,7 @@ export interface Messaging {
 export interface MessageAttachment {
   id: string;
   url: string;
+  filename: string;
   original_name: string;
   mime_type: string;
   size: number;

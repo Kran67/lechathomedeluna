@@ -9,6 +9,9 @@ export interface CatDocument {
     date: string;
     picture: any;
     type: "vaccin" | "antiparasitaire" | "examen";
+    fileName?: string;
+    mimeType?: string;
+    size?: number;
 }
 
 export interface Cat {

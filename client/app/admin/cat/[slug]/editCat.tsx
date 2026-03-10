@@ -42,7 +42,10 @@ import {
   redirectWithDelay,
 } from '@/app/lib/utils';
 import { sendMessage } from '@/app/services/client/messagingService';
-import { update } from '@/app/services/server/catsService';
+import {
+  getBySlug,
+  update,
+} from '@/app/services/server/catsService';
 import { create } from '@/app/services/server/vetVouchersService';
 import {
   CatSexes,
@@ -124,6 +127,10 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         const adoptionDate: string | null = formData.get("adoptionDate") as string !== '' ? formData.get("adoptionDate") as string : null;
         const preVisitDate: string | null = formData.get("preVisitDate") as string !== '' ? formData.get("preVisitDate") as string : null;
         const entryDate: string | null = formData.get("entryDate") as string !== '' ? formData.get("entryDate") as string : null;
+        const catName: string = formData.get("name") as string;
+        const provenance: string = formData.get("provenance") as string;
+        const dress: string = formData.get("dress") as string;
+        const numId: string = formData.get("numIdentification") as string;
         let hasNewFiles: boolean = false;
         pictures.map((picture: any) => {
             if (typeof picture !== "string") {
@@ -141,12 +148,12 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         const res = await update(
             token,
             slug,
-            formData.get("name") as string,
+            catName,
             formData.get("description") as string,
             status,
-            formData.get("numIdentification") as string,
+            numId,
             sex,
-            formData.get("dress") as string,
+            dress,
             formData.get("race") as string,
             isSterilized,
             sterilizationDate,
@@ -162,9 +169,33 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
             deletedCatDocumentFiles,
             user?.id as string,
             entryDate,
-            formData.get("provenance") as string,
+            provenance,
+            baseUrl
         );
         if (!res.error) {
+            setTimeout(() => {
+                getBySlug(slug).then((updatedCat) => {
+                    newCatDocumentFiles.map(async (doc: CatDocument) => {
+                        const document: CatDocument = updatedCat.documents.find((d: CatDocument) => 
+                            d.fileName === doc.fileName && formatDDMMY(new Date(d.date)) === formatDDMMY(new Date(doc.date)) && doc.type === d.type
+                        );
+                        console.log(document);
+                        debugger;
+                        await sendMessage(
+                            token,
+                            CONSTANTS.THREAD_GROUPS.HEALTH_REGISTER.toString(),
+                            user?.id as string,
+                            `Un nouveau ${doc.type} a été ajouté pour le 🐈 ${baseUrl}/admin/cat/${res.slug}[${catName}].`, [{
+                                id: "",
+                                mime_type: doc.mimeType as string,
+                                filename: "-",
+                                original_name: doc.fileName as string,
+                                size: doc.size as number,
+                                url: document?.picture
+                            }]);
+                    });
+                });
+            }, 1000);
             redirectWithDelay(`/admin/cat/${res.slug}`, 1000);
         } else {
             toast.error(res.error);
@@ -194,7 +225,12 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         );
         if (!res.error) {
             toast.success("Bon vétérinaire créé avec succès");
-            await sendMessage(token, CONSTANTS.THREAD_GROUPS.VET_VOUCHERS.toString(), user?.id as string, `📋 Demande de bon vétérinaire pour ${cat?.name} ${cat?.numIdentification ? '('+cat.numIdentification+')' : ''}\nClinique: ${baseUrl}/veterinary/?id=${res.id}[${clinic}]\nObjet: ${voucherObject}`, []);
+            await sendMessage(
+                token,
+                CONSTANTS.THREAD_GROUPS.VET_VOUCHERS.toString(),
+                user?.id as string,
+                `📋 Demande de bon vétérinaire pour ${cat?.name} ${cat?.numIdentification ? '('+cat.numIdentification+')' : ''}\n
+                    Clinique: ${baseUrl}/veterinary/?id=${res.id}[${clinic}]\nObjet: ${voucherObject}`, []);
         } else {
             toast.error(res.error);
         }
@@ -262,21 +298,49 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         switch (type)  {
             case "vaccin":
                 if (vaccineDate && vaccinePicture) {
-                    setCatDocuments([...catDocuments, { id: '', cat_id: cat?.id ?? '', date: vaccineDate ?? '', picture: vaccinePicture, type }]);
+                    console.log(vaccinePicture);
+                    setCatDocuments([...catDocuments, {
+                        id: '',
+                        cat_id: cat?.id ?? '',
+                        date: vaccineDate ?? '',
+                        picture: vaccinePicture,
+                        type,
+                        fileName: vaccinePicture.name,
+                        size: vaccinePicture.size,
+                        mimeType: vaccinePicture.type
+                    }]);
                     setVaccinePicture(undefined);
                     setVaccineDate(undefined);
                 }
                 break;
             case "antiparasitaire":
                 if (pestControlDate && pestControlPicture) {
-                    setCatDocuments([...catDocuments, { id: '', cat_id: cat?.id ?? '', date: pestControlDate ?? '', picture: pestControlPicture, type }]);
+                    setCatDocuments([...catDocuments, {
+                        id: '',
+                        cat_id: cat?.id ?? '',
+                        date: pestControlDate ?? '',
+                        picture: pestControlPicture,
+                        type,
+                        fileName: pestControlPicture.name,
+                        size: pestControlPicture.size,
+                        mimeType: pestControlPicture.type
+                    }]);
                     setPestControlPicture(undefined);
                     setPestControlDate(undefined);
                 }
                 break;
             case "examen":
                 if (examDate && examPicture) {
-                    setCatDocuments([...catDocuments, { id: '', cat_id: cat?.id ?? '', date: examDate ?? '', picture: examPicture, type }]);
+                    setCatDocuments([...catDocuments, {
+                        id: '',
+                        cat_id: cat?.id ?? '',
+                        date: examDate ?? '',
+                        picture: examPicture,
+                        type,
+                        fileName: examPicture.name,
+                        size: examPicture.size,
+                        mimeType: examPicture.type
+                    }]);
                     setExamPicture(undefined);
                     setExamDate(undefined);
                 }
@@ -285,10 +349,24 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         handleReset(type);
     }
 
-    const removeDocument = (e: { preventDefault: () => void; }, idx: number) => {
-        catDocuments.splice(idx, 1);
+    const removeDocument = (e: { preventDefault: () => void; }, idx: number, type: "vaccin" | "antiparasitaire" | "examen") => {
         e.preventDefault();
+        catDocuments.splice(idx, 1);
         setCatDocuments([...catDocuments]);
+        switch (type)  {
+            case "vaccin":
+                vaccinesPreview.splice(idx, 1);
+                setVaccinesPreview([...vaccinesPreview]);
+                break;
+            case "antiparasitaire":
+                pestControlsPreview.splice(idx, 1);
+                setPestControlsPreview([...pestControlsPreview]);
+                break;
+            case "examen":
+                examsPreview.splice(idx, 1);
+                setExamsPreview([...examsPreview]);
+                break;
+        }
     }
 
     const handleReset = (type: "vaccin" | "antiparasitaire" | "examen") => {
@@ -538,7 +616,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     {vaccinesPreview.map((value: { url: string, index: number}, idx: number) => (
                                         <div key={idx} className="rounded-[10px] h-124 w-100 overflow-hidden relative border border-1 border-solid border-(--pink)">
                                             <IconButton className='absolute right-3 top-3 w-16 h-16 z-1 bg-(--primary) flex justify-center items-center rounded-[5px]'
-                                                icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removeDocument(e, idx)} />
+                                                icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removeDocument(e, value.index, "vaccin")} />
                                             <figcaption className='flex flex-col p-5'>
                                                 <img
                                                     data-testid={"vaccin-image-" + (idx + 1)}
@@ -584,7 +662,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     {pestControlsPreview.map((value: { url: string, index: number}, idx: number) => (
                                         <div key={idx} className="rounded-[10px] h-124 w-100 overflow-hidden relative border border-1 border-solid border-(--pink)">
                                             <IconButton className='absolute right-3 top-3 w-16 h-16 z-1 bg-(--primary) flex justify-center items-center rounded-[5px]'
-                                                icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removeDocument(e, value.index)} />
+                                                icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removeDocument(e, value.index, "antiparasitaire")} />
                                             <figcaption className='flex flex-col p-5'>
                                                 <img
                                                     data-testid={"antiparasitaire-image-" + (idx + 1)}
@@ -630,7 +708,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     {examsPreview.map((value: { url: string, index: number}, idx: number) => (
                                         <div key={idx} className="rounded-[10px] h-124 w-100 overflow-hidden relative border border-1 border-solid border-(--pink)">
                                             <IconButton className='absolute right-3 top-3 w-16 h-16 z-1 bg-(--primary) flex justify-center items-center rounded-[5px]'
-                                                icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removeDocument(e, value.index)} />
+                                                icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removeDocument(e, value.index, "examen")} />
                                             <figcaption className='flex flex-col p-5'>
                                                 <img
                                                     data-testid={"examen-image-" + (idx + 1)}

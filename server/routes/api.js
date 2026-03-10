@@ -19,7 +19,7 @@ router.get('/catsmine/:id', cats.listMine);
 router.get('/cats/:id', cats.getById);
 router.post('/cats', requireRole(['Admin','AdoptionReferent', 'HostFamily']), cats.create);
 router.patch('/cats/favorite/:slug', cats.updateFavoriteCount);
-router.patch('/cats/:slug', requireRole(['Admin', 'AdoptionReferent', 'HealthRegisterReferentReferent', 'VetVoucherReferent', 'ICADReferent', 'HostFamily']), cats.update);
+router.patch('/cats/:slug', requireRole(['Admin', 'AdoptionReferent', 'HealthRegisterReferent', 'VetVoucherReferent', 'ICADReferent', 'HostFamily']), cats.update);
 router.delete('/cats/:id', requireRole(['Admin']), cats.remove);
 router.get('/catnotfullycompletedcount', requireRole(['Admin', 'AdoptionReferent']), cats.notFullyCompletedCount);
 router.get('/catnotfullycompletedlist', requireRole(['Admin', 'AdoptionReferent']), cats.notFullyCompletedList);
@@ -70,10 +70,10 @@ router.post('/news', requireRole(['Admin']), news.create);
 router.delete('/news/:id', requireRole(['Admin']), news.remove);
 
 // Uploads
-router.post('/uploads/image', requireRole(['Admin']), uploads.uploadImage);
+router.post('/uploads/image', requireRole(['Admin', 'HealthRegisterReferent', 'HostFamily']), uploads.uploadImage);
 
 // Delete one or multiple uploaded images by filename or URL
-router.delete('/uploads/images', requireRole(['Admin']), uploads.deleteImages);
+router.delete('/uploads/images', requireRole(['Admin', 'HealthRegisterReferent', 'HostFamily']), uploads.deleteImages);
 
 // Codes postaux
 router.get('/postalcodes/search', requireAuth, postalCodes.search);

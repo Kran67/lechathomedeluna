@@ -108,7 +108,8 @@ export const update = async (
     documentsToDelete: string[] | null,
     userId: string,
     entryDate: string | null,
-    provenance: string | null
+    provenance: string | null,
+    baseUrl: string
     ) => {
     try {
         const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats/${slug}`, {
@@ -132,7 +133,8 @@ export const update = async (
                 hostFamily_Id: hostFamilyId,
                 userId,
                 entryDate,
-                provenance
+                provenance,
+                baseUrl
             }),
         });
         const result = await res.json();
@@ -173,6 +175,7 @@ export const update = async (
             formData.append("date", document.date);
             formData.append("type", document.type);
             formData.append("context", "documents");
+            formData.append("original_name", document.fileName as string);
             
             await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/uploads/image`, {
                 method: "POST",

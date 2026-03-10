@@ -11,3 +11,8 @@ export const statusFromError = (e) =>{
   if (e && e.message && /(UNIQUE|PRIMARY KEY)/i.test(e.message)) return 409;
   return 500;
 }
+
+export const formatDDMMY = (date) => {
+    const dateStr = new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" }).format(date);
+    return dateStr;
+}

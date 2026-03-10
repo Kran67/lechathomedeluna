@@ -26,6 +26,7 @@ import {
   prepareBodyToShowModal,
 } from '@/app/lib/utils';
 import {
+  getAdoptedCatNotFullyCompletedCount,
   getCatNotFullyCompletedCount,
 } from '@/app/services/client/catsService';
 import {
@@ -55,6 +56,7 @@ export default function Header({ activeMenu }: HeaderProps) {
     const [unreadMsg, setUnreadMsg] = useState<number>(0);
     const [vetVoucherCount, setVetVoucherCount] = useState<number>(0);
     const [catNotFullyCompletedCount, setCatNotFullyCompletedCount] = useState<number>(0);
+    const [adoptedCatNotFullyCompletedCount, setAdoptedCatNotFullyCompletedCount] = useState<number>(0);
     const cookies: Cookies = useCookies();
     const token: string = cookies.get("token") as string;
 
@@ -74,6 +76,12 @@ export default function Header({ activeMenu }: HeaderProps) {
                 (async () => {
                     const res = await getCatNotFullyCompletedCount(token);
                     setCatNotFullyCompletedCount(res);
+                })();
+            }
+            if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember])) {
+                (async () => {
+                    const res = await getAdoptedCatNotFullyCompletedCount(token);
+                    setAdoptedCatNotFullyCompletedCount(res);
                 })();
             }
         }
@@ -104,7 +112,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.Alerts}
                 url="/myAlerts"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                badge={unreadMsg + vetVoucherCount + catNotFullyCompletedCount} />}
+                badge={unreadMsg + vetVoucherCount + catNotFullyCompletedCount + adoptedCatNotFullyCompletedCount} />}
             {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent]) && <MenuItem
                 text="Bons vétérinaires"
                 isActive={activeMenu === HeaderMenuItems.VeterinaryVouchers}
@@ -131,7 +139,8 @@ export default function Header({ activeMenu }: HeaderProps) {
                 text="Les chats adoptés"
                 isActive={activeMenu === HeaderMenuItems.AdoptedCats}
                 url="/adoptedCats"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />
+                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                badge={adoptedCatNotFullyCompletedCount} />
             {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <MenuItem
                 text="Messagerie"
                 isActive={activeMenu === HeaderMenuItems.Messaging}

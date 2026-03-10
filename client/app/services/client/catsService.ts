@@ -91,12 +91,39 @@ export const getCatNotFullyCompletedCount = async (
     }
 };
 
-
 export const getCatNotFullyCompletedList = async (
     token: string,
 ) => {
     try {
         const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/catnotfullycompletedlist`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+        });
+        return await res.json();
+    } catch (err) {
+        return { error: err };
+    }
+};
+
+export const getAdoptedCatNotFullyCompletedCount = async (
+    token: string,
+) => {
+    try {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/adoptedcatnotfullycompletedcount`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+        });
+        return await res.json();
+    } catch (err) {
+        return { error: err };
+    }
+};
+
+export const getAdoptedCatNotFullyCompletedList = async (
+    token: string,
+) => {
+    try {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/adoptedcatnotfullycompletedlist`, {
             method: "GET",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
         });

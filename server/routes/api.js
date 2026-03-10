@@ -23,6 +23,8 @@ router.patch('/cats/:slug', requireRole(['Admin', 'AdoptionReferent', 'HealthReg
 router.delete('/cats/:id', requireRole(['Admin']), cats.remove);
 router.get('/catnotfullycompletedcount', requireRole(['Admin', 'AdoptionReferent']), cats.notFullyCompletedCount);
 router.get('/catnotfullycompletedlist', requireRole(['Admin', 'AdoptionReferent']), cats.notFullyCompletedList);
+router.get('/adoptedcatnotfullycompletedcount', requireRole(['Admin', 'CommitteeMember']), cats.adoptedNotFullyCompletedCount);
+router.get('/adoptedcatnotfullycompletedlist', requireRole(['Admin', 'CommitteeMember']), cats.adoptedNotFullyCompletedList);
 router.get('/hasprevisitwithoutdatelist', requireRole(['Admin', 'CommitteeMember']), cats.hasPreVisitWithoutDateList);
 router.post('/createadoptionrequest', cats.createAdoptionRequest);
 

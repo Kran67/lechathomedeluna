@@ -28,6 +28,7 @@ import {
   truncate,
 } from '../lib/utils';
 import {
+  getAdoptedCatNotFullyCompletedList,
   getCatNotFullyCompletedList,
   getHasPreVisitWithoutDateList,
 } from '../services/client/catsService';
@@ -56,6 +57,7 @@ export default function MyAlerts() {
   const [unreadMessages, setUnreadMessage] = useState<Message[]>([]);
   const [vetVoucherList, setVetVoucherList] = useState<VetVoucher[]>([]);
   const [unCompletedCatList, setUnCompletedCatList] = useState<{ slug: string, name: string, numId: string, fields: string[]}[]>([]);
+  const [unCompletedAdoptedCatList, setUnCompletedAdoptedCatList] = useState<{ slug: string, name: string, numId: string, fields: string[]}[]>([]);
   const [vaccineBoosterList, setVaccineBoosterList] = useState<[]>([]);
   const [preVisitList, setPreVisitList] = useState<[]>([]);
 
@@ -68,6 +70,12 @@ export default function MyAlerts() {
       (async () => {
           const res = await getCatNotFullyCompletedList(token);
           setUnCompletedCatList(res);
+      })();
+    }
+    if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember])) {
+      (async () => {
+          const res = await getAdoptedCatNotFullyCompletedList(token);
+          setUnCompletedAdoptedCatList(res);
       })();
     }
     (async () => {
@@ -138,7 +146,24 @@ export default function MyAlerts() {
                         <span className="border-l w-150 px-5 text-(--text)">{cat.numId}</span>
                         <span className="border-l flex-1 px-5 text-(--text)">{cat.fields.join(', ')}</span>
                     </div>
-                )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de fiche de chat en FA incompléte</div>}
+                )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de fiche de chats en FA incompléte</div>}
+              </div>
+          </div>}
+          {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.CommitteeMember]) && <div className='flex flex-col'>
+            <span className='text-lg text-(--primary)'>Fiches chats adoptés incomplètes :</span>
+            <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
+                <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
+                    <span className="text-(--white) w-100 px-5">Nom</span>
+                    <span className="text-(--white) border-l w-150 px-5">N° identification</span>
+                    <span className="text-(--white) border-l flex-1 px-5">Champs manquants</span>
+                </div>
+                {unCompletedAdoptedCatList.length > 0 ? unCompletedAdoptedCatList.map((cat: { slug: string, name: string, numId: string, fields: string[]}, idx: number) => (
+                  <div key={cat.slug} className={"flex w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
+                        <Link url={"/admin/cat/" + cat.slug} className="w-100 px-5 text-(--text)" text={cat.name} />
+                        <span className="border-l w-150 px-5 text-(--text)">{cat.numId}</span>
+                        <span className="border-l flex-1 px-5 text-(--text)">{cat.fields.join(', ')}</span>
+                    </div>
+                )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de fiche de chats adoptés incompléte</div>}
               </div>
           </div>}
           {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.HostFamily]) && <div className='flex flex-col'>

@@ -259,6 +259,56 @@ async function getAllCatsNotFullyCompletedList() {
   return res.rows.map(mapCatUnCompletdRow);
 }
 
+async function getAllAdoptedCatsNotFullyCompletedCount() {
+  const res = await pool.query(`SELECT COUNT(*) AS count
+    FROM cats
+    WHERE adoptionDate IS NOT NULL AND 
+      (description       IS NULL OR description       = '' OR
+      numIdentification IS NULL OR numIdentification = '' OR
+      dress             IS NULL OR dress             = '' OR
+      race              IS NULL OR race              = '' OR
+      sterilizationDate IS NULL OR
+      birthDate         IS NULL OR
+      adoptionDate      IS NULL OR
+      hostfamily_id     IS NULL OR
+      entryDate        IS NULL OR
+      provenance        IS NULL);`);
+  return res.rows[0].count;
+}
+
+async function getAllAdoptedCatsNotFullyCompletedList() {
+  const res = await pool.query(`SELECT 
+      slug,
+      name,
+      numIdentification,
+      ARRAY_REMOVE(ARRAY[
+        CASE WHEN description       IS NULL OR description       = '' THEN 'description'       END,
+        CASE WHEN numIdentification IS NULL OR numIdentification = '' THEN 'n° d''identification' END,
+        CASE WHEN dress             IS NULL OR dress             = '' THEN 'robe'             END,
+        CASE WHEN race              IS NULL OR race              = '' THEN 'race'              END,
+        CASE WHEN sterilizationDate IS NULL                          THEN 'date de stérilisation' END,
+        CASE WHEN birthDate         IS NULL                          THEN 'date de naissance'         END,
+        CASE WHEN adoptionDate      IS NULL                          THEN 'date d''adoption'      END,
+        CASE WHEN hostfamily_id     IS NULL                          THEN 'famille d''accueil'     END,
+        CASE WHEN entryDate         IS NULL                          THEN 'Date d''entrée'      END,
+        CASE WHEN provenance        IS NULL                          THEN 'provenance'      END
+      ], NULL) AS fields
+    FROM cats
+    WHERE adoptionDate      IS NOT NULL AND 
+      (description       IS NULL OR description       = '' OR
+      numIdentification IS NULL OR numIdentification = '' OR
+      dress             IS NULL OR dress             = '' OR
+      race              IS NULL OR race              = '' OR
+      sterilizationDate IS NULL OR
+      birthDate         IS NULL OR
+      adoptionDate      IS NOT NULL OR
+      hostfamily_id     IS NULL OR
+      entryDate        IS NULL OR
+      provenance        IS NULL)
+    ORDER BY name;`);
+  return res.rows.map(mapCatUnCompletdRow);
+}
+
 async function catsHasPreVisitWithoutDateList() {
   let sql = `
       SELECT DISTINCT c.*
@@ -314,6 +364,8 @@ module.exports = {
   updateCatFavoriteCount,
   getAllCatsNotFullyCompletedCount,
   getAllCatsNotFullyCompletedList,
+  getAllAdoptedCatsNotFullyCompletedCount,
+  getAllAdoptedCatsNotFullyCompletedList,
   catsHasPreVisitWithoutDateList,
   createAdoptionRequestForCat
 };

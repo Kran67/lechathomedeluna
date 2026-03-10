@@ -7,6 +7,8 @@ const {
   updateCatFavoriteCount,
   getAllCatsNotFullyCompletedCount,
   getAllCatsNotFullyCompletedList,
+  getAllAdoptedCatsNotFullyCompletedCount,
+  getAllAdoptedCatsNotFullyCompletedList,
   catsHasPreVisitWithoutDateList,
   createAdoptionRequestForCat
 } = require('../services/catsService');
@@ -133,6 +135,24 @@ async function notFullyCompletedList(req, res) {
   }
 }
 
+async function adoptedNotFullyCompletedCount(req, res) {
+  try {
+    const count = await getAllAdoptedCatsNotFullyCompletedCount();
+    res.json(count ? parseInt(count,10) : 0);
+  } catch (e) {
+    res.status(statusFromError(e)).json({ error: e.message });
+  }
+}
+
+async function adoptedNotFullyCompletedList(req, res) {
+  try {
+    const list = await getAllAdoptedCatsNotFullyCompletedList();
+    res.json(list);
+  } catch (e) {
+    res.status(statusFromError(e)).json({ error: e.message });
+  }
+}
+
 async function hasPreVisitWithoutDateList(req, res) {
   try {
     const list = await catsHasPreVisitWithoutDateList();
@@ -167,6 +187,8 @@ module.exports = {
   updateFavoriteCount,
   notFullyCompletedCount,
   notFullyCompletedList,
+  adoptedNotFullyCompletedCount,
+  adoptedNotFullyCompletedList,
   hasPreVisitWithoutDateList,
   createAdoptionRequest
 };

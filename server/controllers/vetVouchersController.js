@@ -6,6 +6,8 @@ const {
   deleteVetVoucher,
   getVetVoucherCount
 } = require('../services/vetVouchersService');
+const { getCatDetails } = require('../services/catsService');
+const { createMessaging, createMessage } = require('../services/messagingService');
 const { statusFromError } = require('../utils/lib');
 
 async function list(req, res) {
@@ -52,7 +54,17 @@ async function create(req, res) {
 
 async function update(req, res) {
   try {
+    const baseUrl = req.body.baseUrl;
     const updated = await updateVetVoucher(req.params.id, req.body || {});
+
+    let result = await getCatDetails(updated.cat.slug);
+    if (result) {
+      result = await createMessaging({ toUserId: result.hostFamily.id, fromUserId: updated.user_id});
+      if (result.rowCount > 0) {
+        await createMessage({ threadId: result.rows[0].thread_id, userId: updated.user_id, content: `Le bon vétérinaire pour le 🐈 ${baseUrl}/admin/cat/${updated.cat.slug}[${updated.cat.name}] a été traité.` });
+      }
+    }
+
     res.json(updated);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });

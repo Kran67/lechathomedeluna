@@ -84,6 +84,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const router = useRouter();
     const [pictures, setPictures] = useState<any>([...cat?.pictures ?? []]);
     const [picturesPreview, setPicturesPreview] = useState<string[]>([]);
+    const [appointmentDate, setAppointmentDate] = useState<string | null>(null);
+    const appointmentDateRef = useRef(null);
 
     const [clinic, setClinic] = useState<string | null>();
     const [voucherObject, setVoucherObject] = useState<string | null>();
@@ -212,11 +214,15 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         if (voucherObjectInputRef.current) {
             (voucherObjectInputRef.current as any).clearValue();
         }
+        if (appointmentDateRef.current) {
+            (appointmentDateRef.current as HTMLInputElement).value = "";
+        }
 
         const date: string = formatYMMDD(new Date());
         const res = await create(
             token,
             date,
+            appointmentDate as string,
             user?.id as string,
             cat?.id ?? "-1",
             clinic ?? "",
@@ -741,7 +747,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                     {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent]) && 
                         <>
                             <hr className='border-(--primary)' />
-                            <div className="flex flex-col gap-10" role="form" aria-label="Demander un bon vétérinaire">
+                            <form onSubmit={handleSubmitVoucher} className="flex flex-col gap-10" role="form" aria-label="Demander un bon vétérinaire">
                                 <div className="flex flex-col gap-4 md:gap-8">
                                     <h5 className="text-(--primary)">Demander un bon vétérinaire</h5>
                                 </div>
@@ -758,6 +764,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                             isMulti={false}
                                             isClearable={false}
                                             isSearchable={true}
+                                            required={true}
                                             placeholder="Clinique"
                                             onChange={(e:any) => setClinic(e?.value ?? null)}
                                         />
@@ -775,19 +782,29 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                             isMulti={true}
                                             isClearable={true}
                                             isSearchable={true}
+                                            required={true}
                                             placeholder="Objet du bon"
                                             onChange={(e:any) => { setVoucherObject(e.map((e: any) => e.value).join(", ") ?? null) }}
                                         />
                                     </div>
+                                    <Input
+                                        name="appointmentDate"
+                                        label="Date du rendez-vous"
+                                        type={InputTypes.Date}
+                                        className='max-w-150'
+                                        required={true}
+                                        onChange={(e) => setAppointmentDate(e.target.value)}
+                                        ref={appointmentDateRef}
+                                    />
                                 </div>
                                 <div className='flex justify-center'>
                                     <Button
                                         text="Demander le bon"
-                                        disabled={!clinic || voucherObject?.length === 0}
+                                        disabled={!clinic || voucherObject?.length === 0 || !appointmentDate}
                                         className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230'
-                                        onClick={(e) => handleSubmitVoucher(e) }/>
+                                    />
                                 </div>
-                            </div>
+                            </form>
                         </>}
                </div>
             </div>

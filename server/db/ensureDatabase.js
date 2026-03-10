@@ -146,7 +146,8 @@ async function initSchema(pool) {
     CREATE TABLE IF NOT EXISTS vet_vouchers (
       id SERIAL PRIMARY KEY,
       date DATE NOT NULL,
-      user_id  INTEGER NOT NULL REFERENCES users(id),
+      appointmentDate DATE NOT NULL,
+      user_id INTEGER NOT NULL REFERENCES users(id),
       cat_id INTEGER NOT NULL REFERENCES cats(id) ON DELETE CASCADE,
       clinic VARCHAR(51) NOT NULL,
       object VARCHAR(175) NOT NULL,

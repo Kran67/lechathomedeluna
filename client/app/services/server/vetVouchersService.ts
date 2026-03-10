@@ -1,6 +1,9 @@
+import { baseUrl } from '@/app/lib/utils';
+
 export const create = async (
     token: string | undefined,
     date: string,
+    appointmentDate: string,
     user_id: string,
     cat_id: string,
     clinic: string,
@@ -13,6 +16,7 @@ export const create = async (
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
             body: JSON.stringify({
                 date,
+                appointmentDate,
                 user_id,
                 cat_id,
                 clinic,
@@ -20,8 +24,7 @@ export const create = async (
                 created_by
             }),
         });
-        const result = await res.json();
-        return result;
+        return await res.json();
     } catch (err) {
         console.error("Erreur lors de la création du bon vétérinaire :", err);
         return null;
@@ -37,13 +40,29 @@ export const update = async (
         const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/vetvouchers/${id}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
-            body: JSON.stringify({ processed_on }),
+            body: JSON.stringify({
+                processed_on,
+                baseUrl
+            }),
         });
-        const result = await res.json();
-
-        return result;
+        return await res.json();
     } catch (err) {
         console.error("Erreur lors de la modification du bon vétérinaire :", err);
+        return null;
+    }
+}
+
+export const remove = async (
+    token: string | undefined,
+    id: string,
+    ) => {
+    try {
+        await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/vetvouchers/${id}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+        });
+    } catch (err) {
+        console.error("Erreur lors de la suppression du bon vétérinaire :", err);
         return null;
     }
 }

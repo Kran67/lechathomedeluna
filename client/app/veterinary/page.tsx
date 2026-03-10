@@ -32,7 +32,10 @@ import {
 } from '../lib/utils';
 import { sendMessage } from '../services/client/messagingService';
 import { vetVouchersService } from '../services/client/vetVouchersService';
-import { update } from '../services/server/vetVouchersService';
+import {
+  remove,
+  update,
+} from '../services/server/vetVouchersService';
 import {
   Clinics,
   VoucherObjects,
@@ -97,9 +100,19 @@ export default function VetVouchers() {
             service.refresh();
             toast.success("Bon vétérinaire validé avec succès.");
         } else {
-
+            toast.error(`Une erreur est survenue lors de la validation du bon vétérinaire.\n${res.error}`);
         }
     };
+
+    const removed = async(e: React.MouseEvent<HTMLButtonElement>, voucher: VetVoucher) => {
+        e.stopPropagation();
+        if (confirm("Attention, vous allez supprimer un bon vétérinaire, souhaitez-vous continuer ?")) {
+            await remove(token, voucher.id);
+            await sendMessage(token, CONSTANTS.THREAD_GROUPS.VET_VOUCHERS.toString(), user?.id as string, `❌ Bon vétérinaire pour ${voucher.cat.name} ${voucher.cat.numId ? '('+voucher.cat.numId+')' : ''} a été supprimé.`, []);
+            service.refresh();
+            toast.success("Bon vétérinaire supprimé avec succès.");
+        }
+    }
   
     return (
         <main className="flex flex-col gap-20 w-full items-center md:pt-20 md:px-140">
@@ -164,7 +177,8 @@ export default function VetVouchers() {
                 </div>
                 <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
                     <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
-                        <span className="text-(--white) w-100 px-5">Date</span>
+                        <span className="text-(--white) w-100 px-5">Date de la demande</span>
+                        <span className="text-(--white) border-l w-100 px-5">Date du rendez-vous</span>
                         <span className="text-(--white) border-l w-150 px-5">Demandeur</span>
                         <span className="text-(--white) border-l w-150 px-5">Pour</span>
                         <span className="text-(--white) border-l flex-1 px-5">Clinique</span>
@@ -174,6 +188,7 @@ export default function VetVouchers() {
                     {service.vetVouchers?.map((voucher, idx) => (
                         <div key={voucher.id} className={"flex w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
                             <span className="w-100 px-5 text-(--text)">{formatDDMMY(new Date(voucher.date))}</span>
+                            <span className="border-l w-100 px-5 text-(--text)">{formatDDMMY(new Date(voucher.appointmentDate))}</span>
                             <span className="border-l w-150 px-5 text-(--text)">{voucher.user_name}</span>
                             <span className="border-l w-150 px-5 text-(--text)">{voucher.cat.numId} / {voucher.cat.name}</span>
                             <span className="border-l flex-1 px-5 text-(--text)">{voucher.clinic}</span>
@@ -184,6 +199,13 @@ export default function VetVouchers() {
                                     svgStroke='#902677'
                                     onClick={ (e:React.MouseEvent<HTMLButtonElement>) => approved(e, voucher)}
                                     title='Traiter la demande' />
+                                <IconButton
+                                    icon={IconButtonImages.Trash}
+                                    imgWidth={24}
+                                    imgHeight={24}
+                                    svgFill='#902677'
+                                    onClick={ (e:React.MouseEvent<HTMLButtonElement>) => removed(e, voucher)}
+                                    title='Supprimer la demande' />
                             </span>
                         </div>
                     ))}

@@ -463,7 +463,7 @@ async function seedIfEmpty(pool) {
           user = { id: rows[0].id };
         }
         if (!user) {
-          const ins = await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, referrer_id, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id',
+          const ins = await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, referrer_id, capacity, password_hash) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id',
             [
               p.hostFamily && p.hostFamily.name,
               p.hostFamily && p.hostFamily.lastName,
@@ -473,7 +473,8 @@ async function seedIfEmpty(pool) {
               p.hostFamily && p.hostFamily.roles ? p.hostFamily.roles : 'hostfamily',
               p.hostFamily && p.hostFamily.email ? p.hostFamily.email : `unknown${Date.now()}@example.com`,
               p.hostFamily && p.hostFamily.referrerId ? p.hostFamily.referrerId : null,
-              "Empty"
+              "Empty",
+              p.hostFamily.password && p.hostFamily.password,
             ]);
           user = { id: ins.rows[0].id };
         }

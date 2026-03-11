@@ -110,7 +110,8 @@
             "address": "10 rue des Fleurs",
             "cityId": 4653,
             "roles": "CommitteeMember|HostFamily",
-            "email": "faref@exemple.com"
+            "email": "faref@exemple.com",
+            "password": "scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba"
         }
     },
     {
@@ -131,7 +132,8 @@
             "cityId": 4402,
             "roles": "HostFamily",
             "email": "fa@exemple.com",
-            "referrerId": 8
+            "referrerId": 8,
+            "password": "scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba"
         },
         "isAdoptable": false,
         "pictures": [

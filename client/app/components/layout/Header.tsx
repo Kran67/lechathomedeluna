@@ -102,11 +102,11 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.MyCats}
                 url="/myCats"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
-            <MenuItem
+            {user && !hasRoles(user.roles, [UserRoles.HostFamily]) && <MenuItem
                 text="Les chats à adopter"
                 isActive={activeMenu === HeaderMenuItems.CatsForAdoption}
                 url="/catsForAdoption"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />
+                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
             {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <MenuItem
                 text="Mes alertes"
                 isActive={activeMenu === HeaderMenuItems.Alerts}
@@ -135,12 +135,12 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.Volunteers}
                 url="/"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />} */}
-            <MenuItem
+            {user && !hasRoles(user.roles, [UserRoles.HostFamily]) && <MenuItem
                 text="Les chats adoptés"
                 isActive={activeMenu === HeaderMenuItems.AdoptedCats}
                 url="/adoptedCats"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                badge={adoptedCatNotFullyCompletedCount} />
+                badge={adoptedCatNotFullyCompletedCount} />}
             {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <MenuItem
                 text="Messagerie"
                 isActive={activeMenu === HeaderMenuItems.Messaging}

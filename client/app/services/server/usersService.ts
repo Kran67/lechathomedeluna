@@ -44,12 +44,12 @@ export const getAll = cache(async (token: string | undefined) => {
     }
 });
 
-export const create = async (token: string | undefined, email: string, name: string, lastName: string, social_number: string, phone: string, address: string, city: string, roles: string, blacklisted: boolean, referrer_id: string | null, capacity: string, birthDate: string | null,) => {
+export const create = async (token: string | undefined, email: string, name: string, lastName: string, social_number: string, phone: string, address: string, cityId: string, roles: string, blacklisted: boolean, referrer_id: string | null, capacity: string, birthDate: string | null,) => {
     try {
         const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users`, {
             method: "POST",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
-            body: JSON.stringify({ name, lastName, email, social_number, phone, address, city, roles, blacklisted, referrer_id, capacity, birthDate }),
+            body: JSON.stringify({ name, lastName, email, social_number, phone, address, cityId, roles, blacklisted, referrer_id, capacity, birthDate }),
         });
 
         return await res.json();

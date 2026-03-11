@@ -22,7 +22,7 @@ async function getUserByEmail(email) {
     WHERE u.email = $1`, [email]);
 }
 
-async function createUser({ email, name, lastName, social_number, phone, address, cityId, roles, blacklisted, referrer_id, capacity }) {
+async function createUser({ email, name, lastName, social_number, phone, address, cityId, roles, blacklisted, referrer_id, capacity, birthDate }) {
   if (!email) {
     const err = new Error("L'email est requis");
     err.status = 400;
@@ -46,7 +46,7 @@ async function createUser({ email, name, lastName, social_number, phone, address
   }
   try {
     const r = await pool.query('INSERT INTO users(email, name, lastName, social_number, roles, phone, address, cityId, blacklisted, referrer_id, capacity, birthdate) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id',
-      [email, name, lastName, social_number , roles, phone, address, cityId, blacklisted, referrer_id, capacity]);
+      [email, name, lastName, social_number , roles, phone, address, cityId, blacklisted, referrer_id, capacity, birthDate]);
     return await getUser(r.rows[0].id);
   } catch (e) {
     if (/UNIQUE/i.test(e.message)) {

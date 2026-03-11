@@ -156,7 +156,7 @@ export default function Profile() {
                             <Input name="email" label="Email" value={profile?.email} readOnly={true}maxLength={100} />
                             <Input name="name" label="Prénom" value={profile?.name} maxLength={50} />
                             <Input name="lastname" label="Nom" value={profile?.lastName} maxLength={50} />
-                            <Input name="birthDate" label="Date de naissance" type={InputTypes.Date} value={birthDate ? formatYMMDD(new Date(birthDate)) : ''}
+                            <Input name="birthDate" label="Date de naissance" type={InputTypes.Date} value={birthDate ? formatYMMDD(new Date(birthDate)) : undefined}
                                 onChange={(e) => setBirthDate(e.currentTarget.value)} />
                             <Input name="social_number" label="N° sécurité sociale" value={profile?.social_number} required={true} maxLength={13} />
                             <Input name="phone" label="Téléphone" value={profile?.phone} maxLength={10} />

@@ -220,10 +220,10 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                                     onChange={(e:any) => setIsSterilized(e?.value as boolean ?? false)}
                                 />
                             </div>
-                            <Input name="entryDate" label="Date d'entrée" type={InputTypes.Date}  />
+                            <Input name="entryDate" label="Date d'entrée" type={InputTypes.Date} value={undefined} />
                             <Input name="provenance" label="Provenance" type={InputTypes.Text} maxLength={50}  />
-                            <Input name="sterilizationDate" label="Date de la stérilisation / castration" type={InputTypes.Date}  />
-                            <Input name="birthDate" label="Date de naissance" type={InputTypes.Date}  />
+                            <Input name="sterilizationDate" label="Date de la stérilisation / castration" type={InputTypes.Date} value={undefined} />
+                            <Input name="birthDate" label="Date de naissance" type={InputTypes.Date} value={undefined} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="isDuringVisit">En cours de visite</label>
                                 <Select
@@ -240,7 +240,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                                 />
                             </div>
                             { user && hasRoles(user.roles, [UserRoles.Admin]) &&
-                                <Input name="adoptionDate" label="Date d'adoption" type={InputTypes.Date} />
+                                <Input name="adoptionDate" label="Date d'adoption" type={InputTypes.Date} value={undefined} />
                             }
                             <Input name="catPictures" label="Photos" type={InputTypes.File} multipleFile={true} onChange={picturesChange} />
                             <div className='flex flex-wrap w-full gap-7' data-p={picturesPreview.length}>

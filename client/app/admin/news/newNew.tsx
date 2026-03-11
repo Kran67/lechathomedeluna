@@ -79,7 +79,7 @@ export default function NewCat() {
                             <h5 className="text-(--primary)">Nouvelle actualité</h5>
                         </div>
                         <div className="flex gap-12 md:gap-24">
-                            <Input name="date" label="Date de l'actualité" type={InputTypes.Date} className="w-120"  />
+                            <Input name="date" label="Date de l'actualité" type={InputTypes.Date} className="w-120" value={undefined} />
                             <Input name="newPictures" label="Photos" type={InputTypes.File} multipleFile={false} onChange={picturesChange} />
                             <div className='flex flex-wrap w-full gap-7' data-p={picturesPreview.length}>
                                 {picturesPreview.map((picture: string, idx: number) => (

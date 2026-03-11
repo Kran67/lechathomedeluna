@@ -508,7 +508,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                             <Input name="entryDate"
                                 label="Date d'entrée"
                                 type={InputTypes.Date}
-                                value={cat?.entryDate ? formatYMMDD(new Date(cat?.entryDate)) : ''}
+                                value={cat?.entryDate ? formatYMMDD(new Date(cat?.entryDate)) : undefined}
                                 onChange={(e) => setEntryDate(e.currentTarget.value)}
                                 readOnly={isReadonly} />
                             <Input name="provenance" label="Provenance"  value={cat?.provenance} maxLength={50} readOnly={isReadonly} />
@@ -531,7 +531,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                             <Input 
                                 name="sterilizationDate"
                                 label="Date de la stérilisation  / castration"
-                                type={InputTypes.Date} value={cat?.sterilizationDate ? formatYMMDD(new Date(cat?.sterilizationDate)) : ''}
+                                type={InputTypes.Date} value={cat?.sterilizationDate ? formatYMMDD(new Date(cat?.sterilizationDate)) : undefined}
                                 className={ sterilizationDateError ? "error" : "" }
                                 readOnly={isReadonly}
                             />
@@ -539,7 +539,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 name="birthDate"
                                 label="Date de naissance"
                                 type={InputTypes.Date}
-                                value={birthDate ? formatYMMDD(new Date(birthDate)) : ''}
+                                value={birthDate ? formatYMMDD(new Date(birthDate)) : undefined}
                                 onChange={(e) => setBirthDate(e.currentTarget.value)}
                                 readOnly={isReadonly} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
@@ -562,13 +562,13 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 name="adoptionDate"
                                 label="Date d'adoption"
                                 type={InputTypes.Date}
-                                value={cat?.adoptionDate ? formatYMMDD(new Date(cat?.adoptionDate)) : ''}
+                                value={cat?.adoptionDate ? formatYMMDD(new Date(cat?.adoptionDate)) : undefined}
                                 readOnly={isReadonly} />
                             <Input
                                 name="preVisitDate"
                                 label="Date de la pré visite"
                                 type={InputTypes.Date}
-                                value={cat?.preVisitDate ? formatYMMDD(new Date(cat?.preVisitDate)) : ''}
+                                value={cat?.preVisitDate ? formatYMMDD(new Date(cat?.preVisitDate)) : undefined}
                                 readOnly={isReadonly} />
                             {!isReadonly ? <Input
                                 name="catPictures"
@@ -793,6 +793,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                         type={InputTypes.Date}
                                         className='max-w-150'
                                         required={true}
+                                        value={undefined}
                                         onChange={(e) => setAppointmentDate(e.target.value)}
                                         ref={appointmentDateRef}
                                     />

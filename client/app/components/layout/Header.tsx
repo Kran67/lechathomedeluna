@@ -102,7 +102,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.MyCats}
                 url="/myCats"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
-            {user && !hasRoles(user.roles, [UserRoles.HostFamily]) && <MenuItem
+            {(!user || (user && !hasRoles(user.roles, [UserRoles.HostFamily]))) && <MenuItem
                 text="Les chats à adopter"
                 isActive={activeMenu === HeaderMenuItems.CatsForAdoption}
                 url="/catsForAdoption"
@@ -135,7 +135,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.Volunteers}
                 url="/"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />} */}
-            {user && !hasRoles(user.roles, [UserRoles.HostFamily]) && <MenuItem
+            {(!user || (user && !hasRoles(user.roles, [UserRoles.HostFamily]))) && <MenuItem
                 text="Les chats adoptés"
                 isActive={activeMenu === HeaderMenuItems.AdoptedCats}
                 url="/adoptedCats"

@@ -130,7 +130,7 @@ export default function ModalCreateAdoptionRequest({
                     </div>
                     <div className='flex gap-20'>
                         <Input name="householdPeopleNumber" label="Nombre de personnes dans le foyer" type={InputTypes.Number} required={true} min={1} max={5} />
-                        <Input name="alreadyPresenAnimalsNumber" label="Nombre d’animaux déjà présent" type={InputTypes.Number} required={true} min={1} max={10} /> 
+                        <Input name="alreadyPresenAnimalsNumber" label="Nombre d’animaux déjà présent" type={InputTypes.Number} required={true} min={0} max={10} /> 
                     </div>
                     <div className='flex gap-20'>
                         <div className="flex flex-col gap-8">

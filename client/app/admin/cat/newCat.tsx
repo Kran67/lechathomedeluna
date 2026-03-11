@@ -203,7 +203,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                                     required={true}
                                 />
                             </div>
-                            <Input name="dress" label="Robe" maxLength={10} />
+                            <Input name="dress" label="Robe" maxLength={10} required={true} />
                             <Input name="race" label="Race" value='Européen' maxLength={10} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="isSterilized">Est stérilisé</label>

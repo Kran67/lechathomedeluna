@@ -503,7 +503,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     required={true}
                                 /> : <div className='flex text-sm text-(--text) border border-1 border-(--pink) h-40 rounded-[4px] items-center px-10 py-16 bg-[#eee]'>{CatSexes?.find(c => c.value === sex)?.label}</div>}
                             </div>
-                            <Input name="dress" label="Robe" value={cat?.dress} maxLength={10} readOnly={isReadonly} />
+                            <Input name="dress" label="Robe" value={cat?.dress} maxLength={10} readOnly={isReadonly} required={true} />
                             <Input name="race" label="Race" value={cat?.race} maxLength={10} readOnly={isReadonly} />
                             <Input name="entryDate"
                                 label="Date d'entrée"
@@ -559,16 +559,16 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 /> : <div className='flex text-sm text-(--text) border border-1 border-(--pink) h-40 rounded-[4px] items-center px-10 py-16 bg-[#eee]'>{YesNo?.find(c => c.value === isDuringVisit)?.label}</div>}
                             </div>
                             <Input
-                                name="adoptionDate"
-                                label="Date d'adoption"
-                                type={InputTypes.Date}
-                                value={cat?.adoptionDate ? formatYMMDD(new Date(cat?.adoptionDate)) : undefined}
-                                readOnly={isReadonly} />
-                            <Input
                                 name="preVisitDate"
                                 label="Date de la pré visite"
                                 type={InputTypes.Date}
                                 value={cat?.preVisitDate ? formatYMMDD(new Date(cat?.preVisitDate)) : undefined}
+                                readOnly={isReadonly} />
+                            <Input
+                                name="adoptionDate"
+                                label="Date d'adoption"
+                                type={InputTypes.Date}
+                                value={cat?.adoptionDate ? formatYMMDD(new Date(cat?.adoptionDate)) : undefined}
                                 readOnly={isReadonly} />
                             {!isReadonly ? <Input
                                 name="catPictures"

@@ -1,7 +1,14 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode, Context } from "react";
-import type { User } from "@/app/interfaces/user";
+import {
+  Context,
+  createContext,
+  ReactNode,
+  useContext,
+  useState,
+} from 'react';
+
+import type { User } from '@/app/core/interfaces/user';
 
 /**
  * Interface pour les propriétés d'initialisation du contexte de l'utilisateur

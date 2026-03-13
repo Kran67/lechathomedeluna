@@ -13,10 +13,9 @@ import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
 import Button from '@/app/components/ui/Button';
 import Input from '@/app/components/ui/Input';
-import { InputTypes } from '@/app/enums/enums';
-
-import { sendResetPasswordEmail } from '../lib/utils';
-import { resetPassword } from '../services/server/usersService';
+import { InputTypes } from '@/app/core/enums/enums';
+import { sendResetPasswordEmail } from '@/app/core/lib/utils';
+import { resetPassword } from '@/app/core/services/server/usersService';
 
 /**
  * Affiche la page de demande de nouveau mot de passe

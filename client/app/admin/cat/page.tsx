@@ -2,13 +2,13 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import NewCat from '@/app/admin/cat/newCat';
-import { UserRoles } from '@/app/enums/enums';
-import { User } from '@/app/interfaces/user';
-import { hasRoles } from '@/app/lib/utils';
+import { UserRoles } from '@/app/core/enums/enums';
+import { User } from '@/app/core/interfaces/user';
+import { hasRoles } from '@/app/core/lib/utils';
 import {
   getAll,
   getById,
-} from '@/app/services/server/usersService';
+} from '@/app/core/services/server/usersService';
 
 export default async function Page() {
     const cookieStore = await cookies()

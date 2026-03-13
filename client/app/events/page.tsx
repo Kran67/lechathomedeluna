@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
-import { HeaderMenuItems } from '@/app/enums/enums';
+import { HeaderMenuItems } from '@/app/core/enums/enums';
 
 /**
  * Ajout les métadata à la page

@@ -16,24 +16,24 @@ import ModalMessage from '@/app/components/modals/modalMessage';
 import Button from '@/app/components/ui/Button';
 import IconButton from '@/app/components/ui/IconButton';
 import Input from '@/app/components/ui/Input';
-import { useUser } from '@/app/contexts/userContext';
+import { useUser } from '@/app/core/contexts/userContext';
 import {
   HeaderMenuItems,
   IconButtonImages,
   InputImageTypes,
   UserRoles,
-} from '@/app/enums/enums';
-import { User } from '@/app/interfaces/user';
+} from '@/app/core/enums/enums';
+import { User } from '@/app/core/interfaces/user';
 import {
   getRoleLabel,
   hasRoles,
   sendResetPasswordEmail,
-} from '@/app/lib/utils';
-import { resetPassword } from '@/app/services/server/usersService';
+} from '@/app/core/lib/utils';
+import { resetPassword } from '@/app/core/services/server/usersService';
 import {
   Roles,
   YesNo,
-} from '@/app/staticLists/staticLists';
+} from '@/app/core/staticlists/staticLists';
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 

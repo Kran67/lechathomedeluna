@@ -2,9 +2,9 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import NewNew from '@/app/admin/news/newNew';
-import { UserRoles } from '@/app/enums/enums';
-import { hasRoles } from '@/app/lib/utils';
-import { getById } from '@/app/services/server/usersService';
+import { UserRoles } from '@/app/core/enums/enums';
+import { hasRoles } from '@/app/core/lib/utils';
+import { getById } from '@/app/core/services/server/usersService';
 
 export default async function Page() {
     const cookieStore = await cookies()

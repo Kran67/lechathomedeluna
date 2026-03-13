@@ -20,21 +20,21 @@ import ModalCreateAdoptionRequest
   from '@/app/components/modals/ModalCreateAdoptionRequest';
 import CollapseElement from '@/app/components/ui/CollapseElement';
 import IconButton from '@/app/components/ui/IconButton';
-import { useUser } from '@/app/contexts/userContext';
+import { useUser } from '@/app/core/contexts/userContext';
 import {
   HeaderMenuItems,
   IconButtonImagePositions,
   IconButtonImages,
   UserRoles,
-} from '@/app/enums/enums';
-import { Cat } from '@/app/interfaces/cat';
-import { DateUtils } from '@/app/lib/dateUtils';
+} from '@/app/core/enums/enums';
+import { Cat } from '@/app/core/interfaces/cat';
+import { DateUtils } from '@/app/core/lib/dateUtils';
 import {
   dateAge,
   hasRoles,
   prepareBodyToShowModal,
-} from '@/app/lib/utils';
-import { updateFavorite } from '@/app/services/server/catsService';
+} from '@/app/core/lib/utils';
+import { updateFavorite } from '@/app/core/services/server/catsService';
 
 /**
  * Interface pour les chats d'initialisation d'un chat

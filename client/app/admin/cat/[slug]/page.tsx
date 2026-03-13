@@ -4,14 +4,14 @@ import {
   RedirectType,
 } from 'next/navigation';
 
-import { UserRoles } from '@/app/enums/enums';
-import { User } from '@/app/interfaces/user';
-import { hasRoles } from '@/app/lib/utils';
-import { getBySlug } from '@/app/services/server/catsService';
+import { UserRoles } from '@/app/core/enums/enums';
+import { User } from '@/app/core/interfaces/user';
+import { hasRoles } from '@/app/core/lib/utils';
+import { getBySlug } from '@/app/core/services/server/catsService';
 import {
   getAll,
   getById,
-} from '@/app/services/server/usersService';
+} from '@/app/core/services/server/usersService';
 
 import EditCat from './editCat';
 

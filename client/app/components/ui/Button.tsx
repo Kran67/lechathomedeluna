@@ -8,7 +8,7 @@ import {
 } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { useRouter } from 'next/navigation';
 
-import { ButtonTypes } from '@/app/enums/enums';
+import { ButtonTypes } from '@/app/core/enums/enums';
 
 /**
  * Interface pour les propriétés d'initialisation du bouton

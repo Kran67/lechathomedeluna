@@ -5,12 +5,13 @@ const {
   updateCat,
   deleteCat,
   updateCatFavoriteCount,
-  getAllCatsNotFullyCompletedCount,
-  getAllCatsNotFullyCompletedList,
+  getAllFACatsNotFullyCompletedCount,
+  getAllFACatsNotFullyCompletedList,
   getAllAdoptedCatsNotFullyCompletedCount,
   getAllAdoptedCatsNotFullyCompletedList,
   catsHasPreVisitWithoutDateList,
-  createAdoptionRequestForCat
+  createAdoptionRequestForCat,
+  getAdoptedCatsCount
 } = require('../services/catsService');
 const {
   createSystemMessage
@@ -110,8 +111,32 @@ async function updateFavoriteCount(req, res) {
 
 async function remove(req, res) {
   try {
-    await deleteCat(req.params.id);
+    await deleteCat(req.params.slug);
     res.status(204).end();
+  } catch (e) {
+    res.status(statusFromError(e)).json({ error: e.message });
+  }
+}
+
+async function cloneAndRemove(req, res) {
+  try {
+    const props = await getCatDetails(req.params.slug);
+    if (props) {
+      props.adoptionDate = null;
+      //props.entryDate = 
+      props.hostFamily = null;
+      props.isAdoptable = false;
+      props.isDuringVisit = false;
+      props.preVisitDate = null;
+      props.slug = null;
+      props.id = null;
+      props.favoriteCount = 0;
+      await create({ body: props}, res);
+      await deleteCat(req.params.slug);
+      res.status(204).end();
+    } else {
+      res.status(500).end();
+    }
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
   }
@@ -119,7 +144,7 @@ async function remove(req, res) {
 
 async function notFullyCompletedCount(req, res) {
   try {
-    const count = await getAllCatsNotFullyCompletedCount();
+    const count = await getAllFACatsNotFullyCompletedCount(req.params.id);
     res.json(count ? parseInt(count,10) : 0);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
@@ -128,7 +153,7 @@ async function notFullyCompletedCount(req, res) {
 
 async function notFullyCompletedList(req, res) {
   try {
-    const list = await getAllCatsNotFullyCompletedList();
+    const list = await getAllFACatsNotFullyCompletedList(req.params.id);
     res.json(list);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
@@ -175,6 +200,16 @@ async function createAdoptionRequest(req, res) {
   }
 }
 
+async function adoptedCount(req, res) {
+  try {
+    const count = await getAdoptedCatsCount(req.params.id);
+    res.json(count ? parseInt(count,10) : 0);
+  } catch (e) {
+    res.status(statusFromError(e)).json({ error: e.message });
+  }
+}
+
+
 module.exports = {
   list,
   listAdoptable,
@@ -190,5 +225,7 @@ module.exports = {
   adoptedNotFullyCompletedCount,
   adoptedNotFullyCompletedList,
   hasPreVisitWithoutDateList,
-  createAdoptionRequest
+  createAdoptionRequest,
+  adoptedCount,
+  cloneAndRemove
 };

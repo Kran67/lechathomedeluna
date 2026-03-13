@@ -23,9 +23,9 @@ import {
   HeaderMenuItems,
   IconButtonImages,
   InputTypes,
-} from '@/app/enums/enums';
-import { redirectWithDelay } from '@/app/lib/utils';
-import { create } from '@/app/services/server/newsService';
+} from '@/app/core/enums/enums';
+import { redirectWithDelay } from '@/app/core/lib/utils';
+import { create } from '@/app/core/services/server/newsService';
 
 export default function NewCat() {
     const cookies: Cookies = useCookies();

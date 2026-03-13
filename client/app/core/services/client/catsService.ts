@@ -3,7 +3,7 @@ import {
   useState,
 } from 'react';
 
-import type { Cat } from '@/app/interfaces/cat';
+import type { Cat } from '@/app/core/interfaces/cat';
 
 /**
  * Permet de récupèrer les chats depuis la base de données
@@ -77,11 +77,12 @@ export function catsService(type: "adopted" | "adoptable" | undefined, numIdOrNa
     return { cats, loading, refresh, error };
 }
 
-export const getCatNotFullyCompletedCount = async (
+export const getFACatNotFullyCompletedCount = async (
     token: string,
+    id: string | null
 ) => {
     try {
-        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/catnotfullycompletedcount`, {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/facatnotfullycompletedcount${id ? "/" + id : ""}`, {
             method: "GET",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
         });
@@ -91,11 +92,12 @@ export const getCatNotFullyCompletedCount = async (
     }
 };
 
-export const getCatNotFullyCompletedList = async (
+export const getFACatNotFullyCompletedList = async (
     token: string,
+    id: string | null
 ) => {
     try {
-        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/catnotfullycompletedlist`, {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/facatnotfullycompletedlist${id ? "/" + id : ""}`, {
             method: "GET",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
         });
@@ -140,6 +142,20 @@ export const getHasPreVisitWithoutDateList = async (
         const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/hasprevisitwithoutdatelist`, {
             method: "GET",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+        });
+        return await res.json();
+    } catch (err) {
+        return { error: err };
+    }
+};
+
+export const getAdoptedCount = async (
+    token: string,
+) => {
+    try {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/adoptedcount`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
         });
         return await res.json();
     } catch (err) {

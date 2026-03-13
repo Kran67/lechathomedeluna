@@ -1,10 +1,9 @@
-// app/components/ui/MessageAttachments.tsx
 'use client';
 
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { MessageAttachment } from '@/app/interfaces/messaging';
+import { MessageAttachment } from '@/app/core/interfaces/messaging';
 
 import Button from './Button';
 

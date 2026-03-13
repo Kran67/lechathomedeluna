@@ -20,13 +20,17 @@ router.get('/cats/:id', cats.getById);
 router.post('/cats', requireRole(['Admin','AdoptionReferent', 'HostFamily']), cats.create);
 router.patch('/cats/favorite/:slug', cats.updateFavoriteCount);
 router.patch('/cats/:slug', requireRole(['Admin', 'AdoptionReferent', 'HealthRegisterReferent', 'VetVoucherReferent', 'ICADReferent', 'HostFamily']), cats.update);
-router.delete('/cats/:id', requireRole(['Admin']), cats.remove);
-router.get('/catnotfullycompletedcount', requireRole(['Admin', 'AdoptionReferent']), cats.notFullyCompletedCount);
-router.get('/catnotfullycompletedlist', requireRole(['Admin', 'AdoptionReferent']), cats.notFullyCompletedList);
+router.delete('/cats/:slug', requireRole(['Admin']), cats.remove);
+router.delete('/cats/cloneandremove/:slug', requireRole(['Admin']), cats.cloneAndRemove);
+router.get('/facatnotfullycompletedcount', requireRole(['Admin', 'AdoptionReferent']), cats.notFullyCompletedCount);
+router.get('/facatnotfullycompletedcount/:id', requireRole(['Admin', 'AdoptionReferent', 'HostFamily']), cats.notFullyCompletedCount);
+router.get('/facatnotfullycompletedlist', requireRole(['Admin', 'AdoptionReferent', 'HostFamily']), cats.notFullyCompletedList);
+router.get('/facatnotfullycompletedlist/:id', requireRole(['HostFamily']), cats.notFullyCompletedList);
 router.get('/adoptedcatnotfullycompletedcount', requireRole(['Admin', 'CommitteeMember']), cats.adoptedNotFullyCompletedCount);
 router.get('/adoptedcatnotfullycompletedlist', requireRole(['Admin', 'CommitteeMember']), cats.adoptedNotFullyCompletedList);
 router.get('/hasprevisitwithoutdatelist', requireRole(['Admin', 'CommitteeMember']), cats.hasPreVisitWithoutDateList);
 router.post('/createadoptionrequest', cats.createAdoptionRequest);
+router.get('/adoptedcount', cats.adoptedCount)
 
 // Users
 router.get('/users', requireAuth, users.list);

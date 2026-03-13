@@ -12,11 +12,11 @@ import {
 import Select from 'react-select';
 import { toast } from 'react-toastify';
 
-import { IconButtonImages } from '@/app/enums/enums';
+import { IconButtonImages } from '@/app/core/enums/enums';
 import {
   addMembers,
   removeMembers,
-} from '@/app/services/client/messagingService';
+} from '@/app/core/services/client/messagingService';
 
 import Button from '../ui/Button';
 import IconButton from '../ui/IconButton';

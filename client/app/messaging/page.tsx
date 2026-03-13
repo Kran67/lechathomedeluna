@@ -13,15 +13,16 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { UserRoles } from '../enums/enums';
-import { Messaging } from '../interfaces/messaging';
-import { User } from '../interfaces/user';
-import { hasRoles } from '../lib/utils';
-import { getAllUserThreads } from '../services/server/messagingService';
+import { UserRoles } from '@/app/core/enums/enums';
+import { Messaging } from '@/app/core/interfaces/messaging';
+import { User } from '@/app/core/interfaces/user';
+import { hasRoles } from '@/app/core/lib/utils';
+import { getAllUserThreads } from '@/app/core/services/server/messagingService';
 import {
   getAll,
   getById,
-} from '../services/server/usersService';
+} from '@/app/core/services/server/usersService';
+
 import MessagingPage from './messaging';
 
 /**

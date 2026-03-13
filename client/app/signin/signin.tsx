@@ -16,9 +16,9 @@ import Button from '@/app/components/ui/Button';
 import Checkbox from '@/app/components/ui/Checkbox';
 import Input from '@/app/components/ui/Input';
 import Link from '@/app/components/ui/Link';
-import { InputTypes } from '@/app/enums/enums';
-import { validatePassword } from '@/app/lib/utils';
-import { signin } from '@/app/services/server/authService';
+import { InputTypes } from '@/app/core/enums/enums';
+import { validatePassword } from '@/app/core/lib/utils';
+import { signin } from '@/app/core/services/server/authService';
 
 /**
  * Affiche la page création de compte

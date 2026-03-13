@@ -3,8 +3,8 @@
 import { useEffect } from 'react';
 
 import CatCard from '@/app/components/data/CatCard';
-import { Cat } from '@/app/interfaces/cat';
-import { prepareBodyToShowModal } from '@/app/lib/utils';
+import { Cat } from '@/app/core/interfaces/cat';
+import { prepareBodyToShowModal } from '@/app/core/lib/utils';
 
 /**
  * Ajout les métadata à la page

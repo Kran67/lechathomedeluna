@@ -11,11 +11,11 @@ import ReactSelect from 'react-select';
 import {
   City,
   PostalCode,
-} from '@/app/interfaces/postalCode';
+} from '@/app/core/interfaces/postalCode';
 import {
   getCitiesByCode,
   searchPostalCodes,
-} from '@/app/services/client/postalCodeService';
+} from '@/app/core/services/client/postalCodeService';
 
 interface Props {
   onSelect?: (code: string, city: City) => void;

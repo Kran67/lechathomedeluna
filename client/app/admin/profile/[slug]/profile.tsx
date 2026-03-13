@@ -22,31 +22,31 @@ import Header from '@/app/components/layout/Header';
 import Button from '@/app/components/ui/Button';
 import IconButton from '@/app/components/ui/IconButton';
 import Input from '@/app/components/ui/Input';
-import { useUser } from '@/app/contexts/userContext';
+import { useUser } from '@/app/core/contexts/userContext';
 import {
   HeaderMenuItems,
   IconButtonImages,
   InputTypes,
   UserRoles,
-} from '@/app/enums/enums';
-import { City } from '@/app/interfaces/postalCode';
-import { User } from '@/app/interfaces/user';
+} from '@/app/core/enums/enums';
+import { City } from '@/app/core/interfaces/postalCode';
+import { User } from '@/app/core/interfaces/user';
 import {
   formatYMMDD,
   hasRoles,
   sendResetPasswordEmail,
-} from '@/app/lib/utils';
+} from '@/app/core/lib/utils';
 import {
   create,
   resetPassword,
   update,
-} from '@/app/services/server/usersService';
+} from '@/app/core/services/server/usersService';
 import {
   Capacities,
   ColourOption,
   Roles,
   YesNo,
-} from '@/app/staticLists/staticLists';
+} from '@/app/core/staticlists/staticLists';
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 

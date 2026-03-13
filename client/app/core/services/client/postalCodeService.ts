@@ -1,7 +1,7 @@
 import {
   City,
   PostalCode,
-} from '@/app/interfaces/postalCode';
+} from '@/app/core/interfaces/postalCode';
 
 const BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
 

@@ -11,14 +11,14 @@ import Gallery from '@/app/components/data/Gallery';
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
 import Input from '@/app/components/ui/Input';
-import { useUser } from '@/app/contexts/userContext';
+import { useUser } from '@/app/core/contexts/userContext';
 import {
   HeaderMenuItems,
   InputImageTypes,
   UserRoles,
-} from '@/app/enums/enums';
-import { hasRoles } from '@/app/lib/utils';
-import { catsService } from '@/app/services/client/catsService';
+} from '@/app/core/enums/enums';
+import { hasRoles } from '@/app/core/lib/utils';
+import { catsService } from '@/app/core/services/client/catsService';
 
 import Button from '../components/ui/Button';
 

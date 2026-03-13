@@ -3,7 +3,7 @@ import {
   useState,
 } from 'react';
 
-import { User } from '../../interfaces/user';
+import { User } from '@/app/core/interfaces/user';
 
 /**
  * Permet de récupèrer les utilisateurs depuis la base de données

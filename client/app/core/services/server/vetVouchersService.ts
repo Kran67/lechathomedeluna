@@ -1,4 +1,4 @@
-import { baseUrl } from '@/app/lib/utils';
+import { baseUrl } from '@/app/core/lib/utils';
 
 export const create = async (
     token: string | undefined,

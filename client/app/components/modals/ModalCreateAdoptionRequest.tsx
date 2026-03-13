@@ -8,20 +8,19 @@ import {
 
 import Select from 'react-select';
 
+import Button from '@/app/components/ui/Button';
+import IconButton from '@/app/components/ui/IconButton';
+import Input from '@/app/components/ui/Input';
 import {
   IconButtonImages,
   InputTypes,
-} from '@/app/enums/enums';
-import { createAdoptionRequest } from '@/app/services/client/catsService';
+} from '@/app/core/enums/enums';
+import { createAdoptionRequest } from '@/app/core/services/client/catsService';
 import {
   DailyTimes,
   LifePlaces,
   YesNo,
-} from '@/app/staticLists/staticLists';
-
-import Button from '../ui/Button';
-import IconButton from '../ui/IconButton';
-import Input from '../ui/Input';
+} from '@/app/core/staticlists/staticLists';
 
 export default function ModalCreateAdoptionRequest({
     catName,

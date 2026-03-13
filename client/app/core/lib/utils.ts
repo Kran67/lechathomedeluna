@@ -1,7 +1,7 @@
 import { toast } from 'react-toastify';
 
+import { CONSTANTS } from '@/app/core/consts/constants';
 import emailjs from '@emailjs/browser';
-import { CONSTANTS } from '../consts/constants';
 
 /**
  * Prépare le corps du document html pour l'affichage de fenêtre modale, enlève la scrollbar

@@ -10,9 +10,9 @@ import {
   ToastContainer,
 } from 'react-toastify';
 
-import { UserProvider } from '@/app/contexts/userContext';
-import { User } from '@/app/interfaces/user';
-import { getById } from '@/app/services/server/usersService';
+import { UserProvider } from '@/app/core/contexts/userContext';
+import { User } from '@/app/core/interfaces/user';
+import { getById } from '@/app/core/services/server/usersService';
 
 /**
  * Ajout de la police de caractère utilisée sur le site

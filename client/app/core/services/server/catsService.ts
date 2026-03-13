@@ -1,6 +1,6 @@
 import { cache } from 'react';
 
-import type { CatDocument } from '@/app/interfaces/cat';
+import type { CatDocument } from '@/app/core/interfaces/cat';
 
 /**
  * Récupère les informations d'un chat
@@ -193,7 +193,7 @@ export const update = async (
 
 export const updateFavorite = async (
     slug: string,
-    ) => {
+) => {
     try {
         await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats/favorite/${slug}`, {
             method: "PATCH",
@@ -201,6 +201,23 @@ export const updateFavorite = async (
         });
     } catch (err) {
         console.error("Erreur lors de la modification de la fiche du chat :", err);
+        return null;
+    }
+}
+
+export const deleteCat = async (
+    token: string,
+    catSlug: string,
+    returnToFA: boolean
+) => {
+    try {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats/${returnToFA ? "cloneandremove/" : ""}${catSlug}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        });
+        return res;
+    } catch (err) {
+        console.error("Erreur lors de la suppression de la fiche du chat :", err);
         return null;
     }
 }

@@ -1,4 +1,4 @@
-import { Cat } from '@/app/interfaces/cat';
+import { Cat } from '@/app/core/interfaces/cat';
 
 export const catsMock: Cat[] = [
     {

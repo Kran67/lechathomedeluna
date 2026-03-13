@@ -14,21 +14,20 @@ import dynamic from 'next/dynamic';
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
 import Button from '@/app/components/ui/Button';
-import { useUser } from '@/app/contexts/userContext';
+import IconButton from '@/app/components/ui/IconButton';
+import { useUser } from '@/app/core/contexts/userContext';
 import {
   HeaderMenuItems,
   IconButtonImages,
   UserRoles,
-} from '@/app/enums/enums';
-import { hasRoles } from '@/app/lib/utils';
+} from '@/app/core/enums/enums';
+import { New } from '@/app/core/interfaces/new';
+import { hasRoles } from '@/app/core/lib/utils';
 import {
   deleteNew,
   newsService,
-} from '@/app/services/client/newsService';
-import { NewsPeriods } from '@/app/staticLists/staticLists';
-
-import IconButton from './components/ui/IconButton';
-import { New } from './interfaces/new';
+} from '@/app/core/services/client/newsService';
+import { NewsPeriods } from '@/app/core/staticlists/staticLists';
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 

@@ -3,7 +3,9 @@ import type {
   ResolvingMetadata,
 } from 'next';
 
-import { checkResetTokenValidity } from '@/app/services/server/usersService';
+import {
+  checkResetTokenValidity,
+} from '@/app/core/services/server/usersService';
 
 import ResetPassword from './resetpassword';
 

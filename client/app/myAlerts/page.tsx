@@ -12,27 +12,30 @@ import {
 
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
+import IconButton from '@/app/components/ui/IconButton';
+import Link from '@/app/components/ui/Link';
+import { useUser } from '@/app/core/contexts/userContext';
 import {
   HeaderMenuItems,
+  IconButtonImages,
   UserRoles,
-} from '@/app/enums/enums';
-
-import Link from '../components/ui/Link';
-import { useUser } from '../contexts/userContext';
-import { Message } from '../interfaces/messaging';
-import { VetVoucher } from '../interfaces/vetVoucher';
+} from '@/app/core/enums/enums';
+import { Message } from '@/app/core/interfaces/messaging';
+import { VetVoucher } from '@/app/core/interfaces/vetVoucher';
 import {
   formatDDMMY,
   formatHHMMSS,
   hasRoles,
   truncate,
-} from '../lib/utils';
+} from '@/app/core/lib/utils';
 import {
   getAdoptedCatNotFullyCompletedList,
-  getCatNotFullyCompletedList,
+  getFACatNotFullyCompletedList,
   getHasPreVisitWithoutDateList,
-} from '../services/client/catsService';
-import { unreadMessageListByUserId } from '../services/client/messagingService';
+} from '@/app/core/services/client/catsService';
+import {
+  unreadMessageListByUserId,
+} from '@/app/core/services/client/messagingService';
 
 /**
  * Ajout les métadata à la page
@@ -56,32 +59,36 @@ export default function MyAlerts() {
   const token: string = cookies.get("token") as string;
   const [unreadMessages, setUnreadMessage] = useState<Message[]>([]);
   const [vetVoucherList, setVetVoucherList] = useState<VetVoucher[]>([]);
-  const [unCompletedCatList, setUnCompletedCatList] = useState<{ slug: string, name: string, numId: string, fields: string[]}[]>([]);
+  const [unCompletedFACatList, setUnCompletedFACatList] = useState<{ slug: string, name: string, numId: string, hostfamily_id: string, hostfamily_name: string, fields: string[]}[]>([]);
   const [unCompletedAdoptedCatList, setUnCompletedAdoptedCatList] = useState<{ slug: string, name: string, numId: string, fields: string[]}[]>([]);
   const [vaccineBoosterList, setVaccineBoosterList] = useState<[]>([]);
   const [preVisitList, setPreVisitList] = useState<[]>([]);
+    let isHostFamily: boolean = false;
 
   useEffect(() => {
-    (async () => {
-        const res = await unreadMessageListByUserId(token, user?.id as string);
-        setUnreadMessage(res);
-    })();
-    if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent])) {
+    if (token) {
+      isHostFamily = (user && hasRoles(user.roles, [UserRoles.HostFamily])) as boolean;
       (async () => {
-          const res = await getCatNotFullyCompletedList(token);
-          setUnCompletedCatList(res);
+          const res = await unreadMessageListByUserId(token, user?.id as string);
+          setUnreadMessage(res);
+      })();
+      if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily])) {
+        (async () => {
+            const res = await getFACatNotFullyCompletedList(token, isHostFamily ? user.id : null);
+            setUnCompletedFACatList(res);
+        })();
+      }
+      if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember])) {
+        (async () => {
+            const res = await getAdoptedCatNotFullyCompletedList(token);
+            setUnCompletedAdoptedCatList(res);
+        })();
+      }
+      (async () => {
+        const res = await getHasPreVisitWithoutDateList(token);
+        setPreVisitList(res);
       })();
     }
-    if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember])) {
-      (async () => {
-          const res = await getAdoptedCatNotFullyCompletedList(token);
-          setUnCompletedAdoptedCatList(res);
-      })();
-    }
-    (async () => {
-      const res = await getHasPreVisitWithoutDateList(token);
-      setPreVisitList(res);
-    })();
   }, [user]);
 
   return (
@@ -132,18 +139,20 @@ export default function MyAlerts() {
                 )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de bon vétérinaire en attente</div>}
               </div>
           </div>}
-          {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.AdoptionReferent]) && <div className='flex flex-col'>
+          {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Fiches chats en FA incomplètes :</span>
             <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
                 <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
                     <span className="text-(--white) w-100 px-5">Nom</span>
-                    <span className="text-(--white) border-l w-150 px-5">N° identification</span>
+                    <span className="text-(--white) border-l w-120 px-5">N° identification</span>
+                    <span className="text-(--white) border-l w-150 px-5">Famille d'accueil</span>
                     <span className="text-(--white) border-l flex-1 px-5">Champs manquants</span>
                 </div>
-                {unCompletedCatList.length > 0 ? unCompletedCatList.map((cat: { slug: string, name: string, numId: string, fields: string[]}, idx: number) => (
+                {unCompletedFACatList.length > 0 ? unCompletedFACatList.map((cat: { slug: string, name: string, numId: string, hostfamily_id: string, hostfamily_name: string, fields: string[]}, idx: number) => (
                   <div key={cat.slug} className={"flex w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
                         <Link url={"/admin/cat/" + cat.slug} className="w-100 px-5 text-(--text)" text={cat.name} />
-                        <span className="border-l w-150 px-5 text-(--text)">{cat.numId}</span>
+                        <span className="border-l w-120 px-5 text-(--text)">{cat.numId}</span>
+                        <span className="border-l w-150 px-5 text-(--text)">{user.id !== cat.hostfamily_id ? cat.hostfamily_name : ""}</span>
                         <span className="border-l flex-1 px-5 text-(--text)">{cat.fields.join(', ')}</span>
                     </div>
                 )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de fiche de chats en FA incompléte</div>}
@@ -184,15 +193,34 @@ export default function MyAlerts() {
                 )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de rappel de vaccin à effectuer / en retard</div>}
               </div>
           </div>}
-          {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.PreVisitReferent]) && <div className='flex flex-col'>
+          {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Pré visites sans date :</span>
             <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
                 <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
                     <span className="text-(--white) w-100 px-5">Nom</span>
+                    <span className="text-(--white) border-l flex-1 px-5">N° identification</span>
+                    <span className="text-(--white) border-l flex-1 px-5">Nom prénom</span>
+                    <span className="text-(--white) border-l flex-1 px-5">Actions</span>
                 </div>
                 {preVisitList.length > 0 ? preVisitList.map((preVisit: any, idx: number) => (
                   <div key={preVisit.id} className={"flex w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
                         <Link url={"/admin/cat/" + preVisit.slug} className="w-100 px-5 text-(--text)" text={preVisit.name} />
+                        <span className="border-l flex-1 px-5 text-(--text)">{preVisit.numId}</span>
+                        <span className="border-l flex-1 px-5 text-(--text)">{preVisit.applicant}</span>
+                        <span className="flex border-l flex-1 px-5 text-(--text) gap-5">
+                          <IconButton
+                              icon={IconButtonImages.Approved}
+                              svgStroke='#902677'
+                              // onClick={ (e:React.MouseEvent<HTMLButtonElement>) => approved(e, voucher)}
+                              title='Valider la visite' />
+                          <IconButton
+                              icon={IconButtonImages.Trash}
+                              imgWidth={24}
+                              imgHeight={24}
+                              svgFill='#902677'
+                              // onClick={ (e:React.MouseEvent<HTMLButtonElement>) => removed(e, voucher)}
+                              title='Supprimer la demande' />
+                        </span>
                     </div>
                 )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de date de pré visite</div>}
               </div>

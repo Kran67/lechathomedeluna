@@ -1,5 +1,5 @@
-import { LogoSizes } from "@/app/enums/enums";
-import Logo from "@/app/components/ui/Logo";
+import Logo from '@/app/components/ui/Logo';
+import { LogoSizes } from '@/app/core/enums/enums';
 
 /**
  * Affiche le bas de page

@@ -19,27 +19,29 @@ import {
   HeaderMenuItems,
   IconButtonImages,
   UserRoles,
-} from '@/app/enums/enums';
-
-import IconButton from '../components/ui/IconButton';
-import { CONSTANTS } from '../consts/constants';
-import { useUser } from '../contexts/userContext';
-import { VetVoucher } from '../interfaces/vetVoucher';
+} from '@/app/core/enums/enums';
+import { VetVoucher } from '@/app/core/interfaces/vetVoucher';
 import {
   formatDDMMY,
   formatYMMDD,
   hasRoles,
-} from '../lib/utils';
-import { sendMessage } from '../services/client/messagingService';
-import { vetVouchersService } from '../services/client/vetVouchersService';
+} from '@/app/core/lib/utils';
+import { sendMessage } from '@/app/core/services/client/messagingService';
+import {
+  vetVouchersService,
+} from '@/app/core/services/client/vetVouchersService';
 import {
   remove,
   update,
-} from '../services/server/vetVouchersService';
+} from '@/app/core/services/server/vetVouchersService';
+
+import IconButton from '../components/ui/IconButton';
+import { CONSTANTS } from '../core/consts/constants';
+import { useUser } from '../core/contexts/userContext';
 import {
   Clinics,
   VoucherObjects,
-} from '../staticLists/staticLists';
+} from '../core/staticlists/staticLists';
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 

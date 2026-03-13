@@ -15,8 +15,8 @@ import Header from '@/app/components/layout/Header';
 import Button from '@/app/components/ui/Button';
 import Input from '@/app/components/ui/Input';
 import Link from '@/app/components/ui/Link';
-import { InputTypes } from '@/app/enums/enums';
-import { login } from '@/app/services/server/authService';
+import { InputTypes } from '@/app/core/enums/enums';
+import { login } from '@/app/core/services/server/authService';
 
 /**
  * Affiche la page de connexion

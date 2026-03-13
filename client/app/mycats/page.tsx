@@ -3,15 +3,14 @@
 import Gallery from '@/app/components/data/Gallery';
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
+import Button from '@/app/components/ui/Button';
+import { useUser } from '@/app/core/contexts/userContext';
 import {
   HeaderMenuItems,
   UserRoles,
-} from '@/app/enums/enums';
-import { catsService } from '@/app/services/client/catsService';
-
-import Button from '../components/ui/Button';
-import { useUser } from '../contexts/userContext';
-import { hasRoles } from '../lib/utils';
+} from '@/app/core/enums/enums';
+import { hasRoles } from '@/app/core/lib/utils';
+import { catsService } from '@/app/core/services/client/catsService';
 
 /**
  * Ajout les métadata à la page
@@ -29,7 +28,7 @@ import { hasRoles } from '../lib/utils';
  * 
  * @function MyCats
  */
-export default function Toto() {
+export default function MyCats() {
   const { user } = useUser();
   const service = catsService(undefined, undefined, 0, user?.id);
 

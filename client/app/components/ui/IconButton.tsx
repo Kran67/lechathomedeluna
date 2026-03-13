@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import {
   IconButtonImagePositions,
   IconButtonImages,
-} from '@/app/enums/enums';
+} from '@/app/core/enums/enums';
 
 /**
  * Interface pour les propriétés d'initialisation du IconButton

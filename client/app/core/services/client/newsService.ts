@@ -3,7 +3,7 @@ import {
   useState,
 } from 'react';
 
-import { New } from '../../interfaces/new';
+import { New } from '@/app/core/interfaces/new';
 
 /**
  * Permet de récupèrer les bons vétérinaire depuis la base de données

@@ -20,19 +20,19 @@ import Header from '@/app/components/layout/Header';
 import Button from '@/app/components/ui/Button';
 import IconButton from '@/app/components/ui/IconButton';
 import Input from '@/app/components/ui/Input';
-import { CONSTANTS } from '@/app/consts/constants';
-import { useUser } from '@/app/contexts/userContext';
+import { CONSTANTS } from '@/app/core/consts/constants';
+import { useUser } from '@/app/core/contexts/userContext';
 import {
   HeaderMenuItems,
   IconButtonImages,
   InputTypes,
   UserRoles,
-} from '@/app/enums/enums';
+} from '@/app/core/enums/enums';
 import {
   Cat,
   CatDocument,
-} from '@/app/interfaces/cat';
-import { User } from '@/app/interfaces/user';
+} from '@/app/core/interfaces/cat';
+import { User } from '@/app/core/interfaces/user';
 import {
   baseUrl,
   formatDDMMY,
@@ -40,20 +40,20 @@ import {
   hasRoles,
   isTodayGreaterThanDatePlus6Months,
   redirectWithDelay,
-} from '@/app/lib/utils';
-import { sendMessage } from '@/app/services/client/messagingService';
+} from '@/app/core/lib/utils';
+import { sendMessage } from '@/app/core/services/client/messagingService';
 import {
   getBySlug,
   update,
-} from '@/app/services/server/catsService';
-import { create } from '@/app/services/server/vetVouchersService';
+} from '@/app/core/services/server/catsService';
+import { create } from '@/app/core/services/server/vetVouchersService';
 import {
   CatSexes,
   CatStatus,
   Clinics,
   VoucherObjects,
   YesNo,
-} from '@/app/staticLists/staticLists';
+} from '@/app/core/staticlists/staticLists';
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 
@@ -181,7 +181,6 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                         const document: CatDocument = updatedCat.documents.find((d: CatDocument) => 
                             d.fileName === doc.fileName && formatDDMMY(new Date(d.date)) === formatDDMMY(new Date(doc.date)) && doc.type === d.type
                         );
-                        console.log(document);
                         debugger;
                         await sendMessage(
                             token,
@@ -435,7 +434,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                             <h5 className="text-(--primary)">Modification fiche chat</h5>
                         </div>
                         <div className="flex flex-col gap-12 md:gap-24">
-                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                            {user && !hasRoles(user.roles, [UserRoles.HostFamily]) && <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="hostFamilyId">Famille d'accueil</label>
                                 {!isReadonly ? <Select
                                     options={filteredHostFamilies}
@@ -450,7 +449,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     value={filteredHostFamilies?.find(c => c.value === hostFamilyId)}
                                     onChange={(e:any) => setHostFamilyId(e?.value ?? null)}
                                 /> : <div className='flex text-sm text-(--text) border border-1 border-(--pink) h-40 rounded-[4px] items-center px-10 py-16 bg-[#eee]'>{filteredHostFamilies?.find(c => c.value === hostFamilyId)?.label}</div>}
-                            </div>
+                            </div>}
                             <Input
                                 name="name"
                                 label="Nom"
@@ -528,13 +527,6 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     onChange={(e:any) => setIsSterilized(e?.value as boolean ?? false)}
                                 /> : <div className='flex text-sm text-(--text) border border-1 border-(--pink) h-40 rounded-[4px] items-center px-10 py-16 bg-[#eee]'>{YesNo?.find(c => c.value === isSterilized)?.label}</div>}
                             </div>
-                            <Input 
-                                name="sterilizationDate"
-                                label="Date de la stérilisation  / castration"
-                                type={InputTypes.Date} value={cat?.sterilizationDate ? formatYMMDD(new Date(cat?.sterilizationDate)) : undefined}
-                                className={ sterilizationDateError ? "error" : "" }
-                                readOnly={isReadonly}
-                            />
                             <Input
                                 name="birthDate"
                                 label="Date de naissance"
@@ -542,6 +534,13 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 value={birthDate ? formatYMMDD(new Date(birthDate)) : undefined}
                                 onChange={(e) => setBirthDate(e.currentTarget.value)}
                                 readOnly={isReadonly} />
+                            <Input 
+                                name="sterilizationDate"
+                                label="Date de la stérilisation  / castration"
+                                type={InputTypes.Date} value={cat?.sterilizationDate ? formatYMMDD(new Date(cat?.sterilizationDate)) : undefined}
+                                className={ sterilizationDateError ? "error" : "" }
+                                readOnly={isReadonly}
+                            />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="isDuringVisit">En cours de visite</label>
                                 {!isReadonly ? <Select
@@ -744,7 +743,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 } }/>}
                         </div>
                     </form>
-                    {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent]) && 
+                    {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.HostFamily]) && 
                         <>
                             <hr className='border-(--primary)' />
                             <form onSubmit={handleSubmitVoucher} className="flex flex-col gap-10" role="form" aria-label="Demander un bon vétérinaire">

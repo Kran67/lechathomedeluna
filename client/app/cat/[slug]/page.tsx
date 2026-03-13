@@ -8,8 +8,8 @@ import {
 } from 'next/navigation';
 
 import CatDetail from '@/app/cat/[slug]/catDetail';
-import { Cat } from '@/app/interfaces/cat';
-import { getBySlug } from '@/app/services/server/catsService';
+import { Cat } from '@/app/core/interfaces/cat';
+import { getBySlug } from '@/app/core/services/server/catsService';
 
 type Props = {
   params: Promise<{ slug: string }>

@@ -20,28 +20,30 @@ import Header from '@/app/components/layout/Header';
 import Button from '@/app/components/ui/Button';
 import IconButton from '@/app/components/ui/IconButton';
 import Input from '@/app/components/ui/Input';
-import { CONSTANTS } from '@/app/consts/constants';
-import { useUser } from '@/app/contexts/userContext';
+import { CONSTANTS } from '@/app/core/consts/constants';
+import { useUser } from '@/app/core/contexts/userContext';
 import {
   HeaderMenuItems,
   IconButtonImages,
   InputTypes,
   UserRoles,
-} from '@/app/enums/enums';
-import { User } from '@/app/interfaces/user';
+} from '@/app/core/enums/enums';
+import { User } from '@/app/core/interfaces/user';
 import {
   baseUrl,
   formatDDMMY,
+  formatYMMDD,
   hasRoles,
+  isTodayGreaterThanDatePlus6Months,
   redirectWithDelay,
-} from '@/app/lib/utils';
-import { sendMessage } from '@/app/services/client/messagingService';
-import { create } from '@/app/services/server/catsService';
+} from '@/app/core/lib/utils';
+import { sendMessage } from '@/app/core/services/client/messagingService';
+import { create } from '@/app/core/services/server/catsService';
 import {
   CatSexes,
   CatStatus,
   YesNo,
-} from '@/app/staticLists/staticLists';
+} from '@/app/core/staticlists/staticLists';
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 
@@ -65,11 +67,19 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
     const [hostFamilyId, setHostFamilyId] = useState<string | null>(null);
     const [pictures, setPictures] = useState<any>([]);
     const [picturesPreview, setPicturesPreview] = useState<string[]>([]);
+    const [birthDate, setBirthDate] = useState<string | null>(null);
+    const [sterilizationDateError, setSterilizationDateError] = useState<boolean>(false);
 
     const filteredHostFamilies = hostFamilies?.map(u => ({
         value: u.id,
         label: `${u.lastName} ${u.name}`,
     }));
+
+    useEffect(() => {
+        if (user && hasRoles(user.roles, [UserRoles.HostFamily])) {
+            setHostFamilyId(user.id);
+        }
+    }, [user]);
 
     // Avant chaque soumission, vérification des données fournies valides.
     const handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void> = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -140,6 +150,10 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
         setPictures([...pictures]);
     }
 
+    useEffect(() => {
+        setSterilizationDateError(isTodayGreaterThanDatePlus6Months(birthDate));
+    }, [birthDate]);
+
     return (
         <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 lg:px-140 relative">
             <Header activeMenu={HeaderMenuItems.Adoption} />
@@ -150,7 +164,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                             <h5 className="text-(--primary)">Nouvelle fiche chat</h5>
                         </div>
                         <div className="flex flex-col gap-12 md:gap-24">
-                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                            {!hostFamilyId && <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="hostFamilyId">Famille d'accueil</label>
                                 <Select
                                     options={filteredHostFamilies}
@@ -164,7 +178,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                                     placeholder="Famille d'accueil"
                                     onChange={(e:any) => setHostFamilyId(e?.value ?? null)}
                                 />
-                            </div>
+                            </div>}
                             <Input name="name" label="Nom" required={true} maxLength={20} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="status">Description</label>
@@ -222,8 +236,19 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                             </div>
                             <Input name="entryDate" label="Date d'entrée" type={InputTypes.Date} value={undefined} />
                             <Input name="provenance" label="Provenance" type={InputTypes.Text} maxLength={50}  />
-                            <Input name="sterilizationDate" label="Date de la stérilisation / castration" type={InputTypes.Date} value={undefined} />
-                            <Input name="birthDate" label="Date de naissance" type={InputTypes.Date} value={undefined} />
+                            <Input
+                                name="birthDate"
+                                label="Date de naissance"
+                                type={InputTypes.Date}
+                                value={birthDate ? formatYMMDD(new Date(birthDate)) : undefined}
+                                onChange={(e) => setBirthDate(e.currentTarget.value)}
+                                />
+                            <Input
+                                name="sterilizationDate"
+                                label="Date de la stérilisation / castration"
+                                type={InputTypes.Date}
+                                className={ sterilizationDateError ? "error" : "" }
+                                value={undefined} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="isDuringVisit">En cours de visite</label>
                                 <Select

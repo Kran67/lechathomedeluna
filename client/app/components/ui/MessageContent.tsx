@@ -1,6 +1,6 @@
 'use client';
 
-import { parseLinks } from '@/app/lib/linkParser';
+import { parseLinks } from '@/app/core/lib/linkParser';
 
 interface Props {
   content: string;

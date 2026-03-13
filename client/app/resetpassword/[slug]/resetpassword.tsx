@@ -16,10 +16,10 @@ import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
 import Button from '@/app/components/ui/Button';
 import Input from '@/app/components/ui/Input';
-import { useUser } from '@/app/contexts/userContext';
-import { InputTypes } from '@/app/enums/enums';
-import { validatePassword } from '@/app/lib/utils';
-import { updatePassword } from '@/app/services/server/usersService';
+import { useUser } from '@/app/core/contexts/userContext';
+import { InputTypes } from '@/app/core/enums/enums';
+import { validatePassword } from '@/app/core/lib/utils';
+import { updatePassword } from '@/app/core/services/server/usersService';
 
 /**
  * Interface pour les chats d'initialisation d'un chat

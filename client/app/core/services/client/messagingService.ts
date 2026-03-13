@@ -6,7 +6,7 @@ import {
 import {
   MessageAttachment,
   Messaging,
-} from '../../interfaces/messaging';
+} from '@/app/core/interfaces/messaging';
 
 /**
  * Permet de récupèrer les bons vétérinaire depuis la base de données

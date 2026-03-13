@@ -14,25 +14,28 @@ import IconButton from '@/app/components/ui/IconButton';
 import Link from '@/app/components/ui/Link';
 import Logo from '@/app/components/ui/Logo';
 import MenuItem from '@/app/components/ui/MenuItem';
-import { useUser } from '@/app/contexts/userContext';
+import { useUser } from '@/app/core/contexts/userContext';
 import {
   HeaderMenuItems,
   IconButtonImages,
   LogoSizes,
   UserRoles,
-} from '@/app/enums/enums';
+} from '@/app/core/enums/enums';
 import {
   hasRoles,
   prepareBodyToShowModal,
-} from '@/app/lib/utils';
+} from '@/app/core/lib/utils';
 import {
   getAdoptedCatNotFullyCompletedCount,
-  getCatNotFullyCompletedCount,
-} from '@/app/services/client/catsService';
+  getAdoptedCount,
+  getFACatNotFullyCompletedCount,
+} from '@/app/core/services/client/catsService';
 import {
   getUnreadMessageByUserId,
-} from '@/app/services/client/messagingService';
-import { getVetVouchersCount } from '@/app/services/client/vetVouchersService';
+} from '@/app/core/services/client/messagingService';
+import {
+  getVetVouchersCount,
+} from '@/app/core/services/client/vetVouchersService';
 
 /**
  * Interface pour des paramétres pour l'affichage du menu actif
@@ -55,36 +58,44 @@ export default function Header({ activeMenu }: HeaderProps) {
     const { user } = useUser();
     const [unreadMsg, setUnreadMsg] = useState<number>(0);
     const [vetVoucherCount, setVetVoucherCount] = useState<number>(0);
-    const [catNotFullyCompletedCount, setCatNotFullyCompletedCount] = useState<number>(0);
+    const [faCatNotFullyCompletedCount, setFACatNotFullyCompletedCount] = useState<number>(0);
     const [adoptedCatNotFullyCompletedCount, setAdoptedCatNotFullyCompletedCount] = useState<number>(0);
+    const [adoptedCatCount, setAdoptedCatCount] = useState<number>(0);
     const cookies: Cookies = useCookies();
     const token: string = cookies.get("token") as string;
+    let isHostFamily: boolean = false;
 
     useEffect(() => {
-        if (token) {
+        if (token && user) {
+            isHostFamily = (hasRoles(user.roles, [UserRoles.HostFamily])) as boolean;
             (async () => {
                 const res = await getUnreadMessageByUserId(token, user?.id as string);
                 setUnreadMsg(res);
             })();
-            if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent])) {
+            if (hasRoles(user.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent])) {
                 (async () => {
                     const res = await getVetVouchersCount(token);
                     setVetVoucherCount(res);
                 })();
             }
-            if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent])) {
+            if (hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily])) {
                 (async () => {
-                    const res = await getCatNotFullyCompletedCount(token);
-                    setCatNotFullyCompletedCount(res);
+                    const res = await getFACatNotFullyCompletedCount(token, isHostFamily ? user.id : null);
+                    setFACatNotFullyCompletedCount(res);
                 })();
             }
-            if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember])) {
+            if (hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember])) {
                 (async () => {
                     const res = await getAdoptedCatNotFullyCompletedCount(token);
                     setAdoptedCatNotFullyCompletedCount(res);
                 })();
             }
         }
+        (async () => {
+            const res = await getAdoptedCount(token);
+            setAdoptedCatCount(res);
+        })();
+
     }, [user]);
 
     return (
@@ -100,19 +111,19 @@ export default function Header({ activeMenu }: HeaderProps) {
             {user && hasRoles(user.roles, [UserRoles.HostFamily]) && <MenuItem
                 text="Mes chats"
                 isActive={activeMenu === HeaderMenuItems.MyCats}
-                url="/toto"
+                url="/mycats"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
             {(!user || (user && !hasRoles(user.roles, [UserRoles.HostFamily]))) && <MenuItem
                 text="Les chats à adopter"
                 isActive={activeMenu === HeaderMenuItems.CatsForAdoption}
-                url="/catsForAdoption"
+                url="/catsforadoption"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
             {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <MenuItem
                 text="Mes alertes"
                 isActive={activeMenu === HeaderMenuItems.Alerts}
-                url="/myAlerts"
+                url="/myalerts"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                badge={unreadMsg + vetVoucherCount + catNotFullyCompletedCount + adoptedCatNotFullyCompletedCount} />}
+                badge={unreadMsg + vetVoucherCount + faCatNotFullyCompletedCount + adoptedCatNotFullyCompletedCount} />}
             {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent]) && <MenuItem
                 text="Bons vétérinaires"
                 isActive={activeMenu === HeaderMenuItems.VeterinaryVouchers}
@@ -127,9 +138,9 @@ export default function Header({ activeMenu }: HeaderProps) {
             {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HealthRegisterReferent, UserRoles.VetVoucherReferent]) && <MenuItem
                 text="Chats en FA"
                 isActive={activeMenu === HeaderMenuItems.Adoption}
-                url="/faCats"
+                url="/facats"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                badge={hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent]) ? catNotFullyCompletedCount : 0} />}
+                badge={hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily]) ? faCatNotFullyCompletedCount : 0} />}
             {/* {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant, UserRole.Volunteer]) && <MenuItem
                 text="Bénévoles"
                 isActive={activeMenu === HeaderMenuItems.Volunteers}
@@ -138,9 +149,9 @@ export default function Header({ activeMenu }: HeaderProps) {
             {(!user || (user && !hasRoles(user.roles, [UserRoles.HostFamily]))) && <MenuItem
                 text="Les chats adoptés"
                 isActive={activeMenu === HeaderMenuItems.AdoptedCats}
-                url="/adoptedCats"
+                url="/adoptedcats"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                badge={adoptedCatNotFullyCompletedCount} />}
+                badge={user ? adoptedCatNotFullyCompletedCount : adoptedCatCount} />}
             {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <MenuItem
                 text="Messagerie"
                 isActive={activeMenu === HeaderMenuItems.Messaging}
@@ -198,7 +209,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                 <hr className="w-full h-1 border-(--light-grey)" />
                 <Link
                     text="Adoption"
-                    url="/Adoption"
+                    url="/adoption"
                     className="text-2xl hover:text-(--main-red) hover:font-bold w-full"
                     isActive={activeMenu === HeaderMenuItems.Adoption}
                 />

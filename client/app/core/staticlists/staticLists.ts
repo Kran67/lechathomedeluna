@@ -1,4 +1,4 @@
-import { UserRoles } from '@/app/enums/enums';
+import { UserRoles } from '@/app/core/enums/enums';
 
 export const Roles: {
     value: string;

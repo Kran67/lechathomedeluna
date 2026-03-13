@@ -1,6 +1,7 @@
-import { LogoSizes } from "@/app/enums/enums";
-import Image from "next/image";
-import Logo from "@/app/assets/images/logo.png";
+import Image from 'next/image';
+
+import Logo from '@/app/assets/images/logo.png';
+import { LogoSizes } from '@/app/core/enums/enums';
 
 /**
  * Interface pour les propriétés d'initialisation du logo

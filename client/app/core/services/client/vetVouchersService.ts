@@ -3,7 +3,7 @@ import {
   useState,
 } from 'react';
 
-import { VetVoucher } from '../../interfaces/vetVoucher';
+import { VetVoucher } from '@/app/core/interfaces/vetVoucher';
 
 /**
  * Permet de récupèrer les bons vétérinaire depuis la base de données

@@ -11,8 +11,8 @@ import {
 } from 'next-client-cookies';
 import { toast } from 'react-toastify';
 
-import { IconButtonImages } from '@/app/enums/enums';
-import { renameThread } from '@/app/services/client/messagingService';
+import { IconButtonImages } from '@/app/core/enums/enums';
+import { renameThread } from '@/app/core/services/client/messagingService';
 
 import Button from '../ui/Button';
 import IconButton from '../ui/IconButton';

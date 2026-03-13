@@ -12,12 +12,12 @@ import {
 import Select from 'react-select';
 import { toast } from 'react-toastify';
 
-import { useUser } from '@/app/contexts/userContext';
+import { useUser } from '@/app/core/contexts/userContext';
 import {
   IconButtonImages,
   InputTypes,
-} from '@/app/enums/enums';
-import { createThread } from '@/app/services/client/messagingService';
+} from '@/app/core/enums/enums';
+import { createThread } from '@/app/core/services/client/messagingService';
 
 import Button from '../ui/Button';
 import IconButton from '../ui/IconButton';

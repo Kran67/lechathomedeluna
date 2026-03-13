@@ -9,19 +9,22 @@ import {
 } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { useRouter } from 'next/navigation';
 
-import { useUser } from '@/app/contexts/userContext';
+import { useUser } from '@/app/core/contexts/userContext';
 import {
   IconButtonImages,
   UserRoles,
-} from '@/app/enums/enums';
-import { Cat } from '@/app/interfaces/cat';
-import { DateUtils } from '@/app/lib/dateUtils';
+} from '@/app/core/enums/enums';
+import { Cat } from '@/app/core/interfaces/cat';
+import { DateUtils } from '@/app/core/lib/dateUtils';
 import {
   dateAge,
   hasRoles,
+  redirectWithDelay,
   truncate,
-} from '@/app/lib/utils';
+} from '@/app/core/lib/utils';
 
+import ModalConfirmationDeleteAdoptedCat
+  from '../modals/modalConfirmationDeleteAdoptedCat';
 import ModalMessage from '../modals/modalMessage';
 import IconButton from '../ui/IconButton';
 
@@ -45,12 +48,21 @@ export default function CatCard({ cat }: PropsCC) {
     const router: AppRouterInstance = useRouter();
     const { user } = useUser();
     const [showModalMessage, setShowModalMessage] = useState<boolean>(false);
+    const [showModalConfirmationDeleteAdoptedCat, setShowModalConfirmationDeleteAdoptedCat] = useState<boolean>(false);
+    const [catSlugToDelete, setCatSlugToDelete] = useState<string | undefined>(undefined);
     const [toUserId, setToUserId] = useState<string>("");
 
     // au clique sur les détails, redirection vers la page du chat
     const handleClick: () => void = () => {
         router.push(`/cat/${cat.slug}`);
     };
+
+    const askBeforeDeletion = (e:React.MouseEvent<HTMLButtonElement>, catSlug: string) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setCatSlugToDelete(catSlug);
+        setShowModalConfirmationDeleteAdoptedCat(true);
+    }
 
     return (
         <div className="flex flex-col rounded-[10px] bg-(--white) w-full md:w-355 relative cursor-pointer border border-(--primary) p-5" onClick={() => handleClick()}>
@@ -60,6 +72,17 @@ export default function CatCard({ cat }: PropsCC) {
                     closeModal={() => setShowModalMessage(false)}
                     onSuccess={() => {
                         setShowModalMessage(false);
+                    }}
+                />,
+                document.body
+            )}
+            {showModalConfirmationDeleteAdoptedCat && createPortal(
+                <ModalConfirmationDeleteAdoptedCat
+                    catSlug={catSlugToDelete as string}
+                    closeModal={() => setShowModalConfirmationDeleteAdoptedCat(false)}
+                    onSuccess={() => {
+                        setShowModalConfirmationDeleteAdoptedCat(false);
+                        redirectWithDelay("/adoptedcats");
                     }}
                 />,
                 document.body
@@ -76,6 +99,15 @@ export default function CatCard({ cat }: PropsCC) {
                 url={`/admin/cat/${cat.slug}`}
                 onClick={(e) => {e.stopPropagation();}}
                 title="Éditer la fiche"
+            />}
+            {cat.adoptionDate && user && hasRoles(user.roles, [UserRoles.Admin]) && <IconButton
+                icon={IconButtonImages.Trash}
+                imgWidth={16}
+                imgHeight={16}
+                className={"w-32 h-32 absolute right-16 top-16 bg-(--primary) z-1 rounded-[5px] flex items-center justify-center"}
+                svgFill="#FFF"
+                onClick={(e:React.MouseEvent<HTMLButtonElement>) => { askBeforeDeletion(e, cat.slug); }}
+                title="Supprimer la fiche"
             />}
             <div className="relative h-376 overflow-hidden flex justify-center">
                 <img

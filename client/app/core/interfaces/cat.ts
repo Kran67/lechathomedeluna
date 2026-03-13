@@ -1,4 +1,4 @@
-import { HostFamily } from '@/app/interfaces/hostFamily';
+import { HostFamily } from '@/app/core/interfaces/hostFamily';
 
 type catSex = "Mâle" | "Femelle";
 type catStatus = "negatif" | "positif" | "non testé";

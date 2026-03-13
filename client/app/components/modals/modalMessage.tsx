@@ -11,11 +11,11 @@ import {
 } from 'next-client-cookies';
 import { toast } from 'react-toastify';
 
-import { useUser } from '@/app/contexts/userContext';
-import { IconButtonImages } from '@/app/enums/enums';
+import { useUser } from '@/app/core/contexts/userContext';
+import { IconButtonImages } from '@/app/core/enums/enums';
 import {
   createThreadAndSendMessage,
-} from '@/app/services/client/messagingService';
+} from '@/app/core/services/client/messagingService';
 
 import Button from '../ui/Button';
 import IconButton from '../ui/IconButton';

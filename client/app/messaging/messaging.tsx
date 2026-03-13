@@ -10,33 +10,33 @@ import { createPortal } from 'react-dom';
 
 import { useCookies } from 'next-client-cookies';
 
+import Footer from '@/app/components/layout/Footer';
+import Header from '@/app/components/layout/Header';
+import ModalAddRemoveMembers
+  from '@/app/components/modals/modalAddRemoveMembers';
+import ModalCreateThread from '@/app/components/modals/modalCreateThread';
+import ModalLeaveThread from '@/app/components/modals/modalLeaveThread';
+import ModalRenameThread from '@/app/components/modals/modalRenameThread';
 import EmojiPicker from '@/app/components/ui/EmojiPicker';
-import { useUser } from '@/app/contexts/userContext';
-import { DateUtils } from '@/app/lib/dateUtils';
-
-import Footer from '../components/layout/Footer';
-import Header from '../components/layout/Header';
-import ModalAddRemoveMembers from '../components/modals/modalAddRemoveMembers';
-import ModalCreateThread from '../components/modals/modalCreateThread';
-import ModalLeaveThread from '../components/modals/modalLeaveThread';
-import ModalRenameThread from '../components/modals/modalRenameThread';
-import IconButton from '../components/ui/IconButton';
-import Input from '../components/ui/Input';
-import Link from '../components/ui/Link';
-import MessageAttachments from '../components/ui/MessageAttachments';
-import MessageContent from '../components/ui/MessageContent';
+import IconButton from '@/app/components/ui/IconButton';
+import Input from '@/app/components/ui/Input';
+import Link from '@/app/components/ui/Link';
+import MessageAttachments from '@/app/components/ui/MessageAttachments';
+import MessageContent from '@/app/components/ui/MessageContent';
+import { useUser } from '@/app/core/contexts/userContext';
 import {
   HeaderMenuItems,
   IconButtonImages,
   InputImageTypes,
   InputTypes,
   UserRoles,
-} from '../enums/enums';
+} from '@/app/core/enums/enums';
 import {
   Message,
   MessageAttachment,
   Messaging,
-} from '../interfaces/messaging';
+} from '@/app/core/interfaces/messaging';
+import { DateUtils } from '@/app/core/lib/dateUtils';
 import {
   formatDDMMY,
   formatHHMMSS,
@@ -45,12 +45,12 @@ import {
   prepareBodyToShowModal,
   redirectWithDelay,
   truncate,
-} from '../lib/utils';
+} from '@/app/core/lib/utils';
 import {
   getAllMessagesById,
   sendMessage,
   uploadMessageFiles,
-} from '../services/client/messagingService';
+} from '@/app/core/services/client/messagingService';
 
 /**
  * Ajout les métadata à la page

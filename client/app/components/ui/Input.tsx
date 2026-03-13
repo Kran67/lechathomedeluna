@@ -5,7 +5,7 @@ import Image from 'next/image';
 import {
   InputImageTypes,
   InputTypes,
-} from '@/app/enums/enums';
+} from '@/app/core/enums/enums';
 
 /**
  * Interface pour les propriétés d'initialisation d'un champ de saisie

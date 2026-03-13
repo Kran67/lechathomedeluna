@@ -227,7 +227,7 @@ export default function Profile() {
                         <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
                             <Button
                                 text="Modifier les informations"
-                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230'
+                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)'
                                 disabled={isSubmitted}
                             />
                             <Button
@@ -241,14 +241,14 @@ export default function Profile() {
                             <Link
                                 text="Administrer les utilisateurs"
                                 url="/admin/users"
-                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-250' />
+                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)' />
                         </div>}
                     </form>
                     <Link 
                         text="Se déconnecter"
                         url="/"
                         onClick={() => handleLogout()}
-                        className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230 self-center' />
+                        className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) self-center' />
                 </div>
             </div>
             <Footer />

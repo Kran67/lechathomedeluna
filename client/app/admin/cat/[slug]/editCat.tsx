@@ -624,7 +624,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                         className='max-w-44'
                                         ref={inputVaccineFile} />
                                     <span className='text-sm text-(--primary)'>{vaccinePicture?.name}</span>
-                                    <Button className="flex text-sm p-10 h-40 bg-(--primary) items-center justify-center rounded-[10px] text-lg text-(--white) cursor-pointer"
+                                    <Button className="flex text-sm p-10 h-40 bg-(--primary) items-center justify-center rounded-[10px] text-lg text-(--white) cursor-pointer md:w-180"
                                          onClick={(e:any) => { addDocument("vaccin"); e.preventDefault(); }}
                                          text="Ajouter le vaccin"
                                          disabled={!vaccineDate || !vaccinePicture}
@@ -670,7 +670,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                         className='max-w-44'
                                         ref={inputPestControlFile} />
                                     <span className='text-sm text-(--primary)'>{pestControlPicture?.name}</span>
-                                    <Button className="flex text-sm p-10 h-40 bg-(--primary) items-center justify-center rounded-[10px] text-lg text-(--white) cursor-pointer"
+                                    <Button className="flex text-sm p-10 h-40 bg-(--primary) items-center justify-center rounded-[10px] text-lg text-(--white) cursor-pointer md:w-180"
                                          onClick={(e:any) => { addDocument("antiparasitaire"); e.preventDefault(); }}
                                          text="Ajouter l'antiparasitaire"
                                          disabled={!pestControlDate || !pestControlPicture}
@@ -716,7 +716,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                         className='max-w-44'
                                         ref={inputExamFile} />
                                     <span className='text-sm text-(--primary)'>{examPicture?.name}</span>
-                                    <Button className="flex text-sm p-10 h-40 bg-(--primary) items-center justify-center rounded-[10px] text-lg text-(--white) cursor-pointer"
+                                    <Button className="flex text-sm p-10 h-40 bg-(--primary) items-center justify-center rounded-[10px] text-lg text-(--white) cursor-pointer md:w-180"
                                          onClick={(e:any) => { addDocument("examen"); e.preventDefault(); }}
                                          text="Ajouter le CR/ PS / Examens"
                                          disabled={!examDate || !examPicture}
@@ -746,12 +746,12 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                             {user && !hasRoles(user.roles, [UserRoles.VetVoucherReferent]) && <Button
                                 ref={primaryButton}
                                 text="Valider les modifications"
-                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230'
+                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)'
                                 disabled={isSubmitted} />}
                             {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.HostFamily, UserRoles.AdoptionReferent]) && !isAdoptable && 
                             <Button 
                                 text={!isAdoptable ? "Valider la fiche pour vérification avant adoption" : "Valider la fiche pour l'adoption"}
-                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-270'
+                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)'
                                 disabled={isSubmitted}
                                 onClick={async (e) => {
                                     if (hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent])) isAdoptable = true;
@@ -822,7 +822,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     <Button
                                         text="Demander le bon"
                                         disabled={!clinic || voucherObject?.length === 0 || !appointmentDate}
-                                        className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230'
+                                        className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)'
                                     />
                                 </div>
                             </form>

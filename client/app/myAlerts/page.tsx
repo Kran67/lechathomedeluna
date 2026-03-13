@@ -12,12 +12,10 @@ import {
 
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
-import IconButton from '@/app/components/ui/IconButton';
 import Link from '@/app/components/ui/Link';
 import { useUser } from '@/app/core/contexts/userContext';
 import {
   HeaderMenuItems,
-  IconButtonImages,
   UserRoles,
 } from '@/app/core/enums/enums';
 import { Cat } from '@/app/core/interfaces/cat';
@@ -145,72 +143,90 @@ export default function MyAlerts() {
           </div>} */}
           {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Fiches chats en FA incomplètes :</span>
-            <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
-                <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
-                    <span className="text-(--white) w-100 px-5">Nom</span>
-                    <span className="text-(--white) border-l w-170 px-5">N° identification</span>
-                    <span className="text-(--white) border-l w-150 px-5">Famille d'accueil</span>
-                    <span className="text-(--white) border-l flex-1 px-5">Champs manquants</span>
-                </div>
-                {unCompletedFACatList.length > 0 ? unCompletedFACatList.map((cat: { slug: string, name: string, numId: string, hostfamily_id: string, hostfamily_name: string, fields: string[]}, idx: number) => (
-                  <div key={cat.slug} className={"flex w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
-                        <Link url={"/admin/cat/" + cat.slug} className="w-100 px-5 text-(--text)" text={cat.name} />
-                        <span className="border-l w-170 px-5 text-(--text)">{cat.numId}</span>
-                        <span className="border-l w-150 px-5 text-(--text)">{user.id !== cat.hostfamily_id ? cat.hostfamily_name : ""}</span>
-                        <span className="border-l flex-1 px-5 text-(--text)">{cat.fields.join(', ')}</span>
-                    </div>
-                )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de fiche de chats en FA incompléte</div>}
-              </div>
+            <table className="w-full border-l border-r border-t border-solid border-(--pink)">
+                <thead className="w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
+                  <tr>
+                    <th className="text-(--white) w-100 px-5">Nom</th>
+                    <th className="text-(--white) border-l w-170 px-5">N° identification</th>
+                    <th className="text-(--white) border-l w-150 px-5">Famille d'accueil</th>
+                    <th className="text-(--white) border-l px-5">Champs manquants</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {unCompletedFACatList.length > 0 ? unCompletedFACatList.map((cat: { slug: string, name: string, numId: string, hostfamily_id: string, hostfamily_name: string, fields: string[]}, idx: number) => (
+                    <tr key={cat.slug} className={"w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
+                      <td className="w-100 px-5 text-(--text)" key={cat.slug}><Link url={"/admin/cat/" + cat.slug} text={cat.name} /></td>
+                      <td className="border-l w-170 px-5 text-(--text)">{cat.numId}</td>
+                      <td className="border-l w-150 px-5 text-(--text)">{user.id !== cat.hostfamily_id ? cat.hostfamily_name : ""}</td>
+                      <td className="border-l px-5 text-(--text)">{cat.fields.join(', ')}</td>
+                    </tr>
+                  )) : <tr><td className='text-center border-b border-solid border-(--pink) text-(--text)' colSpan={4}>Pas de fiche de chats en FA incompléte</td></tr>}
+                </tbody>
+              </table>
           </div>}
           {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.CommitteeMember]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Fiches chats adoptés incomplètes :</span>
-            <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
-                <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
-                    <span className="text-(--white) w-100 px-5">Nom</span>
-                    <span className="text-(--white) border-l w-170 px-5">N° identification</span>
-                    <span className="text-(--white) border-l flex-1 px-5">Champs manquants</span>
-                </div>
-                {unCompletedAdoptedCatList.length > 0 ? unCompletedAdoptedCatList.map((cat: { slug: string, name: string, numId: string, fields: string[]}, idx: number) => (
-                  <div key={cat.slug} className={"flex w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
-                        <Link url={"/admin/cat/" + cat.slug} className="w-100 px-5 text-(--text)" text={cat.name} />
-                        <span className="border-l w-170 px-5 text-(--text)">{cat.numId}</span>
-                        <span className="border-l flex-1 px-5 text-(--text)">{cat.fields.join(', ')}</span>
-                    </div>
-                )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de fiche de chats adoptés incompléte</div>}
-              </div>
+            <table className="w-full border-l border-r border-t border-solid border-(--pink)">
+                <thead className="border-b border-solid border-(--pink) bg-(--pink) font-bold">
+                  <tr>
+                    <td className="text-(--white) w-100 px-5">Nom</td>
+                    <td className="text-(--white) border-l w-170 px-5">N° identification</td>
+                    <td className="text-(--white) border-l px-5">Champs manquants</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {unCompletedAdoptedCatList.length > 0 ? unCompletedAdoptedCatList.map((cat: { slug: string, name: string, numId: string, fields: string[]}, idx: number) => (
+                    <tr key={cat.slug} className={"w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
+                      <td className="w-100 px-5 text-(--text)"><Link url={"/admin/cat/" + cat.slug} text={cat.name} /></td>
+                      <td className="border-l w-170 px-5 text-(--text)">{cat.numId}</td>
+                      <td className="border-l px-5 text-(--text)">{cat.fields.join(', ')}</td>
+                    </tr>
+                  )) : <tr><td colSpan={3} className='text-center border-b border-solid border-(--pink) text-(--text)'>Pas de fiche de chats adoptés incompléte</td></tr>}
+                </tbody>
+              </table>
           </div>}
           {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.HostFamily]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Rappels :</span>
-            <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
-                <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
-                    <span className="text-(--white) w-100 px-5">Concerne</span>
-                    <span className="text-(--white) border-l flex-1 px-5">Objet (Rappel vaccin / stérilisation)</span>
-                </div>
-                {vaccineBoosterList.length > 0 ? vaccineBoosterList.map((vaccineBooster: Cat, idx: number) => (
-                  <div key={vaccineBooster.id} className={"flex w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
-                        <Link url={"/admin/cat/" + vaccineBooster.slug} className="w-100 px-5 text-(--text)" text={vaccineBooster.name} />
-                        {/* <span className="border-l w-100 px-5 text-(--text)">{voucher.cat.numId} / {voucher.cat.name}</span>
-                        <span className="border-l flex-1 px-5 text-(--text)">{voucher.clinic}</span>
-                        <span className="border-l w-250 px-5 text-(--text)">{voucher.object}</span> */}
-                    </div>
-                )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de rappel de vaccin à effectuer / en retard</div>}
-              </div>
+            <table className="w-full border-l border-r border-t border-solid border-(--pink)">
+                <thead className="w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
+                  <tr>
+                    <td className="text-(--white) w-100 px-5">Concerne</td>
+                    <td className="text-(--white) border-l flex-1 px-5">Objet (Rappel vaccin / stérilisation)</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {vaccineBoosterList.length > 0 ? vaccineBoosterList.map((vaccineBooster: Cat, idx: number) => (
+                    <tr key={vaccineBooster.id} className={"w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
+                      <td className="w-100 px-5 text-(--text)"><Link url={"/admin/cat/" + vaccineBooster.slug}  text={vaccineBooster.name} /></td>
+                      <td></td>
+                      {/* <span className="border-l w-100 px-5 text-(--text)">{voucher.cat.numId} / {voucher.cat.name}</span>
+                      <span className="border-l flex-1 px-5 text-(--text)">{voucher.clinic}</span>
+                      <span className="border-l w-250 px-5 text-(--text)">{voucher.object}</span> */}
+                    </tr>
+                  )) : <tr>
+                      <td colSpan={2} className='text-center border-b border-solid border-(--pink) text-(--text)'>Pas de rappel de vaccin à effectuer / en retard</td>
+                    </tr>}
+                </tbody>
+              </table>
           </div>}
           {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Pré visites sans date :</span>
-            <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
-                <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
-                    <span className="text-(--white) w-100 px-5">Nom</span>
-                    <span className="text-(--white) border-l flex-1 px-5">N° identification</span>
-                    <span className="text-(--white) border-l flex-1 px-5">Nom prénom</span>
-                    <span className="text-(--white) border-l flex-1 px-5">Actions</span>
-                </div>
-                {preVisitList.length > 0 ? preVisitList.map((preVisit: any, idx: number) => (
-                  <div key={preVisit.id} className={"flex w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
-                        <Link url={"/admin/cat/" + preVisit.slug} className="w-100 px-5 text-(--text)" text={preVisit.name} />
-                        <span className="border-l flex-1 px-5 text-(--text)">{preVisit.numId}</span>
-                        <span className="border-l flex-1 px-5 text-(--text)">{preVisit.applicant}</span>
-                        <span className="flex border-l flex-1 px-5 text-(--text) gap-5">
+            <table className="w-full border-l border-r border-t border-solid border-(--pink)">
+                <thead className="w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
+                  <tr>
+                    <td className="text-(--white) w-100 px-5">Nom</td>
+                    <td className="text-(--white) border-l px-5">N° identification</td>
+                    <td className="text-(--white) border-l px-5">Nom prénom</td>
+                    <td className="text-(--white) border-l px-5">Actions</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* {preVisitList.length > 0 ? preVisitList.map((preVisit: any, idx: number) => (
+                    <tr key={preVisit.id} className={"w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
+                        <td className="w-100 px-5 text-(--text)"><Link url={"/admin/cat/" + preVisit.slug} text={preVisit.name} /></td>
+                        <td className="border-l px-5 text-(--text)">{preVisit.numId}</td>
+                        <td className="border-l px-5 text-(--text)">{preVisit.applicant}</td>
+                        <td className="flex border-l px-5 text-(--text) gap-5">
                           <IconButton
                               icon={IconButtonImages.Approved}
                               svgStroke='#902677'
@@ -223,10 +239,14 @@ export default function MyAlerts() {
                               svgFill='#902677'
                               // onClick={ (e:React.MouseEvent<HTMLButtonElement>) => removed(e, voucher)}
                               title='Supprimer la demande' />
-                        </span>
-                    </div>
-                )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de date de pré visite</div>}
-              </div>
+                        </td>
+                      </tr>
+                  )) :*/}
+                   <tr> 
+                      <td colSpan={4} className='text-center border-b border-solid border-(--pink) text-(--text)'>À venir</td>
+                    </tr>
+              </tbody>
+              </table>
           </div>}
         </div>
       </div>

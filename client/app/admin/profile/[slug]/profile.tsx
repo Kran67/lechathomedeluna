@@ -272,7 +272,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                         <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
                             <Button 
                                 text={ isNew ? "Créer l'utilisateur" : "Modifier les informations"}
-                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />
+                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)' />
                         </div>
                     </form>
                 </div>

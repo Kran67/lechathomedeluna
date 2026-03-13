@@ -396,8 +396,7 @@ async function catsBoosterVaccinationNoLaterThanOneMonthList(id) {
         WHERE cd.cat_id = c.id
         LIMIT 1
       ) d on true
-	    WHERE d.count = 1
-      ORDER BY c.name ASC`;
+	    WHERE d.count = 1`;
   if (id) {
     const res = await getByReferentId(id);
     if (res.rowCount > 0) {
@@ -406,6 +405,7 @@ async function catsBoosterVaccinationNoLaterThanOneMonthList(id) {
       sql += ` AND c.hostfamily_id = ${id}`;
     }
   }
+  sql += ' ORDER BY c.name ASC';
   const res = await pool.query(sql);
   return res.rows.map(mapCatRow);
 }

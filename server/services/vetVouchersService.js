@@ -147,7 +147,7 @@ async function deleteVetVoucher(id) {
 }
 
 async function getVetVoucherCount() {
-  const res = await pool.query('SELECT count(*) AS count FROM vet_vouchers');
+  const res = await pool.query('SELECT count(*) AS count FROM vet_vouchers WHERE processed_on IS NULL');
   return res.rows[0].count;
 }
 

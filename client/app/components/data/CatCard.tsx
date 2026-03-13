@@ -124,7 +124,7 @@ export default function CatCard({ cat }: PropsCC) {
                     <span className="text-sm text-(--text) font-normal md:h-80">{truncate(cat.description ?? "", 210)}</span>
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-sm text-(--text) font-medium">Age : {dateAge(cat.birthDate)} an(s)</span>
+                    <span className="text-sm text-(--text) font-medium">Age : {dateAge(cat.birthDate)}</span>
                     <span className="text-sm text-(--text) font-medium">Sexe : {cat.sex}</span>
                     <span className="text-sm text-(--text) font-medium">Robe : {cat.dress}</span>
                     {user && <span className="text-sm text-(--text) font-medium">Statut (FIV & FELV) : {cat.status}</span>}

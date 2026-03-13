@@ -69,7 +69,7 @@ export default function Property({ cat }: CatProps) {
 
     const collapseElementContent: { name:string, url?:string }[] = [];
     if (cat?.birthDate) {
-        collapseElementContent.push({ name: `${dateAge(cat?.birthDate)} an(s)` });
+        collapseElementContent.push({ name: `${dateAge(cat?.birthDate)}` });
     }
     if (cat?.sex) {
         collapseElementContent.push({ name: cat?.sex});

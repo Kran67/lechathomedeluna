@@ -39,8 +39,31 @@ export const truncate = (str: string, maxlength: number = 100): string => {
 
 export const dateAge = (dateStr: string | undefined) => {
     if (dateStr === undefined) return 0;
-    const date = new Date(dateStr);
-    return Math.round((new Date(Date.now() - date.getTime()).getUTCFullYear()) - 1970); // à voir
+    const date:Date = new Date(dateStr);
+    const now:Date = new Date();
+
+    const diffMs: number = now.getTime() - date.getTime();
+    const diffDays: number = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 7) {
+        return `${diffDays} jour${diffDays > 1 ? "s" : ""}`;
+    }
+
+    const diffWeeks: number = Math.floor(diffDays / 7);
+    if (diffWeeks < 5) {
+        return `${diffWeeks} semaine${diffWeeks > 1 ? "s" : ""}`;
+    }
+
+    const diffMonths: number =
+        (now.getFullYear() - date.getFullYear()) * 12 +
+        (now.getMonth() - date.getMonth());
+
+    if (diffMonths < 12) {
+        return `${diffMonths} mois`;
+    }
+
+    const diffYears: number = now.getFullYear() - date.getFullYear();
+    return `${diffYears} an${diffYears > 1 ? "s" : ""}`;
 }
 
 export const hasRoles = (roles: string, rolesToCheck: string[]): boolean => {

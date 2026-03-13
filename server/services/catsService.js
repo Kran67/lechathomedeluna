@@ -291,7 +291,6 @@ async function getAllFACatsNotFullyCompletedList(id) {
     }
   }
   sql += ' ORDER BY name;'
-  console.log(sql);
   const res = await pool.query(sql);
   return res.rows.map(mapCatUnCompletdRow);
 }

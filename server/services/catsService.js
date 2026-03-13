@@ -29,6 +29,7 @@ function mapCatRow(row) {
     pictures: [row.url],
     entryDate: row.entrydate,
     provenance: row.provenance,
+    destination: row.destination,
     userId: row.created_by
   };
 }
@@ -164,7 +165,7 @@ async function createCat(payload) {
 }
 
 async function updateCat(slug, changes) {
-  const allowed = ['name', 'description', 'status', 'numIdentification', 'sex', 'dress', 'race', 'isSterilized', 'sterilizationDate', 'birthDate', 'isDuringVisit', 'isAdoptable', 'adoptionDate', 'hostFamily_Id', 'preVisitDate', 'entryDate', 'provenance'];
+  const allowed = ['name', 'description', 'status', 'numIdentification', 'sex', 'dress', 'race', 'isSterilized', 'sterilizationDate', 'birthDate', 'isDuringVisit', 'isAdoptable', 'adoptionDate', 'hostFamily_Id', 'preVisitDate', 'entryDate', 'provenance', 'destination'];
   const fields = [];
   const params = [];
 
@@ -352,12 +353,59 @@ async function getAdoptedCatsCount() {
 }
 
 
-async function catsHasPreVisitWithoutDateList() {
+async function catsHasPreVisitWithoutDateList(id) {
   let sql = `
       SELECT DISTINCT c.*
       FROM cats c
       WHERE preVisitDate IS NULL
       ORDER BY c.name ASC`;
+  const res = await pool.query(sql);
+  return res.rows.map(mapCatRow);
+}
+
+async function catsBoosterVaccinationNoLaterThanOneMonthCount(id) {
+  let sql = `
+      SELECT DISTINCT count(*) AS count
+      FROM cats c
+      LEFT JOIN LATERAL (
+        SELECT count(*) as count
+        FROM cat_documents cd
+        WHERE cd.cat_id = c.id
+        LIMIT 1
+      ) d on true
+	    WHERE d.count = 1`;
+  if (id) {
+    const res = await getByReferentId(id);
+    if (res.rowCount > 0) {
+      sql += ` AND hostfamily_id IN (${id}, ${res.rows.map((u) => u.id).join(",")})`;
+    } else {
+      sql += ` AND c.hostfamily_id = ${id}`;
+    }
+  }
+  const res = await pool.query(sql);
+  return res.rows.map(mapCatRow);
+}
+
+async function catsBoosterVaccinationNoLaterThanOneMonthList(id) {
+  let sql = `
+      SELECT DISTINCT c.*
+      FROM cats c
+      LEFT JOIN LATERAL (
+        SELECT count(*) as count
+        FROM cat_documents cd
+        WHERE cd.cat_id = c.id
+        LIMIT 1
+      ) d on true
+	    WHERE d.count = 1
+      ORDER BY c.name ASC`;
+  if (id) {
+    const res = await getByReferentId(id);
+    if (res.rowCount > 0) {
+      sql += ` AND hostfamily_id IN (${id}, ${res.rows.map((u) => u.id).join(",")})`;
+    } else {
+      sql += ` AND c.hostfamily_id = ${id}`;
+    }
+  }
   const res = await pool.query(sql);
   return res.rows.map(mapCatRow);
 }
@@ -411,5 +459,7 @@ module.exports = {
   getAllAdoptedCatsNotFullyCompletedList,
   catsHasPreVisitWithoutDateList,
   createAdoptionRequestForCat,
-  getAdoptedCatsCount
+  getAdoptedCatsCount,
+  catsBoosterVaccinationNoLaterThanOneMonthCount,
+  catsBoosterVaccinationNoLaterThanOneMonthList
 };

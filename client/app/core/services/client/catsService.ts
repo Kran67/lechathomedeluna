@@ -206,3 +206,34 @@ export const createAdoptionRequest = async (
         return { error: err };
     }
 }
+
+export const getCatBoosterVaccinationNoLaterThanOneMonthCount = async (
+    token: string,
+    id: string | null
+) => {
+    try {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/catboostervaccinationnolaterthanonemonthcount${id ? "/" + id : ""}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+        });
+        return await res.json();
+    } catch (err) {
+        return { error: err };
+    }
+};
+
+export const getCatBoosterVaccinationNoLaterThanOneMonthList = async (
+    token: string,
+    id: string | null
+) => {
+    try {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/catboostervaccinationnolaterthanonemonthlist${id ? "/" + id : ""}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+        });
+        return await res.json();
+    } catch (err) {
+        return { error: err };
+    }
+};
+

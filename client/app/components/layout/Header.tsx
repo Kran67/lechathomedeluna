@@ -28,6 +28,7 @@ import {
 import {
   getAdoptedCatNotFullyCompletedCount,
   getAdoptedCount,
+  getCatBoosterVaccinationNoLaterThanOneMonthCount,
   getFACatNotFullyCompletedCount,
 } from '@/app/core/services/client/catsService';
 import {
@@ -61,6 +62,7 @@ export default function Header({ activeMenu }: HeaderProps) {
     const [faCatNotFullyCompletedCount, setFACatNotFullyCompletedCount] = useState<number>(0);
     const [adoptedCatNotFullyCompletedCount, setAdoptedCatNotFullyCompletedCount] = useState<number>(0);
     const [adoptedCatCount, setAdoptedCatCount] = useState<number>(0);
+    const [catBoosterVaccinationNoLaterThanOneMonthCount, setCatBoosterVaccinationNoLaterThanOneMonthCount] = useState<number>(0);
     const cookies: Cookies = useCookies();
     const token: string = cookies.get("token") as string;
     let isHostFamily: boolean = false;
@@ -88,6 +90,12 @@ export default function Header({ activeMenu }: HeaderProps) {
                 (async () => {
                     const res = await getAdoptedCatNotFullyCompletedCount(token);
                     setAdoptedCatNotFullyCompletedCount(res);
+                })();
+            }
+            if (hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily])) {
+                (async () => {
+                    const res = await getCatBoosterVaccinationNoLaterThanOneMonthCount(token, isHostFamily ? user.id : null);
+                    setCatBoosterVaccinationNoLaterThanOneMonthCount(res);
                 })();
             }
         }
@@ -123,7 +131,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.Alerts}
                 url="/myalerts"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                badge={unreadMsg + vetVoucherCount + faCatNotFullyCompletedCount + adoptedCatNotFullyCompletedCount} />}
+                badge={unreadMsg + vetVoucherCount + faCatNotFullyCompletedCount + adoptedCatNotFullyCompletedCount + catBoosterVaccinationNoLaterThanOneMonthCount} />}
             {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent]) && <MenuItem
                 text="Bons vétérinaires"
                 isActive={activeMenu === HeaderMenuItems.VeterinaryVouchers}

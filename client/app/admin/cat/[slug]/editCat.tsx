@@ -172,7 +172,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
             user?.id as string,
             entryDate,
             provenance,
-            baseUrl
+            formData.get("destination") as string,
+            baseUrl,
         );
         if (!res.error) {
             setTimeout(() => {
@@ -563,6 +564,12 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 type={InputTypes.Date}
                                 value={cat?.preVisitDate ? formatYMMDD(new Date(cat?.preVisitDate)) : undefined}
                                 readOnly={isReadonly} />
+                            {user && hasRoles(user?.roles as string, [UserRoles.Admin, UserRoles.ICADReferent]) && <Input
+                                name="destination"
+                                label="Destination"
+                                type={InputTypes.Text}
+                                value={cat?.destination}
+                                 />}
                             <Input
                                 name="adoptionDate"
                                 label="Date d'adoption"

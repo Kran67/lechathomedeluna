@@ -20,6 +20,7 @@ import {
   IconButtonImages,
   UserRoles,
 } from '@/app/core/enums/enums';
+import { Cat } from '@/app/core/interfaces/cat';
 import { Message } from '@/app/core/interfaces/messaging';
 import { VetVoucher } from '@/app/core/interfaces/vetVoucher';
 import {
@@ -30,6 +31,7 @@ import {
 } from '@/app/core/lib/utils';
 import {
   getAdoptedCatNotFullyCompletedList,
+  getCatBoosterVaccinationNoLaterThanOneMonthList,
   getFACatNotFullyCompletedList,
   getHasPreVisitWithoutDateList,
 } from '@/app/core/services/client/catsService';
@@ -61,7 +63,7 @@ export default function MyAlerts() {
   const [vetVoucherList, setVetVoucherList] = useState<VetVoucher[]>([]);
   const [unCompletedFACatList, setUnCompletedFACatList] = useState<{ slug: string, name: string, numId: string, hostfamily_id: string, hostfamily_name: string, fields: string[]}[]>([]);
   const [unCompletedAdoptedCatList, setUnCompletedAdoptedCatList] = useState<{ slug: string, name: string, numId: string, fields: string[]}[]>([]);
-  const [vaccineBoosterList, setVaccineBoosterList] = useState<[]>([]);
+  const [vaccineBoosterList, setVaccineBoosterList] = useState<Cat[]>([]);
   const [preVisitList, setPreVisitList] = useState<[]>([]);
     let isHostFamily: boolean = false;
 
@@ -88,6 +90,12 @@ export default function MyAlerts() {
         const res = await getHasPreVisitWithoutDateList(token);
         setPreVisitList(res);
       })();
+      if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.HostFamily])) {
+        (async () => {
+            const res = await getCatBoosterVaccinationNoLaterThanOneMonthList(token, isHostFamily ? user.id : null);
+            setVaccineBoosterList(res);
+        })();
+      }
     }
   }, [user]);
 
@@ -181,11 +189,10 @@ export default function MyAlerts() {
                 <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
                     <span className="text-(--white) w-100 px-5">Concerne</span>
                     <span className="text-(--white) border-l flex-1 px-5">Objet (Rappel vaccin / stérilisation)</span>
-                    <span className="text-(--white) border-l w-250 px-5"></span>
                 </div>
-                {vaccineBoosterList.length > 0 ? vaccineBoosterList.map((vaccineBooster: any, idx: number) => (
+                {vaccineBoosterList.length > 0 ? vaccineBoosterList.map((vaccineBooster: Cat, idx: number) => (
                   <div key={vaccineBooster.id} className={"flex w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
-                        <span className="w-100 px-5 text-(--text)">le chat</span>
+                        <Link url={"/admin/cat/" + vaccineBooster.slug} className="w-100 px-5 text-(--text)" text={vaccineBooster.name} />
                         {/* <span className="border-l w-100 px-5 text-(--text)">{voucher.cat.numId} / {voucher.cat.name}</span>
                         <span className="border-l flex-1 px-5 text-(--text)">{voucher.clinic}</span>
                         <span className="border-l w-250 px-5 text-(--text)">{voucher.object}</span> */}

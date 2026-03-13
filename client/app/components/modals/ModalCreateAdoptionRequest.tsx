@@ -45,7 +45,7 @@ export default function ModalCreateAdoptionRequest({
         const form: EventTarget & HTMLFormElement = e.currentTarget;
         const formData: FormData = new FormData(form);
 
-        const res: any = await createAdoptionRequest(
+        await createAdoptionRequest(
             catId,
             formData.get("lastname") as string,
             formData.get("firstname") as string,

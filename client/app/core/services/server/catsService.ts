@@ -109,6 +109,7 @@ export const update = async (
     userId: string,
     entryDate: string | null,
     provenance: string | null,
+    destination: string | null,
     baseUrl: string
     ) => {
     try {
@@ -134,6 +135,7 @@ export const update = async (
                 userId,
                 entryDate,
                 provenance,
+                destination,
                 baseUrl
             }),
         });

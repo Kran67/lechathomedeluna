@@ -116,6 +116,7 @@ async function initSchema(pool) {
       hostfamily_id INTEGER REFERENCES users(id) ON DELETE RESTRICT,
       entryDate DATE,
       provenance VARCHAR(50),
+      destination VARCHAR(50),
       created_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       created_at TIMESTAMPTZ NOT NULL,
       updated_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,

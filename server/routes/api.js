@@ -31,6 +31,10 @@ router.get('/adoptedcatnotfullycompletedlist', requireRole(['Admin', 'CommitteeM
 router.get('/hasprevisitwithoutdatelist', requireRole(['Admin', 'CommitteeMember']), cats.hasPreVisitWithoutDateList);
 router.post('/createadoptionrequest', cats.createAdoptionRequest);
 router.get('/adoptedcount', cats.adoptedCount)
+router.get('/catboostervaccinationnolaterthanonemonthcount', requireRole(['Admin', 'HostFamily']), cats.boosterVaccinationNoLaterThanOneMonthCount);
+router.get('/catboostervaccinationnolaterthanonemonthcount/:id', requireRole(['HostFamily']), cats.boosterVaccinationNoLaterThanOneMonthCount);
+router.get('/catboostervaccinationnolaterthanonemonthlist', requireRole(['Admin', 'HostFamily']), cats.boosterVaccinationNoLaterThanOneMonthList);
+router.get('/catboostervaccinationnolaterthanonemonthlist/:id', requireRole(['HostFamily']), cats.boosterVaccinationNoLaterThanOneMonthList);
 
 // Users
 router.get('/users', requireAuth, users.list);

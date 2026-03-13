@@ -37,4 +37,5 @@ export interface Cat {
     preVisitDate?: string;
     entryDate?: string;
     provenance?: string;
+    destination?: string;
 }

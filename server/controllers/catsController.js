@@ -11,7 +11,9 @@ const {
   getAllAdoptedCatsNotFullyCompletedList,
   catsHasPreVisitWithoutDateList,
   createAdoptionRequestForCat,
-  getAdoptedCatsCount
+  getAdoptedCatsCount,
+  catsBoosterVaccinationNoLaterThanOneMonthCount,
+  catsBoosterVaccinationNoLaterThanOneMonthList
 } = require('../services/catsService');
 const {
   createSystemMessage
@@ -209,6 +211,24 @@ async function adoptedCount(req, res) {
   }
 }
 
+async function boosterVaccinationNoLaterThanOneMonthCount(req, res) {
+  try {
+    const count = await catsBoosterVaccinationNoLaterThanOneMonthCount(req.params.id);
+    res.json(count ? parseInt(count,10) : 0);
+  } catch (e) {
+    res.status(statusFromError(e)).json({ error: e.message });
+  }
+}
+
+async function boosterVaccinationNoLaterThanOneMonthList(req, res) {
+  try {
+    const list = await catsBoosterVaccinationNoLaterThanOneMonthList(req.params.id);
+    res.json(list);
+  } catch (e) {
+    res.status(statusFromError(e)).json({ error: e.message });
+  }
+}
+
 
 module.exports = {
   list,
@@ -227,5 +247,7 @@ module.exports = {
   hasPreVisitWithoutDateList,
   createAdoptionRequest,
   adoptedCount,
-  cloneAndRemove
+  cloneAndRemove,
+  boosterVaccinationNoLaterThanOneMonthCount,
+  boosterVaccinationNoLaterThanOneMonthList
 };

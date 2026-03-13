@@ -40,7 +40,7 @@ export const truncate = (str: string, maxlength: number = 100): string => {
 export const dateAge = (dateStr: string | undefined) => {
     if (dateStr === undefined) return 0;
     const date = new Date(dateStr);
-    return Math.abs((new Date(Date.now() - date.getTime()).getUTCFullYear()) - 1970);
+    return Math.round((new Date(Date.now() - date.getTime()).getUTCFullYear()) - 1970); // à voir
 }
 
 export const hasRoles = (roles: string, rolesToCheck: string[]): boolean => {

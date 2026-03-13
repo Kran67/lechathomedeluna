@@ -69,6 +69,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
     const [picturesPreview, setPicturesPreview] = useState<string[]>([]);
     const [birthDate, setBirthDate] = useState<string | null>(null);
     const [sterilizationDateError, setSterilizationDateError] = useState<boolean>(false);
+    const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
     const filteredHostFamilies = hostFamilies?.map(u => ({
         value: u.id,
@@ -84,6 +85,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
     // Avant chaque soumission, vérification des données fournies valides.
     const handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void> = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setIsSubmitted(true);
 
         const form: EventTarget & HTMLFormElement = e.currentTarget;
         const formData: FormData = new FormData(form);
@@ -130,6 +132,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                     N° identification: ${numId ?? "-"}`, []);
             redirectWithDelay(`/admin/cat/${res.slug}`, 1000);
         } else {
+            setIsSubmitted(false);
             toast.error(res.error);
         }
     };
@@ -284,7 +287,11 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                             </div>
                         </div>
                         <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
-                            <Button text="Créer la fiche" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />
+                            <Button
+                                text="Créer la fiche"
+                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230'
+                                disabled={isSubmitted}
+                            />
                         </div>
                     </form>
                 </div>

@@ -168,7 +168,7 @@ export default function UsersList({ users }: UsersListProps) {
                     <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
                         <div className="text-(--white) w-20 px-5"></div>
                         <div className="text-(--white) w-150 px-5">Nom Prénom</div>
-                        <div className="text-(--white) border-l w-100 px-5">N° sécu</div>
+                        <div className="text-(--white) border-l w-115 px-5">N° sécu</div>
                         <div className="text-(--white) border-l w-150 px-5">Email</div>
                         <div className="text-(--white) border-l w-100 px-5 text-center">Téléphone</div>
                         <div className="text-(--white) border-l flex-1 px-5">Adresse</div>
@@ -185,7 +185,7 @@ export default function UsersList({ users }: UsersListProps) {
                                 {u.blacklisted ? <IconButton url="#" icon={IconButtonImages.BlackListed} svgFill="#CE25A6" imgWidth={20} title="Sur la liste noire" /> : null}
                             </div>
                             <div className={"w-150 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.lastName} {u.name}</div>
-                            <div className={"border-l w-100 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.social_number}</div>
+                            <div className={"border-l w-115 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.social_number}</div>
                             <div className={"border-l w-150 px-5 break-all" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.email}</div>
                             <div className={"border-l w-100 px-5 text-center" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.phone}</div>
                             <div className={"border-l flex-1 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.address}</div>

@@ -4,7 +4,7 @@ async function listUsers() {
   return await pool.query(`SELECT u.*, pc.code as postalCode, pc.city, pc.id as cityId
     FROM users u
     LEFT JOIN postal_codes pc ON pc.id = u.cityId
-    WHERE u.id > 1 AND u.blacklisted = false
+    WHERE u.id > 1
     ORDER BY u.lastname, u.name DESC`);
 }
 

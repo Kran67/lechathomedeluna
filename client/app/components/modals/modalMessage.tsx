@@ -58,10 +58,10 @@ export default function ModalMessage({
     }, []);
 
     return (
-        <aside className="fixed inset-0 bg-gray-500/50 flex items-center justify-center z-1 w-320 md:w-full" onClick={ (e) => { e.preventDefault(); e.stopPropagation(); closeModal(); }}>
+        <aside className="fixed inset-0 bg-gray-500/50 flex items-center justify-center z-1 w-320 md:w-full" onClick={ (e) => closeModal() }>
             <div
                 className="bg-(--white) relative px-8 py-10 md:px-36 md:py-39 rounded-[10px] flex flex-col gap-20 w-full md:w-480 border border-(--primary) border-1"
-                onClick={(e) => {e.preventDefault(); e.stopPropagation(); }}
+                onClick={(e) => { e.stopPropagation(); }}
             >
                 <h4 className="text-(--primary)">Saisir le message</h4>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-12 md:gap-24" role="form" aria-label="Information du groupe">

@@ -125,7 +125,7 @@ async function cloneAndRemove(req, res) {
     const props = await getCatDetails(req.params.slug);
     if (props) {
       props.adoptionDate = null;
-      //props.entryDate = 
+      props.entryDate = null;
       props.hostFamily = null;
       props.isAdoptable = false;
       props.isDuringVisit = false;

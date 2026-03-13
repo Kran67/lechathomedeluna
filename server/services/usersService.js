@@ -66,7 +66,7 @@ async function updateUser(id, changes = {}) {
     if (Object.prototype.hasOwnProperty.call(changes || {}, key)) {
       if (key === 'roles') {
         const roles = changes.roles.split("|");
-        if (!roles.some(role => ['Admin', 'Assistant', 'HostFamily', 'Volunteer'].includes(role))) {
+        if (!roles.some(role => ['Admin', 'CommitteeMember', 'AdoptionReferent', 'HealthRegisterReferent', 'VetVoucherReferent', 'PreVisitReferent', 'ICADReferent', 'HostFamily', 'Volunteer'].includes(role))) {
           const err = new Error('Rôles invalides');
           err.status = 400;
           throw err;

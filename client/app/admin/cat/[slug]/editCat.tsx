@@ -41,7 +41,10 @@ import {
   isTodayGreaterThanDatePlus6Months,
   redirectWithDelay,
 } from '@/app/core/lib/utils';
-import { sendMessage } from '@/app/core/services/client/messagingService';
+import {
+  createThreadAndSendMessage,
+  sendMessage,
+} from '@/app/core/services/client/messagingService';
 import {
   getBySlug,
   update,
@@ -738,14 +741,17 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                         </div>
                         <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
                             {user && !hasRoles(user.roles, [UserRoles.VetVoucherReferent]) && <Button ref={primaryButton} text="Valider les modifications" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />}
-                            {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.HostFamily]) && !isAdoptable && 
+                            {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.HostFamily, UserRoles.AdoptionReferent]) && !isAdoptable && 
                             <Button 
-                                text="Valider la fiche pour l'adoption"
+                                text={!isAdoptable ? "Valider la fiche pour vérification avant adoption" : "Valider la fiche pour l'adoption"}
                                 className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-270'
                                 onClick={async (e) => {
-                                    isAdoptable = true;
-                                    if (hostFamilyId) {
-                                        await sendMessage(token, CONSTANTS.THREAD_GROUPS.ADOPTION.toString(), user?.id as string, `Le 🐈 ${baseUrl}/admin/cat/${cat?.slug}[${cat?.name}] ${cat?.numIdentification ? '('+cat.numIdentification+')' : ''} vient de passer à l'adoption 🔥.`, []);
+                                    if (hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent])) isAdoptable = true;
+                                    if (isAdoptable) {
+                                        await createThreadAndSendMessage(token, user?.id, [hostFamilyId as string], `🔥 Le 🐈 ${baseUrl}/admin/cat/${cat?.slug}[${cat?.name}] ${cat?.numIdentification ? '('+cat.numIdentification+')' : ''} est vélidé pour l'adoption.`);
+                                    }
+                                    if (hostFamilyId && !isAdoptable) {
+                                        await sendMessage(token, CONSTANTS.THREAD_GROUPS.ADOPTION.toString(), user?.id as string, `Le 🐈 ${baseUrl}/admin/cat/${cat?.slug}[${cat?.name}] ${cat?.numIdentification ? '('+cat.numIdentification+')' : ''} est prêt pour l'adoption 🔥.`, []);
                                     }
                                 } }/>}
                         </div>

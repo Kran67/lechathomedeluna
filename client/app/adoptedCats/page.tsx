@@ -66,7 +66,7 @@ export default function AdoptedCats() {
             {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember]) &&
               <Input
                 name="search"
-                placeHolder="Rechercher un chat par son numéro d'identification ou son nom"
+                placeHolder="Rechercher un chat par son ICAD ou son nom"
                 imageType={InputImageTypes.Search}
                 className="lg:max-w-357 w-full"
                 value={search}

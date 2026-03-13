@@ -597,7 +597,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     </div>
                                 ))}
                             </div>
-                            {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.HealthRegisterReferent]) && <><div className="select flex flex-col flex-1 justify-start h-77">
+                            {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.HostFamily]) && <><div className="select flex flex-col flex-1 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="">Vaccins</label>
                                 <div className='flex gap-10 items-center'>
                                     <Input

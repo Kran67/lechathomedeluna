@@ -152,14 +152,14 @@ export default function MyAlerts() {
             <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
                 <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
                     <span className="text-(--white) w-100 px-5">Nom</span>
-                    <span className="text-(--white) border-l w-120 px-5">N° identification</span>
+                    <span className="text-(--white) border-l w-170 px-5">N° identification</span>
                     <span className="text-(--white) border-l w-150 px-5">Famille d'accueil</span>
                     <span className="text-(--white) border-l flex-1 px-5">Champs manquants</span>
                 </div>
                 {unCompletedFACatList.length > 0 ? unCompletedFACatList.map((cat: { slug: string, name: string, numId: string, hostfamily_id: string, hostfamily_name: string, fields: string[]}, idx: number) => (
                   <div key={cat.slug} className={"flex w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
                         <Link url={"/admin/cat/" + cat.slug} className="w-100 px-5 text-(--text)" text={cat.name} />
-                        <span className="border-l w-120 px-5 text-(--text)">{cat.numId}</span>
+                        <span className="border-l w-170 px-5 text-(--text)">{cat.numId}</span>
                         <span className="border-l w-150 px-5 text-(--text)">{user.id !== cat.hostfamily_id ? cat.hostfamily_name : ""}</span>
                         <span className="border-l flex-1 px-5 text-(--text)">{cat.fields.join(', ')}</span>
                     </div>
@@ -171,13 +171,13 @@ export default function MyAlerts() {
             <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
                 <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
                     <span className="text-(--white) w-100 px-5">Nom</span>
-                    <span className="text-(--white) border-l w-150 px-5">N° identification</span>
+                    <span className="text-(--white) border-l w-170 px-5">N° identification</span>
                     <span className="text-(--white) border-l flex-1 px-5">Champs manquants</span>
                 </div>
                 {unCompletedAdoptedCatList.length > 0 ? unCompletedAdoptedCatList.map((cat: { slug: string, name: string, numId: string, fields: string[]}, idx: number) => (
                   <div key={cat.slug} className={"flex w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
                         <Link url={"/admin/cat/" + cat.slug} className="w-100 px-5 text-(--text)" text={cat.name} />
-                        <span className="border-l w-150 px-5 text-(--text)">{cat.numId}</span>
+                        <span className="border-l w-170 px-5 text-(--text)">{cat.numId}</span>
                         <span className="border-l flex-1 px-5 text-(--text)">{cat.fields.join(', ')}</span>
                     </div>
                 )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de fiche de chats adoptés incompléte</div>}

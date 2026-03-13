@@ -119,7 +119,7 @@ export default function Header({ activeMenu }: HeaderProps) {
             {user && hasRoles(user.roles, [UserRoles.HostFamily]) && <MenuItem
                 text="Mes chats"
                 isActive={activeMenu === HeaderMenuItems.MyCats}
-                url="/myCats"
+                url="/mycats"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
             {(!user || (user && !hasRoles(user.roles, [UserRoles.HostFamily]))) && <MenuItem
                 text="Les chats à adopter"

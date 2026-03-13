@@ -81,3 +81,17 @@ export const getVetVouchersCount = async (
         return { error: err };
     }
 };
+
+export const getVetVoucherslist = async (
+    token: string,
+) => {
+    try {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/vetvouchers`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+        });
+        return await res.json();
+    } catch (err) {
+        return { error: err };
+    }
+};

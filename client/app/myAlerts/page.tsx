@@ -38,6 +38,9 @@ import {
 import {
   unreadMessageListByUserId,
 } from '@/app/core/services/client/messagingService';
+import {
+  getVetVoucherslist,
+} from '@/app/core/services/client/vetVouchersService';
 
 /**
  * Ajout les métadata à la page
@@ -84,6 +87,12 @@ export default function MyAlerts() {
         (async () => {
             const res = await getAdoptedCatNotFullyCompletedList(token);
             setUnCompletedAdoptedCatList(res);
+        })();
+      }
+      if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent])) {
+        (async () => {
+            const res = await getVetVoucherslist(token);
+            setVetVoucherList(res);
         })();
       }
       (async () => {

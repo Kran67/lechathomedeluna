@@ -291,8 +291,8 @@ async function seedBaseData() {
   // uitisateurs de base
   await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
           [
-            'super',
-            'admin',
+            'systeme',
+            '',
             '----------',
             '-',
             4200,

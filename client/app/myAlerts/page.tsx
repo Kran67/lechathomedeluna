@@ -21,26 +21,13 @@ import {
   UserRoles,
 } from '@/app/core/enums/enums';
 import { Cat } from '@/app/core/interfaces/cat';
-import { Message } from '@/app/core/interfaces/messaging';
-import { VetVoucher } from '@/app/core/interfaces/vetVoucher';
-import {
-  formatDDMMY,
-  formatHHMMSS,
-  hasRoles,
-  truncate,
-} from '@/app/core/lib/utils';
+import { hasRoles } from '@/app/core/lib/utils';
 import {
   getAdoptedCatNotFullyCompletedList,
   getCatBoosterVaccinationNoLaterThanOneMonthList,
   getFACatNotFullyCompletedList,
   getHasPreVisitWithoutDateList,
 } from '@/app/core/services/client/catsService';
-import {
-  unreadMessageListByUserId,
-} from '@/app/core/services/client/messagingService';
-import {
-  getVetVoucherslist,
-} from '@/app/core/services/client/vetVouchersService';
 
 /**
  * Ajout les métadata à la page
@@ -62,21 +49,21 @@ export default function MyAlerts() {
   const { user } = useUser();
   const cookies: Cookies = useCookies();
   const token: string = cookies.get("token") as string;
-  const [unreadMessages, setUnreadMessage] = useState<Message[]>([]);
-  const [vetVoucherList, setVetVoucherList] = useState<VetVoucher[]>([]);
+  //const [unreadMessages, setUnreadMessage] = useState<Message[]>([]);
+  //const [vetVoucherList, setVetVoucherList] = useState<VetVoucher[]>([]);
   const [unCompletedFACatList, setUnCompletedFACatList] = useState<{ slug: string, name: string, numId: string, hostfamily_id: string, hostfamily_name: string, fields: string[]}[]>([]);
   const [unCompletedAdoptedCatList, setUnCompletedAdoptedCatList] = useState<{ slug: string, name: string, numId: string, fields: string[]}[]>([]);
   const [vaccineBoosterList, setVaccineBoosterList] = useState<Cat[]>([]);
   const [preVisitList, setPreVisitList] = useState<[]>([]);
-    let isHostFamily: boolean = false;
+  let isHostFamily: boolean = false;
 
   useEffect(() => {
     if (token) {
       isHostFamily = (user && hasRoles(user.roles, [UserRoles.HostFamily])) as boolean;
-      (async () => {
-          const res = await unreadMessageListByUserId(token, user?.id as string);
-          setUnreadMessage(res);
-      })();
+      //(async () => {
+      //    const res = await unreadMessageListByUserId(token, user?.id as string);
+      //    setUnreadMessage(res);
+      //})();
       if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily])) {
         (async () => {
             const res = await getFACatNotFullyCompletedList(token, isHostFamily ? user.id : null);
@@ -89,12 +76,12 @@ export default function MyAlerts() {
             setUnCompletedAdoptedCatList(res);
         })();
       }
-      if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent])) {
-        (async () => {
-            const res = await getVetVoucherslist(token);
-            setVetVoucherList(res);
-        })();
-      }
+      // if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent])) {
+      //   (async () => {
+      //       const res = await getVetVoucherslist(token);
+      //       setVetVoucherList(res);
+      //   })();
+      // }
       (async () => {
         const res = await getHasPreVisitWithoutDateList(token);
         setPreVisitList(res);
@@ -116,7 +103,7 @@ export default function MyAlerts() {
           <span className="text-[32px] text-(--primary) w-full">Mes alertes</span>
         </div>
         <div className='flex flex-col gap-10'>
-          <div className='flex flex-col'>
+          {/* <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Nouveaux messages :</span>
             <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
                 <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
@@ -134,8 +121,8 @@ export default function MyAlerts() {
                     </div>
                 )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Vous n'avez pas de messages</div>}
               </div>
-            </div>
-          {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent]) && <div className='flex flex-col'>
+            </div> */}
+          {/* {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Bons vétérinaires :</span>
             <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
                 <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
@@ -155,7 +142,7 @@ export default function MyAlerts() {
                     </div>
                 )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de bon vétérinaire en attente</div>}
               </div>
-          </div>}
+          </div>} */}
           {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Fiches chats en FA incomplètes :</span>
             <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">

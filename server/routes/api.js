@@ -51,7 +51,7 @@ router.post('/profile/updatepassword', users.updatePassword);
 router.get('/vetvouchers', requireRole(['Admin', 'VetVoucherReferent']), vetVouchers.list);
 router.get('/vetvouchers/:year/:clinic/:object', requireRole(['Admin', 'VetVoucherReferent']), vetVouchers.listByParams);
 router.get('/vetvouchers/:id', requireRole(['Admin', 'VetVoucherReferent']), vetVouchers.listByParams);
-router.post('/vetvouchers', requireRole(['Admin', 'VetVoucherReferent']), vetVouchers.create);
+router.post('/vetvouchers', requireRole(['Admin', 'HostFamily']), vetVouchers.create);
 router.patch('/vetvouchers/:id', requireRole(['Admin', 'VetVoucherReferent']), vetVouchers.update);
 router.delete('/vetvouchers/:id', requireRole(['Admin', 'VetVoucherReferent']), vetVouchers.remove);
 router.get('/vetvoucherscount', requireRole(['Admin', 'VetVoucherReferent']), vetVouchers.count);

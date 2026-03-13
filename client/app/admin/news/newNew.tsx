@@ -32,23 +32,26 @@ export default function NewCat() {
     const token: string = cookies.get("token") as string;
     const [pictures, setPictures] = useState<any>([]);
     const [picturesPreview, setPicturesPreview] = useState<string[]>([]);
+    const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
     // Avant chaque soumission, vérification des données fournies valides.
     const handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void> = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setIsSubmitted(true);
 
         const form: EventTarget & HTMLFormElement = e.currentTarget;
         const formData: FormData = new FormData(form);
         const date: string | null = formData.get("date") as string !== '' ? formData.get("date") as string : null;
 
         try {
-        await create(
-            token,
-            date,
-            pictures
-        );
-        redirectWithDelay("/", 1000);
+            await create(
+                token,
+                date,
+                pictures
+            );
+            redirectWithDelay("/", 1000);
         } catch (err: any) {
+            setIsSubmitted(false);
             toast.error("Erreur lors de la création de l'actualité :", err);
         }
     };
@@ -97,7 +100,11 @@ export default function NewCat() {
                             </div>
                         </div>
                         <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
-                            <Button text="Créer l'actualité" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />
+                            <Button
+                                text="Créer l'actualité"
+                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230'
+                                disabled={isSubmitted}
+                            />
                         </div>
                     </form>
                 </div>

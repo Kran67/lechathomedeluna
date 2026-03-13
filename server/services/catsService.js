@@ -287,10 +287,11 @@ async function getAllFACatsNotFullyCompletedList(id) {
     if (res.rowCount > 0) {
       sql += ` AND hostfamily_id IN (${id}, ${res.rows.map((u) => u.id).join(",")})`;
     } else {
-      sql += ` AND c.hostfamily_id = ${id}`;
+      sql += ` AND cats.hostfamily_id = ${id}`;
     }
   }
   sql += ' ORDER BY name;'
+  console.log(sql);
   const res = await pool.query(sql);
   return res.rows.map(mapCatUnCompletdRow);
 }

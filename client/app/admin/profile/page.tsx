@@ -62,6 +62,7 @@ export default function Profile() {
     const [birthDate, setBirthDate] = useState<string | null>(user?.birthDate ?? null);
     const [referrer, setReferrer] = useState<User | null>(null);
     const [showModalMessage, setShowModalMessage] = useState<boolean>(false);
+    const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
     if (!user) {
         redirect("/");
@@ -89,6 +90,7 @@ export default function Profile() {
     // Avant chaque soumission, vérification des données fournies valides.
     const handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void> = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setIsSubmitted(true);
 
         const form: EventTarget & HTMLFormElement = e.currentTarget;
         const formData: FormData = new FormData(form);
@@ -112,6 +114,7 @@ export default function Profile() {
         if (!res.error) {
             redirectWithDelay("/admin/profile", 1000);
         } else {
+            setIsSubmitted(false);
             toast.error(res.error);
         }
     };
@@ -124,10 +127,13 @@ export default function Profile() {
 
     const resetMyPassword = async (e: React.FormEvent<HTMLAnchorElement>) => {
         e.preventDefault();
+        setIsSubmitted(true);
         const result = await resetPassword(profile!.email);
         if (result.error) {
+            setIsSubmitted(false);
             toast.error(`Une erreur est survenue lors de l'envoi de l'email pour la réinitialisation du mot de passe : ${result.error.message}`);
         } else {
+            setIsSubmitted(false);
             await sendResetPasswordEmail(profile!.email, result.token);
         }
     }
@@ -219,11 +225,17 @@ export default function Profile() {
                             </div>}
                         </div>
                         <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
-                            <Button text="Modifier les informations" className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230' />
-                            <Link
+                            <Button
+                                text="Modifier les informations"
+                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230'
+                                disabled={isSubmitted}
+                            />
+                            <Button
                                 text="Réinitialiser mon mot de passe"
                                 className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)'
-                                onClick={(e: React.FormEvent<HTMLAnchorElement>) => resetMyPassword(e) }/>
+                                onClick={(e: React.FormEvent<HTMLAnchorElement>) => resetMyPassword(e) }
+                                disabled={isSubmitted}
+                            />
                         </div>
                         {hasRoles(user?.roles, [UserRoles.Admin]) && <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
                             <Link

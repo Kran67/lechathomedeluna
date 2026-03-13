@@ -131,7 +131,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.Alerts}
                 url="/myAlerts"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                badge={unreadMsg + vetVoucherCount + faCatNotFullyCompletedCount + adoptedCatNotFullyCompletedCount + catBoosterVaccinationNoLaterThanOneMonthCount} />}
+                badge={faCatNotFullyCompletedCount + adoptedCatNotFullyCompletedCount + catBoosterVaccinationNoLaterThanOneMonthCount} />}
             {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent]) && <MenuItem
                 text="Bons vétérinaires"
                 isActive={activeMenu === HeaderMenuItems.VeterinaryVouchers}

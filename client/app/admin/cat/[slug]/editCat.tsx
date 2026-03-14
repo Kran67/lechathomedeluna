@@ -190,7 +190,6 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                         const document: CatDocument = updatedCat.documents.find((d: CatDocument) => 
                             d.fileName === doc.fileName && formatDDMMY(new Date(d.date)) === formatDDMMY(new Date(doc.date)) && doc.type === d.type
                         );
-                        debugger;
                         await sendMessage(
                             token,
                             CONSTANTS.THREAD_GROUPS.HEALTH_REGISTER.toString(),
@@ -204,9 +203,9 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 url: document?.picture
                             }]);
                     });
+                    redirectWithDelay(`/admin/cat/${res.slug}`, 1000);
                 });
             }, 1000);
-            redirectWithDelay(`/admin/cat/${res.slug}`, 1000);
         } else {
             setIsSubmitted(false);
             toast.error(res.error);

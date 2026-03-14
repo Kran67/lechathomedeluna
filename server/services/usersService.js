@@ -39,7 +39,7 @@ async function createUser({ email, name, lastName, social_number, phone, address
     throw err;
   }
   const userRoles = roles.split("|");
-  if (!userRoles.some(role => ['Assistant', 'HostFamily', 'Volunteer'].includes(role))) {
+  if (!userRoles.some(role => ['Admin', 'CommitteeMember', 'AdoptionReferent', 'HealthRegisterReferent', 'VetVoucherReferent', 'PreVisitReferent', 'ICADReferent', 'HostFamily', 'Volunteer'].includes(role))) {
     const err = new Error('Rôles invalides');
     err.status = 400;
     throw err;

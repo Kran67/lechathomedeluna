@@ -198,19 +198,21 @@ export default function VetVouchers() {
                             <td className="border-l w-150 px-5 text-(--text)">{voucher.cat.numId} / {voucher.cat.name}</td>
                             <td className="border-l flex-1 px-5 text-(--text)">{voucher.clinic}</td>
                             <td className="border-l w-250 px-5 text-(--text)">{voucher.object}</td>
-                            <td className="gap-5 border-(--pink) border-l w-70 px-5">
-                                <IconButton
-                                    icon={IconButtonImages.Approved}
-                                    svgStroke='#902677'
-                                    onClick={ (e:React.MouseEvent<HTMLButtonElement>) => approved(e, voucher)}
-                                    title='Traiter la demande' />
-                                <IconButton
-                                    icon={IconButtonImages.Trash}
-                                    imgWidth={24}
-                                    imgHeight={24}
-                                    svgFill='#902677'
-                                    onClick={ (e:React.MouseEvent<HTMLButtonElement>) => removed(e, voucher)}
-                                    title='Supprimer la demande' />
+                            <td className="border-(--pink) border-l w-70 px-5">
+                                <div className='flex gap-5 items-center justify-center'>
+                                    <IconButton
+                                        icon={IconButtonImages.Approved}
+                                        svgStroke='#902677'
+                                        onClick={ (e:React.MouseEvent<HTMLButtonElement>) => approved(e, voucher)}
+                                        title='Traiter la demande' />
+                                    <IconButton
+                                        icon={IconButtonImages.Trash}
+                                        imgWidth={24}
+                                        imgHeight={24}
+                                        svgFill='#902677'
+                                        onClick={ (e:React.MouseEvent<HTMLButtonElement>) => removed(e, voucher)}
+                                        title='Supprimer la demande' />
+                                </div>
                             </td>
                         </tr>
                         ))

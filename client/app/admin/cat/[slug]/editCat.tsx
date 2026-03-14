@@ -605,6 +605,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                             data-testid={"chat-image-" + (idx + 1)}
                                             src={(picture.includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + picture}
                                             alt={"Image du chat n°" + (idx + 1)}
+                                            className='cursor-pointer'
                                             style={{ objectFit: "contain" }}
                                             onClick={(e) => setLightbox(e.currentTarget.src) }
                                         />

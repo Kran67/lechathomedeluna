@@ -165,53 +165,61 @@ export default function UsersList({ users }: UsersListProps) {
                             />
                 </div>
                 <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
-                    <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
-                        <div className="text-(--white) w-20 px-5"></div>
-                        <div className="text-(--white) w-150 px-5">Nom Prénom</div>
-                        <div className="text-(--white) border-l w-115 px-5">N° sécu</div>
-                        <div className="text-(--white) border-l w-150 px-5">Email</div>
-                        <div className="text-(--white) border-l w-100 px-5 text-center">Téléphone</div>
-                        <div className="text-(--white) border-l flex-1 px-5">Adresse</div>
-                        <div className="text-(--white) border-l w-50 px-5">CP</div>
-                        <div className="text-(--white) border-l w-170 px-5">Ville</div>
-                        <div className="text-(--white) border-l w-180 px-5">Roles</div>
-                        <div className="text-(--white) border-l w-70 px-5">Capacité</div>
-                        <div className="text-(--white) border-l w-70 px-5">Actions</div>
-                    </div>
-                    {filteredUsers?.map((u, idx) => (
-                        <div key={u.id} className={"flex w-full border-solid border-(--pink) border-b " + (u.blacklisted ? " italic" : "") + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
-                            <div className="flex justify-center items-center px-5 w-20">
-                                {user.id !== u.id && <input type="checkbox" name={"check-" + u.id} value={u.id} onChange={(e) => { addOrRemoveUserToMessage(e.currentTarget.checked, e.currentTarget.value)}} />}
-                                {u.blacklisted ? <IconButton url="#" icon={IconButtonImages.BlackListed} svgFill="#CE25A6" imgWidth={20} title="Sur la liste noire" /> : null}
-                            </div>
-                            <div className={"w-150 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.lastName} {u.name}</div>
-                            <div className={"border-l w-115 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.social_number}</div>
-                            <div className={"border-l w-150 px-5 break-all" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.email}</div>
-                            <div className={"border-l w-100 px-5 text-center" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.phone}</div>
-                            <div className={"border-l flex-1 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.address}</div>
-                            <div className={"border-l w-50 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.postalCode}</div>
-                            <div className={"border-l w-170 px-5 break-all" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.city}</div>
-                            <div className={"border-l w-180 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>
-                                {u.roles.split("|").map((r:string, idx: number) => (<div key={u.id + idx}>{getRoleLabel(r as UserRoles.Admin |
-                                        UserRoles.CommitteeMember |
-                                        UserRoles.AdoptionReferent |
-                                        UserRoles.HealthRegisterReferent |
-                                        UserRoles.VetVoucherReferent |
-                                        UserRoles.ICADReferent |
-                                        UserRoles.HostFamily |
-                                        UserRoles.Volunteer)}</div>))}
-                            </div>
-                            <div className={"border-l w-70 px-5 border-(--pink)" + (u.capacity === "Empty" ? " bg-[#00ff00]": " bg-[#ff0000]")}>&nbsp;</div>
-                            <div className="flex justify-center gap-5 border-(--pink) border-l w-70 px-5">
-                                {u &&
-                                    <>
-                                        <IconButton url={`/admin/profile/${u.id}`} icon={IconButtonImages.Pen} svgFill="#CE25A6" imgWidth={20} title="Editer le profile" />
-                                        <IconButton onClick={(e:React.MouseEvent<HTMLButtonElement>) => resetUserPassword(e, u.email) } icon={IconButtonImages.ChangePassword} svgFill="#CE25A6" imgWidth={20} title="Changer le mot de passe" />
-                                    </>
-                                }
-                            </div>
-                        </div>
-                    ))}
+                    <table className="w-full border-b border-solid border-(--pink)">
+                        <thead>
+                            <tr className='font-bold  bg-(--pink)'>
+                                <td className="text-(--white) w-20 px-5"></td>
+                                <td className="text-(--white) w-150 px-5">Nom Prénom</td>
+                                <td className="text-(--white) border-l w-115 px-5">N° sécu</td>
+                                <td className="text-(--white) border-l w-150 px-5">Email</td>
+                                <td className="text-(--white) border-l w-100 px-5 text-center">Téléphone</td>
+                                <td className="text-(--white) border-l flex-1 px-5">Adresse</td>
+                                <td className="text-(--white) border-l w-50 px-5">CP</td>
+                                <td className="text-(--white) border-l w-170 px-5">Ville</td>
+                                <td className="text-(--white) border-l w-180 px-5">Roles</td>
+                                <td className="text-(--white) border-l w-70 px-5">Capacité</td>
+                                <td className="text-(--white) border-l w-70 px-5">Actions</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {filteredUsers?.map((u, idx) => (
+                            <tr key={u.id} className={"w-full border-solid border-(--pink) border-b " + (u.blacklisted ? " italic" : "") + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
+                                <td className="px-5 w-20">
+                                    <div className='flex justify-center items-center'>
+                                        {user.id !== u.id && <input type="checkbox" name={"check-" + u.id} value={u.id} onChange={(e) => { addOrRemoveUserToMessage(e.currentTarget.checked, e.currentTarget.value)}} />}
+                                        {u.blacklisted ? <IconButton url="#" icon={IconButtonImages.BlackListed} svgFill="#CE25A6" imgWidth={20} title="Sur la liste noire" /> : null}
+                                    </div>
+                                </td>
+                                <td className={"w-150 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.lastName} {u.name}</td>
+                                <td className={"border-l w-115 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.social_number}</td>
+                                <td className={"border-l w-150 px-5 break-all" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.email}</td>
+                                <td className={"border-l w-100 px-5 text-center" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.phone}</td>
+                                <td className={"border-l flex-1 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.address}</td>
+                                <td className={"border-l w-50 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.postalCode}</td>
+                                <td className={"border-l w-170 px-5 break-all" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.city}</td>
+                                <td className={"border-l w-180 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>
+                                    {u.roles.split("|").map((r:string, idx: number) => (<div key={u.id + idx}>{getRoleLabel(r as UserRoles.Admin |
+                                            UserRoles.CommitteeMember |
+                                            UserRoles.AdoptionReferent |
+                                            UserRoles.HealthRegisterReferent |
+                                            UserRoles.VetVoucherReferent |
+                                            UserRoles.ICADReferent |
+                                            UserRoles.HostFamily |
+                                            UserRoles.Volunteer)}</div>))}
+                                </td>
+                                <td className={"border-l w-70 px-5 border-(--pink)" + (u.capacity === "Empty" ? " bg-[#00ff00]": " bg-[#ff0000]")}>&nbsp;</td>
+                                <td className="border-(--pink) border-l w-70 px-5">
+                                    {u &&
+                                        <div className='flex justify-center gap-5 '>
+                                            <IconButton url={`/admin/profile/${u.id}`} icon={IconButtonImages.Pen} svgFill="#CE25A6" imgWidth={20} title="Editer le profile" />
+                                            <IconButton onClick={(e:React.MouseEvent<HTMLButtonElement>) => resetUserPassword(e, u.email) } icon={IconButtonImages.ChangePassword} svgFill="#CE25A6" imgWidth={20} title="Changer le mot de passe" />
+                                        </div>
+                                    }
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <Footer />

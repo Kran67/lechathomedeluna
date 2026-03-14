@@ -34,6 +34,7 @@ import { User } from '@/app/core/interfaces/user';
 import {
   formatYMMDD,
   hasRoles,
+  redirectWithDelay,
   sendResetPasswordEmail,
 } from '@/app/core/lib/utils';
 import {
@@ -73,6 +74,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
     const [capacity, setCapacity] = useState<string>(profile?.capacity || "Empty");
     const router = useRouter();
     const [birthDate, setBirthDate] = useState<string | null>(profile?.birthDate ?? null);
+    const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
     if (!user || !hasRoles(user?.roles, [UserRoles.Admin])) {
         redirect("/");
@@ -81,6 +83,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
     // Avant chaque soumission, vérification des données fournies valides.
     const handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void> = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setIsSubmitted(true);
 
         const form: EventTarget & HTMLFormElement = e.currentTarget;
         const formData: FormData = new FormData(form);
@@ -122,7 +125,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
             );
         }
         if (!res.error) {
-            //redirectWithDelay(`${hasRoles(user.roles, ["Admin"]) ? "/admin" : ""}/profile/${res.id}`, 1000);
+            redirectWithDelay(`${hasRoles(user.roles, ["Admin"]) ? "/admin" : ""}/profile/${res.id}`, 1000);
             if (isNew) {
                 const result = await resetPassword(email);
                 if (result.error) {
@@ -132,6 +135,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                 }
             }
         } else {
+            setIsSubmitted(false);
             toast.error(res.error);
         }
     };
@@ -272,7 +276,9 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                         <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
                             <Button 
                                 text={ isNew ? "Créer l'utilisateur" : "Modifier les informations"}
-                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)' />
+                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)'
+                                disabled={isSubmitted}
+                            />
                         </div>
                     </form>
                 </div>

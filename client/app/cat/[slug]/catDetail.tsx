@@ -131,7 +131,7 @@ export default function Property({ cat }: CatProps) {
             
             setTimeout(() => {
                 paw.remove();
-                setShowModalAdoptionRequest(true);
+                if (!cat?.isDuringVisit) setShowModalAdoptionRequest(true);
             }, 2100);
         }
     }

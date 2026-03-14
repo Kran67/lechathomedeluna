@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { createPortal } from 'react-dom';
 
 import {
   Cookies,
@@ -39,6 +40,7 @@ import {
   formatYMMDD,
   hasRoles,
   isTodayGreaterThanDatePlus6Months,
+  prepareBodyToShowModal,
   redirectWithDelay,
 } from '@/app/core/lib/utils';
 import {
@@ -111,6 +113,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const inputExamDate = useRef(null);
     const primaryButton = useRef(null);
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+    const [lightbox, setLightbox] = useState<string | null>(null);
 
     const clinicInputRef = useRef(null);
     const voucherObjectInputRef = useRef(null);
@@ -420,6 +423,10 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         setSterilizationDateError(isTodayGreaterThanDatePlus6Months(birthDate));
     }, [birthDate]);
 
+    useEffect(() => {
+        prepareBodyToShowModal(lightbox ? "hidden" : "");
+    }, [lightbox]);
+
     return (
         <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 lg:px-140 relative">
             <Header activeMenu={HeaderMenuItems.Adoption} />
@@ -599,6 +606,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                             src={(picture.includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + picture}
                                             alt={"Image du chat n°" + (idx + 1)}
                                             style={{ objectFit: "contain" }}
+                                            onClick={(e) => setLightbox(e.currentTarget.src) }
                                         />
                                     </div>
                                 ))}
@@ -641,7 +649,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                                     src={(value.url.includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + value.url}
                                                     alt={"Image du vaccin n°" + (idx + 1)}
                                                     style={{ objectFit: "contain" }}
-                                                    className=' max-h-150'
+                                                    className=' max-h-150 cursor-pointer'
+                                                    onClick={(e) => setLightbox(e.currentTarget.src) }
                                                 />
                                                 <figcaption className='text-(--primary) text-sm p-3 text-center'>{ formatDDMMY(new Date(catDocuments[value.index]?.date)) }</figcaption>
                                             </figcaption>
@@ -687,7 +696,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                                     src={(value.url.includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + value.url}
                                                     alt={"Image de l'antiparasitaire n°" + (idx + 1)}
                                                     style={{ objectFit: "contain" }}
-                                                    className=' max-h-150'
+                                                    className=' max-h-150 cursor-pointer'
+                                                    onClick={(e) => setLightbox(e.currentTarget.src) }
                                                 />
                                                 <figcaption className='text-(--primary) text-sm p-3 text-center'>{ formatDDMMY(new Date(catDocuments[value.index]?.date)) }</figcaption>
                                             </figcaption>
@@ -733,7 +743,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                                     src={(value.url.includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + value.url}
                                                     alt={"Image de l'examen n°" + (idx + 1)}
                                                     style={{ objectFit: "contain" }}
-                                                    className=' max-h-150'
+                                                    className=' max-h-150 cursor-pointer'
+                                                    onClick={(e) => setLightbox(e.currentTarget.src) }
                                                 />
                                                 <figcaption className='text-(--primary) text-sm p-3 text-center'>{ formatDDMMY(new Date(catDocuments[value.index]?.date)) }</figcaption>
                                             </figcaption>
@@ -750,7 +761,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 disabled={isSubmitted} />}
                             {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.HostFamily, UserRoles.AdoptionReferent]) && !isAdoptable && 
                             <Button 
-                                text={!isAdoptable ? "Valider la fiche pour vérification avant adoption" : "Valider la fiche pour l'adoption"}
+                                text={user && !hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent]) ? "Valider la fiche pour vérification avant adoption" : "Valider la fiche pour l'adoption"}
                                 className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)'
                                 disabled={isSubmitted}
                                 onClick={async (e) => {
@@ -829,6 +840,28 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                         </>}
                </div>
             </div>
+                  {/* Lightbox */}
+                  {lightbox && createPortal(
+                    <div
+                      className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center"
+                      onClick={() => setLightbox(null)}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={lightbox}
+                        alt="Aperçu"
+                        className="max-w-[90vw] max-h-[90vh] rounded-[8px] shadow-2xl"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      <Button
+                        onClick={() => setLightbox(null)}
+                        className="absolute top-4 right-6 text-white text-3xl font-bold hover:opacity-80 cursor-pointer"
+                        text="✕"
+                      />
+                    </div>,
+                    document.body
+                  )}
+            
             <Footer />
         </main>
     );

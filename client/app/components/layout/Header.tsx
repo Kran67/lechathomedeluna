@@ -92,7 +92,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                     setAdoptedCatNotFullyCompletedCount(res);
                 })();
             }
-            if (hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily])) {
+            if (hasRoles(user.roles, [UserRoles.Admin, UserRoles.HostFamily])) {
                 (async () => {
                     const res = await getCatBoosterVaccinationNoLaterThanOneMonthCount(token, isHostFamily ? user.id : null);
                     setCatBoosterVaccinationNoLaterThanOneMonthCount(res);

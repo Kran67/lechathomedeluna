@@ -52,6 +52,8 @@ import {
   uploadMessageFiles,
 } from '@/app/core/services/client/messagingService';
 
+import ModalMessage from '../components/modals/modalMessage';
+
 /**
  * Ajout les métadata à la page
  * 
@@ -101,6 +103,8 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
     const potentialNewMemberList = userList.filter((userItem) => !currentThread?.members?.some((member) => member.id === userItem.value)) ?? [];
     const [pendingFiles, setPendingFiles] = useState<File[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [showModalMessage, setShowModalMessage] = useState<boolean>(false);
+    const [toUserId, setToUserId] = useState<string>('');
 
     useEffect(() => {
         if (search.trim() !== "") {
@@ -236,7 +240,17 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
                 />,
                 document.body
             )}
-
+            {showModalMessage && createPortal(
+                <ModalMessage
+                    userIds={[toUserId]}
+                    closeModal={() => setShowModalMessage(false)}
+                    onSuccess={() => {
+                        setShowModalMessage(false);
+                        setToUserId('');
+                    }}
+                />,
+                document.body
+            )}
             <div className="flex gap-20 md:gap-30 p-30 md:p-0 w-full xl:w-1115 flex-1 min-h-0">
                 <div className="flex flex-col border border-1 border-(--primary) rounded-[10px] w-321 p-16 gap-10 h-full">
                     <div className='flex felx-col gap-3'>
@@ -308,7 +322,10 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
                                                         className={'px-5 text-sm ' + (idx > 0 ? 'border-l-1' : '') + (currentThread.user_id === member.id ? " font-bold" : " ") }
                                                         key={member.id}
                                                         text={member.name}
-                                                        onClick={() => {}}
+                                                        onClick={() => {
+                                                            setToUserId(member.id);
+                                                            setShowModalMessage(true);
+                                                        }}
                                                         title="Écrire un message privé" />
                                                     : <span key={member.id} className={'px-5 text-sm ' + (idx > 0 ? 'border-l-1' : '') + (currentThread.user_id === member.id ? " font-bold" : " ") }>{member.name}</span>
                                                 )

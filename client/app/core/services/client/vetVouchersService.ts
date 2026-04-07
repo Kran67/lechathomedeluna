@@ -1,7 +1,4 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useState } from 'react';
 
 import { VetVoucher } from '@/app/core/interfaces/vetVoucher';
 
@@ -49,22 +46,6 @@ export function vetVouchersService(token: string | undefined, year: number = 0, 
         }
     }
 
-    // permet d'actualiser les données lors d'un changement
-    useEffect(() => {
-        let active: boolean = true;
-
-        async function load() {
-            await refresh();
-            if (active) setLoading(false);
-        }
-
-        load();
-
-        return () => {
-            active = false;
-        };
-    }, []);
-
     return { vetVouchers, loading, refresh, error };
 }
 
@@ -86,7 +67,7 @@ export const getVetVoucherslist = async (
     token: string,
 ) => {
     try {
-        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/vetvouchers`, {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/vetvouchers/2000/-/-`, {
             method: "GET",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
         });

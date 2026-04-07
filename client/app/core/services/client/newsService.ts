@@ -1,7 +1,4 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useState } from 'react';
 
 import { New } from '@/app/core/interfaces/new';
 
@@ -45,23 +42,6 @@ export function newsService(period: 'current' |'next'): { news: New[] | null, lo
             setLoading(false);
         }
     }
-
-    // permet d'actualiser les données lors d'un changement
-    useEffect(() => {
-        let active: boolean = true;
-
-        async function load() {
-            await refresh();
-            if (active) setLoading(false);
-        }
-
-        load();
-
-        return () => {
-            active = false;
-        };
-    }, []);
-
     return { news, loading, refresh, error };
 }
 

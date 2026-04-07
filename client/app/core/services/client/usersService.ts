@@ -1,7 +1,4 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useState } from 'react';
 
 import { User } from '@/app/core/interfaces/user';
 
@@ -45,22 +42,6 @@ export function usersService(token: string | undefined): { users: User[] | null,
             setLoading(false);
         }
     }
-
-    // permet d'actualiser les données lors d'un changement
-    useEffect(() => {
-        let active: boolean = true;
-
-        async function load() {
-            await refresh();
-            if (active) setLoading(false);
-        }
-
-        load();
-
-        return () => {
-            active = false;
-        };
-    }, []);
 
     return { users, loading, refresh, error };
 }

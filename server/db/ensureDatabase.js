@@ -4,6 +4,7 @@ const { Client } = require("pg");
 const pool = require("./pool");
 const tools = require("../utils/lib");
 const https = require('https');
+const { hashPassword } = require('../services/authService');
 
 const PROPS_JSON_PATH = path.join(__dirname, '../data', 'cats.json');
 
@@ -298,7 +299,7 @@ async function seedBaseData() {
             4200,
             'Admin',
             'superadmin@exemple.com',
-            'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
+            'scrypt:cf9d3be60b49fabff0f9836460b86ebf:95bd09ce474c86c17f7f75499df2f10c1a9fe18ff42eddefcf9e2f7d52580596bb4eb94a8b86ae95263c0dad58be23adb2dda919795afb12d7d521c626c2e31d',
             'Empty'
           ]);
   await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
@@ -310,7 +311,7 @@ async function seedBaseData() {
             4200,
             'Admin|CommitteeMember',
             'admin@exemple.com',
-            'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
+            'scrypt:e7e9be565ae6d2044b0924c1d65e7c49:7ca138ec9995aa1afe6df5dec829845249ef197fd71af7b75dfe08df4f9444f1175106137c1104dfc89ce9b31cf216a87670a509127d8257f1b42bc72b77d284',
             'Empty'
           ]);
   await pool.query("INSERT INTO news (date, url) VALUES ('2026-03-29','/images/news/Loto29-03-2026.jpeg')");
@@ -324,7 +325,7 @@ async function seedBaseData() {
             4697,
             'CommitteeMember|AdoptionReferent',
             'marine.schneider@exemple.com',
-            'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
+            'scrypt:e7e9be565ae6d2044b0924c1d65e7c49:7ca138ec9995aa1afe6df5dec829845249ef197fd71af7b75dfe08df4f9444f1175106137c1104dfc89ce9b31cf216a87670a509127d8257f1b42bc72b77d284',
             'Empty'
           ]);
   await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
@@ -336,7 +337,7 @@ async function seedBaseData() {
             4653,
             'CommitteeMember|HealthRegisterReferent',
             'amandine.list@exemple.com',
-            'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
+            'scrypt:e7e9be565ae6d2044b0924c1d65e7c49:7ca138ec9995aa1afe6df5dec829845249ef197fd71af7b75dfe08df4f9444f1175106137c1104dfc89ce9b31cf216a87670a509127d8257f1b42bc72b77d284',
             'Empty'
           ]);
   await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
@@ -348,7 +349,7 @@ async function seedBaseData() {
             4200,
             'CommitteeMember|VetVoucherReferent',
             'thibaut.b@exemple.com',
-            'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
+            'scrypt:e7e9be565ae6d2044b0924c1d65e7c49:7ca138ec9995aa1afe6df5dec829845249ef197fd71af7b75dfe08df4f9444f1175106137c1104dfc89ce9b31cf216a87670a509127d8257f1b42bc72b77d284',
             'Empty'
           ]);
   await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
@@ -360,7 +361,7 @@ async function seedBaseData() {
             4465,
             'CommitteeMember|ICADReferent',
             'patricia.belloni@exemple.com',
-            'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
+            'scrypt:e7e9be565ae6d2044b0924c1d65e7c49:7ca138ec9995aa1afe6df5dec829845249ef197fd71af7b75dfe08df4f9444f1175106137c1104dfc89ce9b31cf216a87670a509127d8257f1b42bc72b77d284',
             'Empty'
           ]);
   await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
@@ -372,7 +373,7 @@ async function seedBaseData() {
             4435,
             'CommitteeMember|PreVisitReferent',
             'dominique.cometti@exemple.com',
-            'scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba',
+            'scrypt:e7e9be565ae6d2044b0924c1d65e7c49:7ca138ec9995aa1afe6df5dec829845249ef197fd71af7b75dfe08df4f9444f1175106137c1104dfc89ce9b31cf216a87670a509127d8257f1b42bc72b77d284',
             'Empty'
           ]);
   // groupes de discussion de base

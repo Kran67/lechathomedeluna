@@ -142,11 +142,16 @@ async function getUnreadMessageCountByUserId(userid) {
         msg.thread_id,
         COUNT(*) AS unread_count
     FROM messages msg
+    LEFT JOIN message_threads mt
+      ON mt.id = msg.thread_id
+    LEFT JOIN thread_participants tp
+      ON tp.thread_id = msg.thread_id
     LEFT JOIN message_reads mr 
         ON mr.message_id = msg.id
         AND mr.user_id = $1
     WHERE 
         msg.sender_id <> $1
+		AND tp.user_id = $1
         AND mr.message_id IS NULL
     GROUP BY msg.thread_id
   `, [userid]);

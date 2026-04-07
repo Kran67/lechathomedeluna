@@ -14,6 +14,7 @@ import IconButton from '@/app/components/ui/IconButton';
 import Link from '@/app/components/ui/Link';
 import Logo from '@/app/components/ui/Logo';
 import MenuItem from '@/app/components/ui/MenuItem';
+import { useHeader } from '@/app/core/contexts/headerContext';
 import { useUser } from '@/app/core/contexts/userContext';
 import {
   HeaderMenuItems,
@@ -66,6 +67,13 @@ export default function Header({ activeMenu }: HeaderProps) {
     const cookies: Cookies = useCookies();
     const token: string = cookies.get("token") as string;
     let isHostFamily: boolean = false;
+    const { refreshBadges, refreshKey } = useHeader();
+
+    useEffect(() => {
+        const interval = setInterval(() => refreshBadges(), 60000);
+
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         if (token && user) {
@@ -78,24 +86,28 @@ export default function Header({ activeMenu }: HeaderProps) {
                 (async () => {
                     const res = await getVetVouchersCount(token);
                     setVetVoucherCount(res);
+                    console.log('VetVoucherCount', res);
                 })();
             }
             if (hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily])) {
                 (async () => {
                     const res = await getFACatNotFullyCompletedCount(token, isHostFamily ? user.id : null);
                     setFACatNotFullyCompletedCount(res);
+                    console.log('FACatNotFullyCompletedCount', res);
                 })();
             }
             if (hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember])) {
                 (async () => {
                     const res = await getAdoptedCatNotFullyCompletedCount(token);
                     setAdoptedCatNotFullyCompletedCount(res);
+                    console.log('AdoptedCatNotFullyCompletedCount', res);
                 })();
             }
             if (hasRoles(user.roles, [UserRoles.Admin, UserRoles.HostFamily])) {
                 (async () => {
                     const res = await getCatBoosterVaccinationNoLaterThanOneMonthCount(token, isHostFamily ? user.id : null);
                     setCatBoosterVaccinationNoLaterThanOneMonthCount(res);
+                    console.log('CatBoosterVaccinationNoLaterThanOneMonthCount', res);
                 })();
             }
         }
@@ -104,7 +116,7 @@ export default function Header({ activeMenu }: HeaderProps) {
             setAdoptedCatCount(res);
         })();
 
-    }, [user]);
+    }, [user, refreshKey]);
 
     return (
         <header
@@ -124,14 +136,14 @@ export default function Header({ activeMenu }: HeaderProps) {
             {(!user || (user && !hasRoles(user.roles, [UserRoles.HostFamily]))) && <MenuItem
                 text="Les chats à adopter"
                 isActive={activeMenu === HeaderMenuItems.CatsForAdoption}
-                url="/catsForAdoption"
+                url="/catsforadoption"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
             {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <MenuItem
                 text="Mes alertes"
                 isActive={activeMenu === HeaderMenuItems.Alerts}
-                url="/myAlerts"
+                url="/myalerts"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                badge={faCatNotFullyCompletedCount + adoptedCatNotFullyCompletedCount + catBoosterVaccinationNoLaterThanOneMonthCount} />}
+                badge={faCatNotFullyCompletedCount + adoptedCatNotFullyCompletedCount + vetVoucherCount + catBoosterVaccinationNoLaterThanOneMonthCount} />}
             {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent]) && <MenuItem
                 text="Bons vétérinaires"
                 isActive={activeMenu === HeaderMenuItems.VeterinaryVouchers}
@@ -146,7 +158,7 @@ export default function Header({ activeMenu }: HeaderProps) {
             {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HealthRegisterReferent, UserRoles.VetVoucherReferent]) && <MenuItem
                 text="Chats en FA"
                 isActive={activeMenu === HeaderMenuItems.Adoption}
-                url="/faCats"
+                url="/facats"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
                 badge={hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily]) ? faCatNotFullyCompletedCount : 0} />}
             {/* {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant, UserRole.Volunteer]) && <MenuItem
@@ -157,7 +169,7 @@ export default function Header({ activeMenu }: HeaderProps) {
             {(!user || (user && !hasRoles(user.roles, [UserRoles.HostFamily]))) && <MenuItem
                 text="Les chats adoptés"
                 isActive={activeMenu === HeaderMenuItems.AdoptedCats}
-                url="/adoptedCats"
+                url="/adoptedcats"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
                 badge={adoptedCatCount} />}
             {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <MenuItem

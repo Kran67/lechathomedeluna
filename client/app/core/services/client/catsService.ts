@@ -1,7 +1,4 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useState } from 'react';
 
 import type { Cat } from '@/app/core/interfaces/cat';
 
@@ -22,7 +19,7 @@ export function catsService(type: "adopted" | "adoptable" | undefined, numIdOrNa
         try {
             let url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cats`;
             if (type === "adopted") {
-                url+=`Adopted/${year}`;
+                url+=`adopted/${year}`;
             } else if (type === "adoptable") {
                 url+="adoptable";
             } else if (hostFamilyId) {
@@ -57,22 +54,6 @@ export function catsService(type: "adopted" | "adoptable" | undefined, numIdOrNa
             setLoading(false);
         }
     }
-
-    // permet d'actualiser les données lors d'un changement
-    useEffect(() => {
-        let active: boolean = true;
-
-        async function load() {
-            await refresh();
-            if (active) setLoading(false);
-        }
-
-        load();
-
-        return () => {
-            active = false;
-        };
-    }, []);
 
     return { cats, loading, refresh, error };
 }

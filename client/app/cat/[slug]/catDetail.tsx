@@ -6,10 +6,6 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 
-import {
-  Cookies,
-  useCookies,
-} from 'next-client-cookies';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 
@@ -18,8 +14,10 @@ import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
 import ModalCreateAdoptionRequest
   from '@/app/components/modals/ModalCreateAdoptionRequest';
+import ModalMessage from '@/app/components/modals/modalMessage';
 import CollapseElement from '@/app/components/ui/CollapseElement';
 import IconButton from '@/app/components/ui/IconButton';
+import Link from '@/app/components/ui/Link';
 import { useUser } from '@/app/core/contexts/userContext';
 import {
   HeaderMenuItems,
@@ -53,14 +51,13 @@ interface CatProps {
  * @param { string } slug - Identifiant du chat
  */
 export default function Property({ cat }: CatProps) {
-    const cookies: Cookies = useCookies();
-    const token: string = cookies.get("token") as string;
     const [viewCarousel, setViewCarousel] = useState(false);
     const [carouselImageIndex, setCarouselImageIndex] = useState(0);
     const router = useRouter();
     const { user } = useUser();
     const [favoriteCount, setFavoriteCount] = useState<number>(cat?.favoriteCount ?? 0);
     const [showModalAdoptionRequest, setShowModalAdoptionRequest] = useState<boolean>(false);
+    const [showModalMessage, setShowModalMessage] = useState<boolean>(false);
 
     const viewCarouselAndActiveImage = (viewCarousel: boolean, index: number) => {
         setViewCarousel(viewCarousel);
@@ -156,6 +153,16 @@ export default function Property({ cat }: CatProps) {
                 />,
                 document.body
             )}
+            {showModalMessage && createPortal(
+                <ModalMessage
+                    userIds={[cat?.hostFamily?.id as string]}
+                    closeModal={() => setShowModalMessage(false)}
+                    onSuccess={() => {
+                        setShowModalMessage(false);
+                    }}
+                />,
+                document.body
+            )}
             <Header activeMenu={cat?.isAdoptable && cat?.adoptionDate ? HeaderMenuItems.AdoptedCats : HeaderMenuItems.Home} />
             <div className="flex flex-col w-full gap-10 lg:gap-24 lg:w-970 px-16 pb-80 lg:px-0 lg:pb-0">
                 <div className="lg:flex lg:flex-row lg:gap-10 w-full lg:py-16 lg:px-7 border-b-0 lg:border-b-1 border-solid border-b-(--pink)">
@@ -197,6 +204,15 @@ export default function Property({ cat }: CatProps) {
                         <div className="flex flex-col gap-32">
                             <div className="flex gap-8 items-center">
                                 <span className="text-2xl text-(--text)">{cat?.name}</span>
+                                { cat?.hostFamily?.id !== user?.id && 
+                                    // <span className="text-2xl text-(--text)"> ({cat?.hostFamily?.name})</span>
+                                    <Link
+                                        text={'(' + cat?.hostFamily?.name as string + ')'}
+                                        className='cursor-pointer text-2xl text-(--text)'
+                                        title='Envoyer un message'
+                                        onClick={() => setShowModalMessage(true) }
+                                    />
+                                }
                                 {favoriteCount > 0 && <span className='heart flex items-center justify-center text-sm text-(--primary)'>{favoriteCount}</span>}
                             </div>
                             <p className="text-sm text-(--text) font-normal whitespace-break-spaces">{cat?.description}</p>

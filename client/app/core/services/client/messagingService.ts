@@ -1,7 +1,4 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useState } from 'react';
 
 import {
   MessageAttachment,
@@ -48,22 +45,6 @@ export function messagingService(token: string, userId: string): { messaging: Me
             setLoading(false);
         }
     }
-
-    // permet d'actualiser les données lors d'un changement
-    useEffect(() => {
-        let active: boolean = true;
-
-        async function load() {
-            await refresh();
-            if (active) setLoading(false);
-        }
-
-        load();
-
-        return () => {
-            active = false;
-        };
-    }, []);
 
     return { messaging, loading, refresh, error };
 }
@@ -254,7 +235,7 @@ export const leaveThread = async (
     isLastMember: boolean
 ) => {
     try {
-        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/messaging/leaveThread`, {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/messaging/leavethread`, {
             method: "POST",
             body: JSON.stringify({
                 threadId,

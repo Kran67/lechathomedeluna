@@ -39,7 +39,7 @@ async function listVetVoucher(year = 0, clinic = '', object = '', id = null) {
       params.push(id);
     }
     else {
-      sql += ` AND DATE_PART('year',  v.date) = $1`;
+      sql += ` AND DATE_PART('year',  v.date) >= $1`;
       if (clinic.trim() !== '-' && object.trim() !== '-') {
         sql += ' AND v.clinic = $2';
         sql += ' AND v.object = $3';

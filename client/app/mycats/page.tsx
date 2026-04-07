@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 import Gallery from '@/app/components/data/Gallery';
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
@@ -32,14 +34,11 @@ export default function MyCats() {
   const { user } = useUser();
   const service = catsService(undefined, undefined, 0, user?.id);
 
-  const Years: {
-    value: number;
-    label: number;
-  }[] = [];
-  for (let i = 2026; i <= new Date().getFullYear(); i++) {
-    Years.push({ value: i, label: i});
-  }
   const isFaRef: boolean = service.cats?.some((u) => u.hostFamily?.id !== user?.id) as boolean;
+
+  useEffect(() => {
+    service.refresh();
+  }, [user]);
   
   return (
     <main className="flex flex-col gap-51 md:gap-20 w-full items-center md:pt-20 md:px-140">

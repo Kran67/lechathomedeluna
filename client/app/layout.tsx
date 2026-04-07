@@ -14,6 +14,8 @@ import { UserProvider } from '@/app/core/contexts/userContext';
 import { User } from '@/app/core/interfaces/user';
 import { getById } from '@/app/core/services/server/usersService';
 
+import { HeaderProvider } from './core/contexts/headerContext';
+
 /**
  * Ajout de la police de caractère utilisée sur le site
  * 
@@ -51,7 +53,9 @@ export default async function RootLayout({
       >
         <UserProvider initialUser={user}>
           <CookiesProvider>
-            {children}
+            <HeaderProvider>
+              {children}
+            </HeaderProvider>
           </CookiesProvider>
         </UserProvider>
         <ToastContainer

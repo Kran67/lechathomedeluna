@@ -102,9 +102,14 @@ async function listCats(isAdoptable = false, year = 0, hostFamilyId = null) {
 
 async function getCatDetails(slug) {
   const res = await pool.query(`
-    SELECT c.*, u.id AS hostFamily_id, u.name AS hostFamily_name
+    SELECT c.*, u.id AS hostFamily_id, u.hostfamily_name
     FROM cats c
-    LEFT JOIN users u ON u.id = c.hostfamily_id
+    LEFT JOIN LATERAL (
+        SELECT id, CONCAT(users.name, ' ', users.lastname) AS hostfamily_name
+        FROM users
+        WHERE c.hostfamily_id = users.id
+        LIMIT 1
+    ) u on true
     WHERE c.slug = $1
   `, [slug]);
   if (res.rows.length === 0) return null;
@@ -383,7 +388,7 @@ async function catsBoosterVaccinationNoLaterThanOneMonthCount(id) {
     }
   }
   const res = await pool.query(sql);
-  return res.rows.map(mapCatRow);
+  return res.rows[0].count;
 }
 
 async function catsBoosterVaccinationNoLaterThanOneMonthList(id) {

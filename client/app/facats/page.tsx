@@ -55,7 +55,7 @@ export default function AdoptionPage() {
                     <span className="text-[32px] text-(--primary) w-full">Les chats nouvellement accueillis</span>
                     <span className="text-lg text-(--text) font-normal w-full">Fiches de chats en attente de validation</span>
                     <div className="flex w-full items-center justify-center gap-10">
-                        {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember]) &&
+                        {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.CommitteeMember]) &&
                                 <Input
                                 name="search"
                                 placeHolder="Rechercher un chat par son ICAD ou son nom"
@@ -65,7 +65,7 @@ export default function AdoptionPage() {
                                 showLabel={false}
                                 onChange={(e: { target: { value: SetStateAction<string>; }; }) => setSearch(e.target.value)} />
                         }
-                        {user && hasRoles(user.roles, [UserRoles.Admin]) && <Button
+                        {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin]) && <Button
                             text='Ajouter une fiche chat'
                             url='/admin/cat'
                             className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-16 text-(--white) md:w-170' />

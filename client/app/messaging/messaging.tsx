@@ -259,7 +259,7 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
                             svgFill='#902677'
                             title='Créer une discussion privée'
                             onClick={() => createNewThread("private")} />
-                        {user && hasRoles(user.roles, [UserRoles.Admin]) && <IconButton
+                        {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin]) && <IconButton
                             icon={IconButtonImages.Group}
                             svgFill='#902677'
                             title='Créer une discussion groupée'

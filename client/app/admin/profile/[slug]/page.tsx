@@ -22,7 +22,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ slug: 
     let users: User[] = [];
     let res;
 
-    if (!user || (user && !hasRoles(user.roles, [UserRoles.Admin]))) {
+    if (!user || (user && !hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin]))) {
         redirect("/");
     }
 
@@ -40,6 +40,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ slug: 
     } else {
         throw new Error(res.error);
     }
+    console.log(profile);
 
     return (
         <Profile profile={profile} users={users} isNew={slug === "new"} />

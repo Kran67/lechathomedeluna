@@ -7,6 +7,7 @@ export const CONSTANTS = {
         ICAD: 5
     },
     ROLE_LABELS: {
+        SuperAdmin: "Système", 
         Admin: "Adminstrateur",
         CommitteeMember: "Membre du comité",
         AdoptionReferent: "Référent adoption",

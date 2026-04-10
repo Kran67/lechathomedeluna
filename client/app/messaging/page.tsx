@@ -37,7 +37,7 @@ export default async function Page() {
     const user = await getById(token, userId ?? '');
     let threads: Messaging[] = [];
 
-    if (!user || (user && !hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]))) {
+    if (!user || (user && !hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]))) {
         redirect("/");
     }
 

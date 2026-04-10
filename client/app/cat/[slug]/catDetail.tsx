@@ -68,16 +68,20 @@ export default function Property({ cat }: CatProps) {
     if (cat?.birthDate) {
         collapseElementContent.push({ name: `${dateAge(cat?.birthDate)}` });
     }
+    console.log(cat);
     if (cat?.sex) {
         collapseElementContent.push({ name: cat?.sex});
     }
     if (cat?.dress) {
         collapseElementContent.push({ name: cat?.dress});
     }
-    if (cat?.status) {
-        collapseElementContent.push({ name: cat?.status});
+    if (cat?.statusFiv) {
+        collapseElementContent.push({ name: `Fiv : ${cat?.statusFiv}`});
     }
-    if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember]) && cat?.entryDate) {
+    if (cat?.statusFelv) {
+        collapseElementContent.push({ name: `Felv : ${cat?.statusFelv}`});
+    }
+    if (user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.CommitteeMember]) && cat?.entryDate) {
         collapseElementContent.push({ name: `Entrée ${DateUtils.differenceDate(new Date(cat?.entryDate)).text}`});
     }
     if (cat?.provenance) {
@@ -205,8 +209,7 @@ export default function Property({ cat }: CatProps) {
                             <div className="flex gap-8 items-center">
                                 <span className="text-2xl text-(--text)">{cat?.name}</span>
                                 { cat?.hostFamily?.id !== user?.id && 
-                                    // <span className="text-2xl text-(--text)"> ({cat?.hostFamily?.name})</span>
-                                    <Link
+                                    cat?.hostFamily?.name && <Link
                                         text={'(' + cat?.hostFamily?.name as string + ')'}
                                         className='cursor-pointer text-2xl text-(--text)'
                                         title='Envoyer un message'

@@ -90,7 +90,7 @@ export default function CatCard({ cat }: PropsCC) {
             {cat.isDuringVisit && <div className="absolute ruban -left-5 -top-5 w-145 h-145 z-1 overflow-hidden">
                 <span className='absolute -left-30 top-40 w-160 text-center rotate-[-45deg] text-(--white) text-sm bg-gradient-to-b from-(--pink) to-(--primary) pl-5 pr-5'>EN COURS DE VISITE</span>
             </div>}
-            {!cat.adoptionDate && user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <IconButton
+            {!cat.adoptionDate && user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <IconButton
                 icon={IconButtonImages.Pen}
                 imgWidth={16}
                 imgHeight={16}
@@ -100,7 +100,7 @@ export default function CatCard({ cat }: PropsCC) {
                 onClick={(e) => {e.stopPropagation();}}
                 title="Éditer la fiche"
             />}
-            {cat.adoptionDate && user && hasRoles(user.roles, [UserRoles.Admin]) && <IconButton
+            {cat.adoptionDate && user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin]) && <IconButton
                 icon={IconButtonImages.Trash}
                 imgWidth={16}
                 imgHeight={16}
@@ -127,7 +127,8 @@ export default function CatCard({ cat }: PropsCC) {
                     <span className="text-sm text-(--text) font-medium">Age : {dateAge(cat.birthDate)}</span>
                     <span className="text-sm text-(--text) font-medium">Sexe : {cat.sex}</span>
                     <span className="text-sm text-(--text) font-medium">Robe : {cat.dress}</span>
-                    {user && <span className="text-sm text-(--text) font-medium">Statut (FIV & FELV) : {cat.status}</span>}
+                    {user && <span className="text-sm text-(--text) font-medium">Statut FIV : {cat.statusFiv}</span>}
+                    {user && <span className="text-sm text-(--text) font-medium">Statut FELV : {cat.statusFelv}</span>}
                     <span className="text-sm text-(--text) font-medium">Date d'entrée : {cat.entryDate ? DateUtils.differenceDate(new Date(cat.entryDate)).text : ""}</span>
                     {user && <span className="text-sm text-(--text) font-medium">Provenance : {cat.provenance}</span>}
                 </div>

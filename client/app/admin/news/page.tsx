@@ -12,7 +12,7 @@ export default async function Page() {
     const token: string = cookieStore.get("token")?.value as string;
     const user = await getById(token, userId ?? '');
 
-    if (!user || (user && !hasRoles(user.roles, [UserRoles.Admin]))) {
+    if (!user || (user && !hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin]))) {
         redirect("/");
     }
 

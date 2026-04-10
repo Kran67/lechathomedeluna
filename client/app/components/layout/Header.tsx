@@ -82,32 +82,28 @@ export default function Header({ activeMenu }: HeaderProps) {
                 const res = await getUnreadMessageByUserId(token, user?.id as string);
                 setUnreadMsg(res);
             })();
-            if (hasRoles(user.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent])) {
+            if (hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.VetVoucherReferent])) {
                 (async () => {
                     const res = await getVetVouchersCount(token);
                     setVetVoucherCount(res);
-                    console.log('VetVoucherCount', res);
                 })();
             }
-            if (hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily])) {
+            if (hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily])) {
                 (async () => {
                     const res = await getFACatNotFullyCompletedCount(token, isHostFamily ? user.id : null);
                     setFACatNotFullyCompletedCount(res);
-                    console.log('FACatNotFullyCompletedCount', res);
                 })();
             }
-            if (hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember])) {
+            if (hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.CommitteeMember])) {
                 (async () => {
                     const res = await getAdoptedCatNotFullyCompletedCount(token);
                     setAdoptedCatNotFullyCompletedCount(res);
-                    console.log('AdoptedCatNotFullyCompletedCount', res);
                 })();
             }
-            if (hasRoles(user.roles, [UserRoles.Admin, UserRoles.HostFamily])) {
+            if (hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.HostFamily])) {
                 (async () => {
                     const res = await getCatBoosterVaccinationNoLaterThanOneMonthCount(token, isHostFamily ? user.id : null);
                     setCatBoosterVaccinationNoLaterThanOneMonthCount(res);
-                    console.log('CatBoosterVaccinationNoLaterThanOneMonthCount', res);
                 })();
             }
         }
@@ -138,30 +134,30 @@ export default function Header({ activeMenu }: HeaderProps) {
                 isActive={activeMenu === HeaderMenuItems.CatsForAdoption}
                 url="/catsforadoption"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
-            {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <MenuItem
+            {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <MenuItem
                 text="Mes alertes"
                 isActive={activeMenu === HeaderMenuItems.Alerts}
                 url="/myalerts"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
                 badge={faCatNotFullyCompletedCount + adoptedCatNotFullyCompletedCount + vetVoucherCount + catBoosterVaccinationNoLaterThanOneMonthCount} />}
-            {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent]) && <MenuItem
+            {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.VetVoucherReferent]) && <MenuItem
                 text="Bons vétérinaires"
                 isActive={activeMenu === HeaderMenuItems.VeterinaryVouchers}
                 url="/veterinary"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
                 badge={vetVoucherCount} />}
-            {/* {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Volunteer]) && <MenuItem
+            {/* {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRole.Admin, UserRole.Volunteer]) && <MenuItem
                 text="Evénements"
                 isActive={activeMenu === HeaderMenuItems.Events}
                 url="/events"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />} */}
-            {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HealthRegisterReferent, UserRoles.VetVoucherReferent]) && <MenuItem
+            {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HealthRegisterReferent, UserRoles.VetVoucherReferent]) && <MenuItem
                 text="Chats en FA"
                 isActive={activeMenu === HeaderMenuItems.Adoption}
                 url="/facats"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                badge={hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily]) ? faCatNotFullyCompletedCount : 0} />}
-            {/* {user && hasRoles(user.roles, [UserRole.Admin, UserRole.Assistant, UserRole.Volunteer]) && <MenuItem
+                badge={hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily]) ? faCatNotFullyCompletedCount : 0} />}
+            {/* {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRole.Admin, UserRole.Assistant, UserRole.Volunteer]) && <MenuItem
                 text="Bénévoles"
                 isActive={activeMenu === HeaderMenuItems.Volunteers}
                 url="/"
@@ -172,7 +168,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                 url="/adoptedcats"
                 className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
                 badge={adoptedCatCount} />}
-            {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <MenuItem
+            {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <MenuItem
                 text="Messagerie"
                 isActive={activeMenu === HeaderMenuItems.Messaging}
                 url="/messaging"

@@ -22,7 +22,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     const user = await getById(token, userId ?? '');
     let hostFamilies: User[] = [];
 
-    if (!user || (user && !hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]))) {
+    if (!user || (user && !hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]))) {
         redirect("/");
     }
 

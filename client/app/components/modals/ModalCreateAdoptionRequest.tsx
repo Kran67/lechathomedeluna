@@ -5,6 +5,7 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { createPortal } from 'react-dom';
 
 import Select from 'react-select';
 
@@ -21,6 +22,9 @@ import {
   LifePlaces,
   YesNo,
 } from '@/app/core/staticlists/staticLists';
+
+import Link from '../ui/Link';
+import ModalConditionsOfUse from './modalConditionsOfUse';
 
 export default function ModalCreateAdoptionRequest({
     catName,
@@ -39,6 +43,11 @@ export default function ModalCreateAdoptionRequest({
     const [isOutsideAccess, setIsOutsideAccess] = useState<boolean>(false);
     const [dailyTimeOff, setDailyTimeOff] = useState<string>("");
     const [holidaysChildcareSolution, setHolidaysChildcareSolution] = useState<string>("");
+    const [readedConditionsOfUse, setReadedConditionsOfUse] = useState(false);
+    const [showModalConditionsOfUse, setShowModalConditionsOfUse] = useState(false);
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [approuvedConditions, setApprouvedConditions] = useState(false);
 
     const handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void> = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -74,15 +83,27 @@ export default function ModalCreateAdoptionRequest({
 
     return (
         <aside className="fixed inset-0 bg-gray-500/50 flex items-center justify-center z-1 w-400 md:w-full" onClick={closeModal}>
+            {showModalConditionsOfUse && createPortal(
+                <ModalConditionsOfUse
+                    firstName={firstName}
+                    lastName={lastName}
+                    closeModal={() => setShowModalConditionsOfUse(false)}
+                    onSuccess={() => {
+                        setShowModalConditionsOfUse(false);
+                        setReadedConditionsOfUse(true);
+                    }}
+                />,
+                document.body
+            )}
             <div
                 className="bg-(--white) relative px-8 py-10 md:px-36 md:py-39 rounded-[10px] flex flex-col gap-20 w-full md:w-600 border border-(--primary) border-1"
                 onClick={(e) => e.stopPropagation()}
-            >
+             >
                 <h4 className="text-(--primary)">Créer une demande d'adoption pour {catName}</h4>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-10" role="form" aria-label="Information de la demande d'adoption">
                     <div className='flex gap-20'>
-                        <Input name="lastname" label="Nom" type={InputTypes.Text} required={true} maxLength={30} />
-                        <Input name="firstname" label="Prénom" type={InputTypes.Text} required={true} maxLength={30} />
+                        <Input name="lastname" label="Nom" type={InputTypes.Text} required={true} maxLength={30} onChange={(e) => setFirstName(e.currentTarget.value)} />
+                        <Input name="firstname" label="Prénom" type={InputTypes.Text} required={true} maxLength={30} onChange={(e) => setLastName(e.currentTarget.value)} />
                     </div>
                     <div className='flex gap-20'>
                         <Input name="email" label="Email" type={InputTypes.Text} required={true} maxLength={100} />
@@ -173,7 +194,16 @@ export default function ModalCreateAdoptionRequest({
                             />
                         </div>
                     </div>
-                    <Button text="Créer la demande" className='flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) w-200 self-center' />
+                    <div className={"flex flex-col gap-8" + (firstName !== "" && lastName !== "" ? "" : " hidden")}>
+                        <Link className="text-sm" text="Lire les conditions d'utilisation" onClick={(e) => {
+                            setShowModalConditionsOfUse(true);
+                        }} />
+                        <div className="flex gap-5 items-center">
+                            <input className="min-w-[1.15em] min-h-[1.15em]" type="checkbox" name="approuved-conditions" disabled={!readedConditionsOfUse} onChange={(e) => setApprouvedConditions(e.currentTarget.checked) }/>
+                            <label className="text-xs" htmlFor='approuved-conditions' >J'ai lu et j'accepte les conditions d'utilisation de mes données personnelles par le ’Chat'Home de Luna’</label>
+                        </div>
+                    </div>
+                    <Button text="Créer la demande" className='flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) w-200 self-center' disabled={!approuvedConditions} />
                 </form>
                 <IconButton icon={IconButtonImages.Cross} onClick={closeModal} imgWidth={20} imgHeight={20} className='absolute top-15 right-15 cursor-pointer' svgFill='#902677' />
             </div>

@@ -77,7 +77,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const { user } = useUser();
     const cookies: Cookies = useCookies();
     const token: string = cookies.get("token") as string;
-    const [status, setStatus] = useState<string | null>(cat?.status ?? null);
+    const [statusFiv, setStatusFiv] = useState<string | null>(cat?.statusFiv ?? null);
+    const [statusFelv, setStatusFelv] = useState<string | null>(cat?.statusFelv ?? null);
     const [sex, setSex] = useState<string | null>(cat?.sex ?? null);
     const [isSterilized, setIsSterilized] = useState<boolean>(cat?.isSterilized ?? false);
     const [isDuringVisit, setIsDuringVisit] = useState<boolean>(cat?.isDuringVisit ?? false);
@@ -123,7 +124,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         label: `${u.lastName} ${u.name}`,
     }));
 
-    const isReadonly: boolean = !hasRoles(user?.roles as string, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily]);
+    const isReadonly: boolean = !hasRoles(user?.roles as string, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily]);
 
     // Avant chaque soumission, vérification des données fournies valides.
     const handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void> = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -160,7 +161,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
             slug,
             catName,
             formData.get("description") as string,
-            status,
+            statusFiv,
+            statusFelv,
             numId,
             sex,
             dress,
@@ -493,9 +495,25 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     isClearable={false}
                                     isSearchable={false}
                                     placeholder="Statut"
-                                    value={CatStatus.find(c => c.value === status)}
-                                    onChange={(e:any) => setStatus(e?.value as string ?? "")}
-                                /> : <div className='flex text-sm text-(--text) border border-1 border-(--pink) h-40 rounded-[4px] items-center px-10 py-16 bg-[#eee]'>{CatStatus?.find(c => c.value === status)?.label}</div>}
+                                    value={CatStatus.find(c => c.value === statusFiv)}
+                                    onChange={(e:any) => setStatusFiv(e?.value as string ?? "")}
+                                /> : <div className='flex text-sm text-(--text) border border-1 border-(--pink) h-40 rounded-[4px] items-center px-10 py-16 bg-[#eee]'>{CatStatus?.find(c => c.value === statusFiv)?.label}</div>}
+                            </div>
+                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                                <label className="text-sm text-(--text) font-medium " htmlFor="status">Statut (FIV & FELV)</label>
+                                {!isReadonly ? <Select
+                                    options={CatStatus}
+                                    className="select"
+                                    classNamePrefix="select"
+                                    name="status"
+                                    id="status"
+                                    isMulti={false}
+                                    isClearable={false}
+                                    isSearchable={false}
+                                    placeholder="Statut"
+                                    value={CatStatus.find(c => c.value === statusFelv)}
+                                    onChange={(e:any) => setStatusFelv(e?.value as string ?? "")}
+                                /> : <div className='flex text-sm text-(--text) border border-1 border-(--pink) h-40 rounded-[4px] items-center px-10 py-16 bg-[#eee]'>{CatStatus?.find(c => c.value === statusFelv)?.label}</div>}
                             </div>
                             <Input name="numIdentification" label="N° d'identification" value={cat?.numIdentification} maxLength={20} readOnly={isReadonly} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
@@ -576,7 +594,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 type={InputTypes.Date}
                                 value={cat?.preVisitDate ? formatYMMDD(new Date(cat?.preVisitDate)) : undefined}
                                 readOnly={isReadonly} />
-                            {user && hasRoles(user?.roles as string, [UserRoles.Admin, UserRoles.ICADReferent]) && <Input
+                            {user && hasRoles(user?.roles as string, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.ICADReferent]) && <Input
                                 name="destination"
                                 label="Destination"
                                 type={InputTypes.Text}
@@ -611,7 +629,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     </div>
                                 ))}
                             </div>
-                            {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.HostFamily]) && <><div className="select flex flex-col flex-1 justify-start h-77">
+                            {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.HostFamily]) && <><div className="select flex flex-col flex-1 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="">Vaccins</label>
                                 <div className='flex gap-10 items-center'>
                                     <Input
@@ -759,13 +777,13 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 text="Valider les modifications"
                                 className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)'
                                 disabled={isSubmitted} />}
-                            {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.HostFamily, UserRoles.AdoptionReferent]) && !isAdoptable && 
+                            {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.HostFamily, UserRoles.AdoptionReferent]) && !isAdoptable && 
                             <Button 
-                                text={user && !hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent]) ? "Valider la fiche pour vérification avant adoption" : "Valider la fiche pour l'adoption"}
+                                text={user && !hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent]) ? "Valider la fiche pour vérification avant adoption" : "Valider la fiche pour l'adoption"}
                                 className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)'
                                 disabled={isSubmitted}
                                 onClick={async (e) => {
-                                    if (hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent])) isAdoptable = true;
+                                    if (hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent])) isAdoptable = true;
                                     if (isAdoptable) {
                                         await createThreadAndSendMessage(token, user?.id, [hostFamilyId as string], `🔥 Le 🐈 ${baseUrl}/admin/cat/${cat?.slug}[${cat?.name}] ${cat?.numIdentification ? '('+cat.numIdentification+')' : ''} est validé pour l'adoption.`);
                                     }
@@ -775,7 +793,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 } }/>}
                         </div>
                     </form>
-                    {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.HostFamily]) && 
+                    {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.HostFamily]) && 
                         <>
                             <hr className='border-(--primary)' />
                             <form onSubmit={handleSubmitVoucher} className="flex flex-col gap-10" role="form" aria-label="Demander un bon vétérinaire">

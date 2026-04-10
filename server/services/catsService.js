@@ -12,7 +12,8 @@ function mapCatRow(row) {
     slug: row.slug,
     name: row.name,
     description: row.description,
-    status: row.status,
+    statusFiv: row.statusfiv,
+    statusFelv: row.statusfelv,
     numIdentification: row.numidentification,
     sex: row.sex,
     dress: row.dress,
@@ -130,7 +131,8 @@ async function createCat(payload) {
   const {
     name,
     description = null,
-    status = null,
+    statusFiv = null,
+    statusFelv = null,
     numIdentification = null,
     sex = null,
     dress = null,
@@ -154,9 +156,9 @@ async function createCat(payload) {
   const base = tools.uuid();
   const uniqueSlug = await ensureUniqueSlug(base);
   const res = await pool.query(
-    `INSERT INTO cats(name, slug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdoptable, adoptionDate, hostFamily_id, entryDate, provenance, created_by, created_at, updated_by, updated_at) 
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,false,$13,$14, $15, $16, $17, NOW(), $17, NOW()) RETURNING id`,
-    [name, uniqueSlug, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, adoptionDate, hostFamilyId, entryDate, provenance, userId]
+    `INSERT INTO cats(name, slug, description, statusFiv, statusFelv, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdoptable, adoptionDate, hostFamily_id, entryDate, provenance, created_by, created_at, updated_by, updated_at) 
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,false,$13,$14, $15, $16, $17, $18, NOW(), $18, NOW()) RETURNING id`,
+    [name, uniqueSlug, description, statusFiv, statusFelv, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, adoptionDate, hostFamilyId, entryDate, provenance, userId]
   );
   const lastId = res.rows[0].id;
 
@@ -170,7 +172,8 @@ async function createCat(payload) {
 }
 
 async function updateCat(slug, changes) {
-  const allowed = ['name', 'description', 'status', 'numIdentification', 'sex', 'dress', 'race', 'isSterilized', 'sterilizationDate', 'birthDate', 'isDuringVisit', 'isAdoptable', 'adoptionDate', 'hostFamily_Id', 'preVisitDate', 'entryDate', 'provenance', 'destination'];
+  const allowed = ['name', 'description', 'statusFiv', 'statusFelv', 'numIdentification', 'sex', 'dress', 'race', 'isSterilized', 'sterilizationDate', 
+    'birthDate', 'isDuringVisit', 'isAdoptable', 'adoptionDate', 'hostFamily_Id', 'preVisitDate', 'entryDate', 'provenance', 'destination'];
   const fields = [];
   const params = [];
 
@@ -444,9 +447,10 @@ async function createAdoptionRequestForCat(payload) {
   if (!holidaysChildcareSolution) throw new Error('Solution de garde pendant les congés est requis');
   
   await pool.query(
-    `INSERT INTO cat_request_adoptions(cat_id, date, last_name, first_name, email, facebook, lifePlace, area, isOutsideAccess, householdPeopleNumber, alreadyPresenAnimalsNumber, dailyTimeOff, holidaysChildcareSolution)
-     VALUES ($1,NOW(),$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
-    [catId, lastName, firstName, email, facebook, lifePlace, area, isOutsideAccess, householdPeopleNumber, alreadyPresenAnimalsNumber, dailyTimeOff, holidaysChildcareSolution]
+    `INSERT INTO cat_request_adoptions(cat_id, date, last_name, first_name, email, facebook, lifePlace, area, isOutsideAccess, householdPeopleNumber, alreadyPresenAnimalsNumber, dailyTimeOff, holidaysChildcareSolution, acceptedConditionOfUse, acceptedConditionOfUseDate)
+     VALUES ($1,NOW(),$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
+    [catId, lastName, firstName, email, facebook, lifePlace, area, isOutsideAccess, householdPeopleNumber, alreadyPresenAnimalsNumber, dailyTimeOff, holidaysChildcareSolution,
+      true, new Date()]
   );
 }
 

@@ -72,6 +72,7 @@ export enum InputImageTypes {
 }
 
 export enum UserRoles {
+    SuperAdmin = "SuperAdmin",
     Admin = "Admin",
     CommitteeMember = "CommitteeMember",
     AdoptionReferent = "AdoptionReferent",

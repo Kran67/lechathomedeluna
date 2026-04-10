@@ -25,7 +25,7 @@ function requireAuth(req, res, next) {
 
 function requireAdmin(req, res, next) {
   requireAuth(req, res, () => {
-    if (!req.user.roles.includes('Admin')) return res.status(403).json({ error: 'admin required' });
+    if (!(req.user.roles.includes('Admin') || req.user.roles.includes('SuperAdmin'))) return res.status(403).json({ error: 'admin required' });
     next();
   });
 }
@@ -48,7 +48,7 @@ function requireSelfOrAdmin(param = 'id') {
     requireAuth(req, res, () => {
       const requestedId = String(req.params && req.params[param]);
       const userRoles = req.user.roles.split("|");      
-      if (userRoles.includes('Admin') || String(req.user.id) === requestedId) return next();
+      if (userRoles.includes('SuperAdmin')|| userRoles.includes('Admin') || String(req.user.id) === requestedId) return next();
       return res.status(403).json({ error: 'forbidden' });
     });
   };

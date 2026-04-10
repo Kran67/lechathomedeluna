@@ -267,7 +267,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                                     onChange={(e:any) => setIsDuringVisit(e?.value as boolean ?? "")}
                                 />
                             </div>
-                            { user && hasRoles(user.roles, [UserRoles.Admin]) &&
+                            { user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin]) &&
                                 <Input name="adoptionDate" label="Date d'adoption" type={InputTypes.Date} value={undefined} />
                             }
                             <Input name="catPictures" label="Photos" type={InputTypes.File} multipleFile={true} onChange={picturesChange} />

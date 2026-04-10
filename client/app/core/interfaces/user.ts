@@ -2,7 +2,7 @@ export interface User {
     id: string;
     name: string;
     lastName: string;
-    social_number?: string;
+    placeOfBirth?: string;
     phone: string;
     address: string;
     city: string;

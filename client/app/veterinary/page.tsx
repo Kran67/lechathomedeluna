@@ -80,7 +80,7 @@ export default function VetVouchers() {
         Years.push({ value: i, label: i});
     }
 
-    if (!user || !hasRoles(user?.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent])) {
+    if (!user || !hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.VetVoucherReferent])) {
         redirect("/");
     }
 

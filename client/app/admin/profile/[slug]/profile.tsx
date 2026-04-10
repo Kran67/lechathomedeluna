@@ -76,7 +76,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
     const [birthDate, setBirthDate] = useState<string | null>(profile?.birthDate ?? null);
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
-    if (!user || !hasRoles(user?.roles, [UserRoles.Admin])) {
+    if (!user || !hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin])) {
         redirect("/");
     }
 
@@ -97,7 +97,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                 email,
                 formData.get("name") as string,
                 formData.get("lastname") as string,
-                formData.get("social_number") as string,
+                formData.get("placeOfBirth") as string,
                 formData.get("phone") as string,
                 formData.get("address") as string,
                 cityId,
@@ -111,9 +111,10 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
             res = await update(
                 token,
                 profile!.id,
+                email,
                 formData.get("name") as string,
                 formData.get("lastname") as string,
-                formData.get("social_number") as string,
+                formData.get("placeOfBirth") as string,
                 formData.get("phone") as string,
                 formData.get("address") as string,
                 cityId,
@@ -167,12 +168,12 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                         </div>
                         <div className="flex flex-col gap-12 md:gap-24">
                             <Input name="id" label="Identifiant" value={profile?.id} hidden={true} />
-                            <Input name="email" label="Email" value={profile?.email} readOnly={!isNew} required={isNew} maxLength={100} />
+                            <Input name="email" label="Email" value={profile?.email} readOnly={!isNew && !hasRoles(user.roles, [UserRoles.SuperAdmin])} required={isNew} maxLength={100} />
                             <Input name="name" label="Prénom" value={profile?.name} required={isNew} maxLength={50} />
                             <Input name="lastname" label="Nom" value={profile?.lastName} required={isNew} maxLength={50} />
                             <Input name="birthDate" label="Date de naissance" type={InputTypes.Date} value={birthDate ? formatYMMDD(new Date(birthDate)) : undefined}
                                 onChange={(e) => setBirthDate(e.currentTarget.value)} />
-                            <Input name="social_number" label="N° sécurité sociale" value={profile?.social_number} required={true} maxLength={13} pattern={"[0-9]{13}"} />
+                            <Input name="placeOfBirth" label="Lieu de naissance" value={profile?.placeOfBirth} required={true} maxLength={45} />
                             <Input name="phone" label="Téléphone" value={profile?.phone} maxLength={10} />
                             <Input name="address" label="Adresse" value={profile?.address} maxLength={255} />
                             <PostalCodeSelect

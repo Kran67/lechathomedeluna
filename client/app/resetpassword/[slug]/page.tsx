@@ -5,6 +5,7 @@ import type {
 
 import {
   checkResetTokenValidity,
+  getUserByResetToken,
 } from '@/app/core/services/server/usersService';
 
 import ResetPassword from './resetpassword';
@@ -29,8 +30,8 @@ export async function generateMetadata({ params }: Props,
  */
 export default async function ResetPasswordPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const user = await getUserByResetToken(slug);
   // on va vérifier que le token est valide et qu'il n'a pas expiré
   const tokenValid: { valid: boolean } = await checkResetTokenValidity(slug);
-
-  return <ResetPassword token={slug} tokenValid={tokenValid.valid} />
+  return <ResetPassword token={slug} tokenValid={tokenValid.valid} user={user} />
 }

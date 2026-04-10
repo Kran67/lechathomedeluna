@@ -68,19 +68,19 @@ export default function MyAlerts() {
       //    const res = await unreadMessageListByUserId(token, user?.id as string);
       //    setUnreadMessage(res);
       //})();
-      if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily])) {
+      if (user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily])) {
         (async () => {
             const res = await getFACatNotFullyCompletedList(token, isHostFamily ? user.id : null);
             setUnCompletedFACatList(res);
         })();
       }
-      if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember])) {
+      if (user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.CommitteeMember])) {
         (async () => {
             const res = await getAdoptedCatNotFullyCompletedList(token);
             setUnCompletedAdoptedCatList(res);
         })();
       }
-      if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent])) {
+      if (user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.VetVoucherReferent])) {
         (async () => {
             const res = await getVetVoucherslist(token);
             setVetVoucherList(res);
@@ -90,7 +90,7 @@ export default function MyAlerts() {
         const res = await getHasPreVisitWithoutDateList(token);
         setPreVisitList(res);
       })();
-      if (user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.HostFamily])) {
+      if (user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.HostFamily])) {
         (async () => {
             const res = await getCatBoosterVaccinationNoLaterThanOneMonthList(token, isHostFamily ? user.id : null);
             setVaccineBoosterList(res);
@@ -126,7 +126,7 @@ export default function MyAlerts() {
                 )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Vous n'avez pas de messages</div>}
               </div>
             </div> */}
-            {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.VetVoucherReferent]) && <div className='flex flex-col'>
+            {user && hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.VetVoucherReferent]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Bons vétérinaires :</span>
             <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
                 <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
@@ -147,7 +147,7 @@ export default function MyAlerts() {
                 )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de bon vétérinaire en attente</div>}
               </div>
           </div>} 
-          {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily]) && <div className='flex flex-col'>
+          {user && hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Fiches chats en FA incomplètes :</span>
             <table className="w-full border-l border-r border-t border-solid border-(--pink)">
                 <thead className="w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
@@ -170,7 +170,7 @@ export default function MyAlerts() {
                 </tbody>
               </table>
           </div>}
-          {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.CommitteeMember]) && <div className='flex flex-col'>
+          {user && hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.CommitteeMember]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Fiches chats adoptés incomplètes :</span>
             <table className="w-full border-l border-r border-t border-solid border-(--pink)">
                 <thead className="border-b border-solid border-(--pink) bg-(--pink) font-bold">
@@ -191,7 +191,7 @@ export default function MyAlerts() {
                 </tbody>
               </table>
           </div>}
-          {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.HostFamily]) && <div className='flex flex-col'>
+          {user && hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.HostFamily]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Rappels :</span>
             <table className="w-full border-l border-r border-t border-solid border-(--pink)">
                 <thead className="w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
@@ -215,7 +215,7 @@ export default function MyAlerts() {
                 </tbody>
               </table>
           </div>}
-          {user && hasRoles(user?.roles, [UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <div className='flex flex-col'>
+          {user && hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Pré visites sans date :</span>
             <table className="w-full border-l border-r border-t border-solid border-(--pink)">
                 <thead className="w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">

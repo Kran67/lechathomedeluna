@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import { useState } from 'react';
 
 /**
  * Interface pour les propriétés d'initialisation de la Checkbox
@@ -51,7 +51,7 @@ export default function Checkbox({ id, text, disabled, className, checked = fals
                 disabled={disabled}
                 checked={isChecked}
                 onChange={(e) => setIsChecked(e.target.checked)} />
-            <span className="checkmark w-12 h-12 border border-1 border-solid border-(--dark-grey) mr-10 rounded-[2px] pointer-events-none"></span>
+            {/* <span className="checkmark min-w-12 min-h-12 border border-1 border-solid border-(--dark-grey) mr-10 rounded-[2px] pointer-events-none"></span> */}
             <label htmlFor={id} className={"pointer-events-none " + className}>{text}{required ? " *" : ""}</label>
         </div>
     );

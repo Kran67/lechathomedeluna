@@ -11,7 +11,7 @@ function mapUserRow(row) {
     id: row.id,
     name: row.name,
     lastName: row.lastname ?? "",
-    social_number: row.social_number ?? "",
+    placeOfBirth: row.placeofbirth ?? "",
     phone: row.phone ?? "",
     address: row.address ?? "",
     postalCode: row.postalcode ?? "",
@@ -25,6 +25,8 @@ function mapUserRow(row) {
     reset_expires: row.reset_expires ?? null,
     capacity: row.capacity ?? "Empty",
     birthDate: row.birthdate,
+    acceptedConditionOfUse: row.acceptedconditionofuse,
+    acceptedConditionOfUseDate: row.acceptedconditionofusedate
   };
 }
 
@@ -100,25 +102,19 @@ async function requestPasswordReset({ email }) {
   return resp;
 }
 
-async function resetPassword({ token, password }) {
-  if (!token || !password) { const err = new Error('Un jeton et un mot de passe sont requis.'); err.status = 400; throw err; }
-  if (String(password).length < 8) { const err = new Error('Le mot de passe doit comporter au moins 8 caractères.'); err.status = 400; throw err; }
-  const now = Date.now();
-  const res = await pool.query('SELECT id FROM users WHERE reset_token = $1 AND IFNULL(reset_expires, 0) > $2', [token, now]);
-  const user = mapUserRow(res.rows[0]);
-  if (!user) { const err = new Error('Jeton invalide ou expiré'); err.status = 400; throw err; }
-  const password_hash = hashPassword(String(password));
-  await pool.query('UPDATE users SET password_hash = $1, reset_token = NULL, reset_expires = NULL WHERE id = $2', [password_hash, user.id]);
-  return { ok: true };
+async function getUserIdByResetToken(token) {
+  const sql = "SELECT * FROM users WHERE reset_token = '" + token +"'";
+  const res = await pool.query(sql);
+  return mapUserRow(res.rows[0]);
 }
 
 module.exports = {
   register,
   login,
   requestPasswordReset,
-  resetPassword,
   hashPassword,
   verifyPassword,
   signToken,
-  mapUserRow
+  mapUserRow,
+  getUserIdByResetToken
 };

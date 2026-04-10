@@ -91,13 +91,13 @@ export default function HomePage() {
           />
         </div>
         <div className="flex w-full items-center justify-center gap-10">
-          {user && hasRoles(user.roles, [UserRoles.Admin]) && 
+          {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin]) && 
             <Button text='Ajouter une actualité' url='/admin/news' className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-16 text-(--white) md:w-170' /> }
         </div>
         {service.news && service.news.length === 0 && <span className="text-(--text) text-center">Aucune actualité pour le moment.</span>}
         {service.news && service.news.map((newItem: New, idx: number) => (
           <div key={newItem.id + idx} className='relative'>
-            {user && hasRoles(user.roles, [UserRoles.Admin]) && <IconButton
+            {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin]) && <IconButton
                             icon={IconButtonImages.Trash}
                             imgWidth={16}
                             imgHeight={16}

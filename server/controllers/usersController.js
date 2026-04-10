@@ -1,5 +1,5 @@
 const { listUsers, getUser, createUser, updateUser, resetMyPassword, getUserByEmail, changePassword } = require('../services/usersService');
-const { mapUserRow } = require('../services/authService');
+const { mapUserRow, getUserIdByResetToken } = require('../services/authService');
 const { statusFromError } = require('../utils/lib');
 const jwt = require('jsonwebtoken');
 
@@ -48,7 +48,7 @@ async function create(req, res) {
 
 async function update(req, res) {
   try {
-    const allowAdminRole = req.user && req.user.role === 'Admin';
+    const allowAdminRole = req.user && (req.user.role === 'SuperAdmin' || req.user.role === 'Admin');
     const updated = await updateUser(req.params.id, req.body || {}, { allowAdminRole });
     res.json(updated.rows[0]);
   } catch (e) {
@@ -122,6 +122,19 @@ async function updatePassword(req, res) {
   }
 }
 
+async function userIdByResetToken(req, res) {
+    try {
+      const result = await getUserIdByResetToken(req.params.token);
+      if (result) {
+        res.status(201).json(result);
+      } else {
+        return res.status(404).json({ error: 'User not found' });
+      }
+    } catch (e) {
+      return res.status(statusFromError(e)).json({ error: e.message });
+    }
+}
+
 module.exports = {
   list,
   getById,
@@ -130,5 +143,6 @@ module.exports = {
   resetPassword,
   getByEmail,
   checkResetTokenValidity,
-  updatePassword
+  updatePassword,
+  userIdByResetToken
 };

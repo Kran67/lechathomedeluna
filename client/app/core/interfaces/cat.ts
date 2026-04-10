@@ -19,7 +19,8 @@ export interface Cat {
     slug: string;
     description?: string;
     name: string;
-    status?: catStatus;
+    statusFiv?: catStatus;
+    statusFelv?: catStatus;
     numIdentification?: string;
     sex?: catSex;
     dress?: string;

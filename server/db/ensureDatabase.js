@@ -5,6 +5,10 @@ const pool = require("./pool");
 const tools = require("../utils/lib");
 const https = require('https');
 const { hashPassword } = require('../services/authService');
+const jwt = require('jsonwebtoken');
+
+const JWT_SECRET = process.env.JWT_SECRET || 'change-me-in-prod';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
 const PROPS_JSON_PATH = path.join(__dirname, '../data', 'cats.json');
 
@@ -79,7 +83,7 @@ async function initSchema(pool) {
         id SERIAL PRIMARY KEY,
         name VARCHAR(50) NOT NULL,
         lastName VARCHAR(50) NOT NULL,
-        social_number VARCHAR(13),
+        placeOfBirth VARCHAR(45),
         phone VARCHAR(10) NOT NULL,
         address VARCHAR(255) NOT NULL,
         cityId INTEGER NOT NULL REFERENCES postal_codes(id),
@@ -90,6 +94,8 @@ async function initSchema(pool) {
         referrer_id INTEGER REFERENCES users(id) ON DELETE RESTRICT,
         capacity VARCHAR(5) NOT NULL CHECK (capacity IN ('Empty','Full')),
         birthDate DATE,
+        acceptedConditionOfUse BOOLEAN DEFAULT false,
+        acceptedConditionOfUseDate DATE,
         reset_token VARCHAR(255),
         reset_expires TIMESTAMPTZ,
         UNIQUE(email)
@@ -101,7 +107,8 @@ async function initSchema(pool) {
       slug VARCHAR(50) NOT NULL UNIQUE,
       name VARCHAR(20) NOT NULL,
       description TEXT,
-      status VARCHAR(9) NOT NULL CHECK (status IN ('Positif','Négatif','Non testé')),
+      statusFiv VARCHAR(9) NOT NULL CHECK (statusFiv IN ('Positif','Négatif','Non testé')),
+      statusFelv VARCHAR(9) NOT NULL CHECK (statusFelv IN ('Positif','Négatif','Non testé')),
       numIdentification VARCHAR(20),
       sex VARCHAR(7) NOT NULL CHECK (sex IN ('Mâle','Femelle')),
       dress VARCHAR(10),
@@ -231,12 +238,14 @@ async function initSchema(pool) {
       householdPeopleNumber INTEGER NOT NULL,
       alreadyPresenAnimalsNumber INTEGER NOT NULL,
       dailyTimeOff VARCHAR(12) NOT NULL CHECK (dailyTimeOff IN ('Aucun', '1 heure', '2 heures', '3 heures', 'demi-journée', '5 heures', '6 heures', '7 heures', 'Journée', 'Soirée', 'Nuit')),
-      holidaysChildcareSolution BOOLEAN DEFAULT false
+      holidaysChildcareSolution BOOLEAN DEFAULT false,
+      acceptedConditionOfUse BOOLEAN DEFAULT false,
+      acceptedConditionOfUseDate DATE
     );`);
   
-  await pool.query(`
-    CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email);
-  `);
+  //await pool.query(`
+  //  CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email);
+  //`);
 
   await pool.query(`
     CREATE INDEX IF NOT EXISTS idx_users_reset_token ON users(reset_token);
@@ -292,12 +301,12 @@ async function seedBaseData() {
   // uitisateurs de base
   await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
           [
-            'systeme',
+            'système',
             '',
             '----------',
             '-',
             4200,
-            'Admin',
+            'SuperAdmin',
             'superadmin@exemple.com',
             'scrypt:cf9d3be60b49fabff0f9836460b86ebf:95bd09ce474c86c17f7f75499df2f10c1a9fe18ff42eddefcf9e2f7d52580596bb4eb94a8b86ae95263c0dad58be23adb2dda919795afb12d7d521c626c2e31d',
             'Empty'
@@ -438,6 +447,7 @@ function fetchCSV(url) {
 }
 
 async function seedIfEmpty(pool) {
+  //console.log(jwt.sign({ id: 10, name: 'Miguel', email: 'lopesmiguel80@gmail.com' }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN }));
   const res = await pool.query('SELECT COUNT(*)::int as c FROM cats');
   if (res.rows && res.rows[0].c > 0) return; // already seeded
 
@@ -493,12 +503,13 @@ async function seedIfEmpty(pool) {
 
       // Insert cat
       const res = await pool.query(
-        'INSERT INTO cats(slug, name, description, status, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdoptable, adoptionDate, hostfamily_id, created_by, created_at, updated_by, updated_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,2, NOW(), 2, NOW()) ON CONFLICT (id) DO NOTHING RETURNING id',
+        'INSERT INTO cats(slug, name, description, statusFiv, statusFelv, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdoptable, adoptionDate, hostfamily_id, created_by, created_at, updated_by, updated_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,2, NOW(), 2, NOW()) ON CONFLICT (id) DO NOTHING RETURNING id',
         [
           slug,
           p.name,
           p.description || null,
-          p.status || null,
+          p.statusFiv || null,
+          p.statusFelv || null,
           p.numIdentification || null,
           p.sex || null,
           p.dress || null,

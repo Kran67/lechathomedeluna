@@ -55,7 +55,7 @@ export default function UsersList({ users }: UsersListProps) {
     const [checkedUser, setCheckedUser] = useState<string[]>([]);
     const [showModalMessage, setShowModalMessage] = useState<boolean>(false);
 
-    if (!user || !hasRoles(user?.roles, [UserRoles.Admin])) {
+    if (!user || !hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin])) {
         redirect("/");
     }
 
@@ -191,14 +191,15 @@ export default function UsersList({ users }: UsersListProps) {
                                     </div>
                                 </td>
                                 <td className={"w-150 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.lastName} {u.name}</td>
-                                <td className={"border-l w-115 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.social_number}</td>
+                                <td className={"border-l w-115 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.placeOfBirth}</td>
                                 <td className={"border-l w-150 px-5 break-all" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.email}</td>
                                 <td className={"border-l w-100 px-5 text-center" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.phone}</td>
                                 <td className={"border-l flex-1 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.address}</td>
                                 <td className={"border-l w-50 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.postalCode}</td>
                                 <td className={"border-l w-170 px-5 break-all" + (u.blacklisted ? " text-black" : " text-(--text)")}>{u.city}</td>
                                 <td className={"border-l w-180 px-5" + (u.blacklisted ? " text-black" : " text-(--text)")}>
-                                    {u.roles.split("|").map((r:string, idx: number) => (<div key={u.id + idx}>{getRoleLabel(r as UserRoles.Admin |
+                                    {u.roles.split("|").map((r:string, idx: number) => (<div key={u.id + idx}>{getRoleLabel(r as UserRoles.SuperAdmin |
+                                            UserRoles.Admin |
                                             UserRoles.CommitteeMember |
                                             UserRoles.AdoptionReferent |
                                             UserRoles.HealthRegisterReferent |

@@ -18,7 +18,7 @@ export default async function UsersPage() {
     const user = await getById(token, userId ?? '');
     let users: User[] = [];
 
-    if (!user || (user && !hasRoles(user.roles, [UserRoles.Admin]))) {
+    if (!user || (user && !hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin]))) {
         redirect("/");
     }
 

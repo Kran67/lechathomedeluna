@@ -22,7 +22,7 @@ async function getUserByEmail(email) {
     WHERE u.email = $1`, [email]);
 }
 
-async function createUser({ email, name, lastName, social_number, phone, address, cityId, roles, blacklisted, referrer_id, capacity, birthDate }) {
+async function createUser({ email, name, lastName, placeOfBirth, phone, address, cityId, roles, blacklisted, referrer_id, capacity, birthDate }) {
   if (!email) {
     const err = new Error("L'email est requis");
     err.status = 400;
@@ -45,8 +45,9 @@ async function createUser({ email, name, lastName, social_number, phone, address
     throw err;
   }
   try {
-    const r = await pool.query('INSERT INTO users(email, name, lastName, social_number, roles, phone, address, cityId, blacklisted, referrer_id, capacity, birthdate) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id',
-      [email, name, lastName, social_number , roles, phone, address, cityId, blacklisted, referrer_id, capacity, birthDate]);
+    if (cityId === '') cityId = 4648;
+    const r = await pool.query('INSERT INTO users(email, name, lastName, placeofbirth, roles, phone, address, cityId, blacklisted, referrer_id, capacity, birthdate) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id',
+      [email, name, lastName, placeOfBirth , roles, phone, address, cityId, blacklisted, referrer_id, capacity, birthDate]);
     return await getUser(r.rows[0].id);
   } catch (e) {
     if (/UNIQUE/i.test(e.message)) {
@@ -59,14 +60,14 @@ async function createUser({ email, name, lastName, social_number, phone, address
 }
 
 async function updateUser(id, changes = {}) {
-  const allowedFields = ['name', 'lastName', 'social_number', 'phone', 'address', 'cityId', 'roles', 'blacklisted', 'referrer_id', 'capacity', 'birthDate'];
+  const allowedFields = ['email', 'name', 'lastName', 'placeOfBirth', 'phone', 'address', 'cityId', 'roles', 'blacklisted', 'referrer_id', 'capacity', 'birthDate'];
   const fields = [];
   const params = [];
   for (const key of allowedFields) {
     if (Object.prototype.hasOwnProperty.call(changes || {}, key)) {
       if (key === 'roles') {
         const roles = changes.roles.split("|");
-        if (!roles.some(role => ['Admin', 'CommitteeMember', 'AdoptionReferent', 'HealthRegisterReferent', 'VetVoucherReferent', 'PreVisitReferent', 'ICADReferent', 'HostFamily', 'Volunteer'].includes(role))) {
+        if (!roles.some(role => ['SuperAdmin', 'Admin', 'CommitteeMember', 'AdoptionReferent', 'HealthRegisterReferent', 'VetVoucherReferent', 'PreVisitReferent', 'ICADReferent', 'HostFamily', 'Volunteer'].includes(role))) {
           const err = new Error('Rôles invalides');
           err.status = 400;
           throw err;
@@ -102,7 +103,8 @@ async function resetMyPassword(id, token) {
 async function changePassword(id, newPassword) {
   const crypto = require('crypto');
   const hash = crypto.scryptSync(newPassword, 'salt', 64).toString('hex');
-  await pool.query(`UPDATE users SET password_hash = $2, reset_token = NULL, reset_expires = NULL WHERE id = $1`, [id, `scrypt:salt:${hash}`]);
+  await pool.query(`UPDATE users SET password_hash = $2, reset_token = NULL, reset_expires = NULL, acceptedConditionOfUse = $3, acceptedConditionOfUseDate = $4 WHERE id = $1`,
+    [id, `scrypt:salt:${hash}`, true, new Date()]);
 }
 
 async function getByReferentId(id) {

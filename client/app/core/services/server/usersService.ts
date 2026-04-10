@@ -44,12 +44,12 @@ export const getAll = cache(async (token: string | undefined) => {
     }
 });
 
-export const create = async (token: string | undefined, email: string, name: string, lastName: string, social_number: string, phone: string, address: string, cityId: string, roles: string, blacklisted: boolean, referrer_id: string | null, capacity: string, birthDate: string | null,) => {
+export const create = async (token: string | undefined, email: string, name: string, lastName: string, placeOfBirth: string, phone: string, address: string, cityId: string, roles: string, blacklisted: boolean, referrer_id: string | null, capacity: string, birthDate: string | null,) => {
     try {
         const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users`, {
             method: "POST",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
-            body: JSON.stringify({ name, lastName, email, social_number, phone, address, cityId, roles, blacklisted, referrer_id, capacity, birthDate }),
+            body: JSON.stringify({ name, lastName, email, placeOfBirth, phone, address, cityId, roles, blacklisted, referrer_id, capacity, birthDate }),
         });
 
         return await res.json();
@@ -69,12 +69,12 @@ export const create = async (token: string | undefined, email: string, name: str
  * @param { string } email - L'email de l'utilisateur
  * @returns { Promise<any> } Un object contenant l'utilisateur ou un object contenant une erreur
  */
-export const update = cache(async (token: string | undefined, id: string, name: string, lastName: string, social_number: string, phone: string, address: string, cityId: string, roles: string, blacklisted: boolean, referrer_id: string | null, capacity: string, birthDate: string | null,) => {
+export const update = cache(async (token: string | undefined, id: string, email: string, name: string, lastName: string, placeOfBirth: string, phone: string, address: string, cityId: string, roles: string, blacklisted: boolean, referrer_id: string | null, capacity: string, birthDate: string | null,) => {
     try {
         const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/${id}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
-            body: JSON.stringify({ name, lastName, social_number, phone, address, cityId, roles, blacklisted, referrer_id, capacity, birthDate }),
+            body: JSON.stringify({ email, name, lastName, placeOfBirth, phone, address, cityId, roles, blacklisted, referrer_id, capacity, birthDate }),
         });
 
         return await res.json();
@@ -132,3 +132,17 @@ export const updatePassword = async (token: string, password: string) => {
         return null;
     }
 }
+
+export const getUserByResetToken = async (token: string) => {
+    try {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/reset/${token}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+        return await res.json();
+    } catch (err) {
+        console.error("Erreur lors de la récupération de l'utilisateur :", err);
+        return null;
+    }
+}
+

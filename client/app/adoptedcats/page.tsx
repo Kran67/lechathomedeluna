@@ -63,7 +63,7 @@ export default function AdoptedCats() {
         <div className="flex flex-col gap-8 w-full xl:w-1115 lg:w-800 items-center text-center">
           <span className="text-[32px] text-(--primary) w-full">Les chats qui ont été adoptés</span>
           <div className="flex gap-5 w-full items-center justify-center">
-            {user && hasRoles(user.roles, [UserRoles.Admin, UserRoles.CommitteeMember]) &&
+            {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.CommitteeMember]) &&
               <Input
                 name="search"
                 placeHolder="Rechercher un chat par son ICAD ou son nom"

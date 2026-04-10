@@ -60,7 +60,8 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
     const { user } = useUser();
     const cookies: Cookies = useCookies();
     const token: string = cookies.get("token") as string;
-    const [status, setStatus] = useState<string | null>("Non testé");
+    const [statusFiv, setStatusFiv] = useState<string | null>("Non testé");
+    const [statusFelv, setStatusFelv] = useState<string | null>("Non testé");
     const [sex, setSex] = useState<string | null>(null);
     const [isSterilized, setIsSterilized] = useState<boolean | null>(null);
     const [isDuringVisit, setIsDuringVisit] = useState<boolean | null>(null);
@@ -102,7 +103,8 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
             token,
             catName,
             formData.get("description") as string,
-            status,
+            statusFiv,
+            statusFelv,
             numId,
             sex,
             dress,
@@ -188,19 +190,35 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                                 <textarea className='text-sm text-(--text) w-full outline-0 border border-(--pink) px-10 py-5' name="description" rows={5} />
                             </div>
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
-                                <label className="text-sm text-(--text) font-medium " htmlFor="status">Statut (FIV & FELV)</label>
+                                <label className="text-sm text-(--text) font-medium " htmlFor="status">Statut FIV</label>
                                 <Select
                                     options={CatStatus}
                                     className="select"
                                     classNamePrefix="select"
-                                    name="status"
+                                    name="statusFiv"
                                     id="status"
                                     isMulti={false}
                                     isClearable={false}
                                     isSearchable={false}
-                                    placeholder="Statut"
-                                    value={CatStatus.find(c => c.value === status)}
-                                    onChange={(e:any) => setStatus(e?.value as string ?? "")}
+                                    placeholder="Statut Fiv"
+                                    value={CatStatus.find(c => c.value === statusFiv)}
+                                    onChange={(e:any) => setStatusFiv(e?.value as string ?? "")}
+                                />
+                            </div>
+                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                                <label className="text-sm text-(--text) font-medium " htmlFor="status">Statut FELV</label>
+                                <Select
+                                    options={CatStatus}
+                                    className="select"
+                                    classNamePrefix="select"
+                                    name="statusFelv"
+                                    id="status"
+                                    isMulti={false}
+                                    isClearable={false}
+                                    isSearchable={false}
+                                    placeholder="Statut Felv"
+                                    value={CatStatus.find(c => c.value === statusFelv)}
+                                    onChange={(e:any) => setStatusFelv(e?.value as string ?? "")}
                                 />
                             </div>
                             <Input name="numIdentification" label="N° d'identification" maxLength={20} />

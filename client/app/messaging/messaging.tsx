@@ -9,6 +9,7 @@ import {
 import { createPortal } from 'react-dom';
 
 import { useCookies } from 'next-client-cookies';
+import { toast } from 'react-toastify';
 
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
@@ -420,8 +421,17 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
                                         accept="image/*,.pdf,.doc,.docx,.txt,.xlsx,.xls"
                                         className="hidden"
                                         onChange={(e) => {
+                                            const acceptedFileds: File[] = [];
                                             const files = Array.from(e.target.files ?? []);
-                                            setPendingFiles(prev => [...prev, ...files].slice(0, 5));
+                                            files.map((file) => {
+                                                if (file.size < 1000000) {
+                                                    acceptedFileds.push(file);
+                                                }
+                                            });
+                                            if (acceptedFileds.length !== files.length) {
+                                                toast.error("Seul les fichiers dont la taille est inférieure à 1Mo sont acceptés");
+                                            }
+                                            setPendingFiles(prev => [...prev, ...acceptedFileds].slice(0, 5));
                                         }}
                                     />
                                     <IconButton

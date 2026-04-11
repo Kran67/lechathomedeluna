@@ -63,7 +63,11 @@ export default function NewCat() {
     }, [pictures]);
 
     const picturesChange = (e: { target: { files: any; }; }) => {
-        setPictures([...pictures, ...e.target.files]);
+        if (e.target.files[0].size < 1000000) {
+            setPictures([...pictures, ...e.target.files]);
+        } else {
+            toast.error("La taille de l'image dépasse les 1Mo, veuillez réduire les dimensions de l'image pour qu'elle soit en dessous de 1Mo:");
+        }
     }
 
     const removePicture = (e: { preventDefault: () => void; }, idx: number) => {

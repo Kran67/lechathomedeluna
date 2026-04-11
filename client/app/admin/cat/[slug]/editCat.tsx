@@ -263,7 +263,11 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         if (pictures.includes('/images/chat.png')) {
             pics = pics.filter((picture:string) => picture !== '/images/chat.png');
         }
-        setPictures([...pics, ...e.target.files]);
+        if (e.target.files[0].size < 1000000) {
+            setPictures([...pics, ...e.target.files]);
+        } else {
+            toast.error("La taille de l'image dépasse les 1Mo, veuillez réduire les dimensions de l'image pour qu'elle soit en dessous de 1Mo:");
+        }
     }
 
     const removePicture = (e: { preventDefault: () => void; }, idx: number) => {

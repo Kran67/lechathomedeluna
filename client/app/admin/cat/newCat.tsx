@@ -126,11 +126,11 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                 token,
                 CONSTANTS.THREAD_GROUPS.ICAD.toString(),
                 user?.id as string,
-                `La fiche pour le 🐈 ${baseUrl}/admin/cat/${res.slug}[${catName}] vient d'être créée.\n
-                    Date d'entrée : ${entryDate ? formatDDMMY(new Date(entryDate)) : "-"}\n
-                    Provenance : ${provenance ?? "-"}\n
-                    Robe : ${dress ?? "-"}\n
-                    Date de naissance : ${birthDate ? formatDDMMY(new Date(birthDate)) : "-"}\n
+                `La fiche pour le 🐈 ${baseUrl}/admin/cat/${res.slug}[${catName}] vient d'être créée.
+                    Date d'entrée : ${entryDate ? formatDDMMY(new Date(entryDate)) : "-"}
+                    Provenance : ${provenance ?? "-"}
+                    Robe : ${dress ?? "-"}
+                    Date de naissance : ${birthDate ? formatDDMMY(new Date(birthDate)) : "-"}
                     N° identification: ${numId ?? "-"}`, []);
             redirectWithDelay(`/admin/cat/${res.slug}`, 1000);
         } else {

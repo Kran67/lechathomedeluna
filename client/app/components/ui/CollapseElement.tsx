@@ -57,7 +57,7 @@ export default function CollapseElement({ title, content, opened = false }: Coll
                         <Tag
                             key={index}
                             text={tag.name}
-                            className="flex items-center justify-center md:whitespace-nowrap text-xs text-(--white) font-normal bg-(--primary-dark) rounded-[5px] py-8 px-8 text-center" />
+                            className="flex items-center justify-center text-xs text-(--white) font-normal bg-(--primary-dark) rounded-[5px] py-8 px-8 text-center" />
                     ))}
                 </div>
             </div>

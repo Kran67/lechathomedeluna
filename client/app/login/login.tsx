@@ -15,7 +15,10 @@ import Header from '@/app/components/layout/Header';
 import Button from '@/app/components/ui/Button';
 import Input from '@/app/components/ui/Input';
 import Link from '@/app/components/ui/Link';
-import { InputTypes } from '@/app/core/enums/enums';
+import {
+  InputImageTypes,
+  InputTypes,
+} from '@/app/core/enums/enums';
 import { login } from '@/app/core/services/server/authService';
 
 /**
@@ -80,6 +83,7 @@ export default function Login() {
                                 setPassword(e.currentTarget.value);
                                 setError(false);
                             }}
+                            imageType={InputImageTypes.Eye}
                             hasError={error} />
                     </div>
                     {error && <span className="text-sm text-(--primary) font-bold">{errorMsg}</span>}

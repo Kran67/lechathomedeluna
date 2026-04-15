@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react';
+
 import Image from 'next/image';
 
 import {
@@ -65,6 +67,7 @@ interface InputProps {
  */
 export default function Input({ name, label, type, value, imageType, placeHolder, required, width, onChange, hasError, autoComplete = "on", maxLength, className, 
     showLabel = true, readOnly = false, hidden = false, multipleFile = false, ref = undefined, pattern = undefined, min, max }: InputProps) {
+    const [viewPassword, setViewPassword] = useState(false);
     const classNames: string = [
         "input",
         "flex",
@@ -112,7 +115,7 @@ export default function Input({ name, label, type, value, imageType, placeHolder
                         className={"text-sm text-(--text) w-full outline-0" + (type === InputTypes.File ? " h-0" : "")}
                         id={name}
                         name={name}
-                        type={type}
+                        type={type === InputTypes.Password && viewPassword ? InputTypes.Text : type}
                         defaultValue={value}
                         placeholder={placeHolder}
                         required={required}
@@ -128,7 +131,14 @@ export default function Input({ name, label, type, value, imageType, placeHolder
                         max={max}
                     />
                     {imageType &&
-                        <Image src={"/images/" + imageType + ".svg"} width={15} height={imgHeight} alt={" Image " + imageType} />
+                        <Image
+                            src={"/images/" + ([InputImageTypes.Eye, InputImageTypes.CrossedEye].includes(imageType) ? viewPassword ? InputImageTypes.CrossedEye : InputImageTypes.Eye : imageType) + ".svg"}
+                            width={15}
+                            height={imgHeight}
+                            alt={" Image " + imageType}
+                            className={ [InputImageTypes.Eye, InputImageTypes.CrossedEye].includes(imageType) ? "cursor-pointer" : "" }
+                            onClick={ (e) => { if (type === InputTypes.Password) setViewPassword(!viewPassword) } }
+                        />
                     }
                 </div>
                 {showLabel && <label className="text-sm text-(--text) font-medium order-0" htmlFor={name}>{label}</label>}

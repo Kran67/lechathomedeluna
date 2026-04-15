@@ -323,68 +323,68 @@ async function seedBaseData() {
             'scrypt:e7e9be565ae6d2044b0924c1d65e7c49:7ca138ec9995aa1afe6df5dec829845249ef197fd71af7b75dfe08df4f9444f1175106137c1104dfc89ce9b31cf216a87670a509127d8257f1b42bc72b77d284',
             'Empty'
           ]);
-  await pool.query("INSERT INTO news (date, url) VALUES ('2026-03-29','/images/news/Loto29-03-2026.jpeg')");
+  //await pool.query("INSERT INTO news (date, url) VALUES ('2026-03-29','/images/news/Loto29-03-2026.jpeg')");
 
-  await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
-          [ //3
-            'Marine',
-            'Schneider',
-            '0632272078',
-            'Unknown',
-            4697,
-            'CommitteeMember|AdoptionReferent',
-            'marine.schneider@exemple.com',
-            'scrypt:e7e9be565ae6d2044b0924c1d65e7c49:7ca138ec9995aa1afe6df5dec829845249ef197fd71af7b75dfe08df4f9444f1175106137c1104dfc89ce9b31cf216a87670a509127d8257f1b42bc72b77d284',
-            'Empty'
-          ]);
-  await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
-          [ //4
-            'Amandine',
-            'List',
-            '0680578792',
-            'Unknown',
-            4653,
-            'CommitteeMember|HealthRegisterReferent',
-            'amandine.list@exemple.com',
-            'scrypt:e7e9be565ae6d2044b0924c1d65e7c49:7ca138ec9995aa1afe6df5dec829845249ef197fd71af7b75dfe08df4f9444f1175106137c1104dfc89ce9b31cf216a87670a509127d8257f1b42bc72b77d284',
-            'Empty'
-          ]);
-  await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
-          [ //5
-            'Thibaut',
-            'B',
-            '0626196258',
-            'Unknown',
-            4200,
-            'CommitteeMember|VetVoucherReferent',
-            'thibaut.b@exemple.com',
-            'scrypt:e7e9be565ae6d2044b0924c1d65e7c49:7ca138ec9995aa1afe6df5dec829845249ef197fd71af7b75dfe08df4f9444f1175106137c1104dfc89ce9b31cf216a87670a509127d8257f1b42bc72b77d284',
-            'Empty'
-          ]);
-  await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
-          [ //6
-            'Patricia',
-            'Belloni',
-            '0626196258',
-            'Unknown',
-            4465,
-            'CommitteeMember|ICADReferent',
-            'patricia.belloni@exemple.com',
-            'scrypt:e7e9be565ae6d2044b0924c1d65e7c49:7ca138ec9995aa1afe6df5dec829845249ef197fd71af7b75dfe08df4f9444f1175106137c1104dfc89ce9b31cf216a87670a509127d8257f1b42bc72b77d284',
-            'Empty'
-          ]);
-  await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
-          [ //7
-            'Dominique',
-            'Cometti',
-            '0661348002',
-            'Unknown',
-            4435,
-            'CommitteeMember|PreVisitReferent',
-            'dominique.cometti@exemple.com',
-            'scrypt:e7e9be565ae6d2044b0924c1d65e7c49:7ca138ec9995aa1afe6df5dec829845249ef197fd71af7b75dfe08df4f9444f1175106137c1104dfc89ce9b31cf216a87670a509127d8257f1b42bc72b77d284',
-            'Empty'
-          ]);
+  //await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
+  //        [ //3
+  //          'Marine',
+  //          'Schneider',
+  //          '0632272078',
+  //          'Unknown',
+  //          4697,
+  //          'CommitteeMember|AdoptionReferent',
+  //          'marine.schneider@exemple.com',
+  //          'scrypt:e7e9be565ae6d2044b0924c1d65e7c49:7ca138ec9995aa1afe6df5dec829845249ef197fd71af7b75dfe08df4f9444f1175106137c1104dfc89ce9b31cf216a87670a509127d8257f1b42bc72b77d284',
+  //          'Empty'
+  //        ]);
+  //await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
+  //        [ //4
+  //          'Amandine',
+  //          'List',
+  //          '0680578792',
+  //          'Unknown',
+  //          4653,
+  //          'CommitteeMember|HealthRegisterReferent',
+  //          'amandine.list@exemple.com',
+  //          'scrypt:e7e9be565ae6d2044b0924c1d65e7c49:7ca138ec9995aa1afe6df5dec829845249ef197fd71af7b75dfe08df4f9444f1175106137c1104dfc89ce9b31cf216a87670a509127d8257f1b42bc72b77d284',
+  //          'Empty'
+  //        ]);
+  //await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
+  //        [ //5
+  //          'Thibaut',
+  //          'B',
+  //          '0626196258',
+  //          'Unknown',
+  //          4200,
+  //          'CommitteeMember|VetVoucherReferent',
+  //          'thibaut.b@exemple.com',
+  //          'scrypt:e7e9be565ae6d2044b0924c1d65e7c49:7ca138ec9995aa1afe6df5dec829845249ef197fd71af7b75dfe08df4f9444f1175106137c1104dfc89ce9b31cf216a87670a509127d8257f1b42bc72b77d284',
+  //          'Empty'
+  //        ]);
+  //await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
+  //        [ //6
+  //          'Patricia',
+  //          'Belloni',
+  //          '0626196258',
+  //          'Unknown',
+  //          4465,
+  //          'CommitteeMember|ICADReferent',
+  //          'patricia.belloni@exemple.com',
+  //          'scrypt:e7e9be565ae6d2044b0924c1d65e7c49:7ca138ec9995aa1afe6df5dec829845249ef197fd71af7b75dfe08df4f9444f1175106137c1104dfc89ce9b31cf216a87670a509127d8257f1b42bc72b77d284',
+  //          'Empty'
+  //        ]);
+  //await pool.query('INSERT INTO users(name, lastname, phone, address, cityId, roles, email, password_hash, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (email) DO NOTHING', 
+  //        [ //7
+  //          'Dominique',
+  //          'Cometti',
+  //          '0661348002',
+  //          'Unknown',
+  //          4435,
+  //          'CommitteeMember|PreVisitReferent',
+  //          'dominique.cometti@exemple.com',
+  //          'scrypt:e7e9be565ae6d2044b0924c1d65e7c49:7ca138ec9995aa1afe6df5dec829845249ef197fd71af7b75dfe08df4f9444f1175106137c1104dfc89ce9b31cf216a87670a509127d8257f1b42bc72b77d284',
+  //          'Empty'
+  //        ]);
   // groupes de discussion de base
   await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'Adoption', 1]);
   await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'Bons vétérinaire', 1]);
@@ -451,22 +451,22 @@ async function seedIfEmpty(pool) {
   const res = await pool.query('SELECT COUNT(*)::int as c FROM cats');
   if (res.rows && res.rows[0].c > 0) return; // already seeded
 
-  if (!fs.existsSync(PROPS_JSON_PATH)) return;
-  const raw = fs.readFileSync(PROPS_JSON_PATH, 'utf-8');
-  let data;
-  try {
-    data = JSON.parse(raw);
-  } catch (e) {
-    console.error('Failed to parse cats.json:', e.message);
-    return;
-  }
+  //if (!fs.existsSync(PROPS_JSON_PATH)) return;
+  //const raw = fs.readFileSync(PROPS_JSON_PATH, 'utf-8');
+  //let data;
+  //try {
+  //  data = JSON.parse(raw);
+  //} catch (e) {
+  //  console.error('Failed to parse cats.json:', e.message);
+  //  return;
+  //}
 
   try {
-    const usedSlugs = new Set();
+    //const usedSlugs = new Set();
     console.log('Début Import');
     await importPostalCodes();
     await seedBaseData();
-    for (const p of data) {
+    /*for (const p of data) {
       // Ensure owner user exists
       let user = null;
       if (p.hostFamily) {
@@ -526,7 +526,7 @@ async function seedIfEmpty(pool) {
       p.id = res.rows[0].id;
       // Pictures
       if (Array.isArray(p.pictures)) p.pictures.forEach(async (u, idx) => u && await pool.query('INSERT INTO cat_pictures(cat_id, url, scheduling) VALUES ($1,$2,$3)', [p.id, u, idx]));
-    }
+    }*/
   } catch (e) {
     console.log(e);
   }

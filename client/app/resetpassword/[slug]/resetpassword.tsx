@@ -20,7 +20,10 @@ import Button from '@/app/components/ui/Button';
 import Input from '@/app/components/ui/Input';
 import Link from '@/app/components/ui/Link';
 import { useUser } from '@/app/core/contexts/userContext';
-import { InputTypes } from '@/app/core/enums/enums';
+import {
+  InputImageTypes,
+  InputTypes,
+} from '@/app/core/enums/enums';
 import { User } from '@/app/core/interfaces/user';
 import { validatePassword } from '@/app/core/lib/utils';
 import { updatePassword } from '@/app/core/services/server/usersService';
@@ -113,6 +116,7 @@ export default function ResetPassword({ token, tokenValid, user }: ResetPassword
                                 setPassword(e.currentTarget.value);
                                 setError(false);
                             }}
+                            imageType={InputImageTypes.Eye}
                             hasError={error} />
                         <Input
                             label="Confirmation du mot de passe"
@@ -124,12 +128,13 @@ export default function ResetPassword({ token, tokenValid, user }: ResetPassword
                                 setConfirmPassword(e.currentTarget.value);
                                 setError(false);
                             }}
+                            imageType={InputImageTypes.Eye}
                             hasError={error} />
                         <Link className="text-sm" text="Lire les conditions d'utilisation" onClick={(e) => {
                             setShowModalConditionsOfUse(true);
                         }} />
                         <div className="flex gap-5 items-center">
-                            <input className="min-w-[1.15em] min-h-[1.15em]" type="checkbox" name="approuved-conditions" disabled={!readedConditionsOfUse} checked={approuvedConditions} />
+                            <input className="min-w-[1.15em] min-h-[1.15em]" type="checkbox" name="approuved-conditions" disabled={!readedConditionsOfUse} checked={approuvedConditions} onChange={ (e) => setApprouvedConditions(!approuvedConditions)} />
                             <label className="text-xs" htmlFor='approuved-conditions' >J'ai lu et j'accepte les conditions d'utilisation de mes données personnelles par le ’Chat'Home de Luna’</label>
                         </div>
                     </div> : <span className="text-sm text-(--primary) font-bold">Le token de réinitialisation du mot de passe est invalide ou a expiré</span>}

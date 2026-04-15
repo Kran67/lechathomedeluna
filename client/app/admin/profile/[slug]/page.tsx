@@ -36,11 +36,11 @@ export default async function ProfilePage({ params }: { params: Promise<{ slug: 
     }
     res = await getAll(token);
     if (!res.error) {
-        users = res;
+        users = res.filter((u: User) => u.id !== profile?.id);
     } else {
         throw new Error(res.error);
     }
-    console.log(profile);
+    //console.log(profile);
 
     return (
         <Profile profile={profile} users={users} isNew={slug === "new"} />

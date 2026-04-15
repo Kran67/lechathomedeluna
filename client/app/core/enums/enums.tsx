@@ -69,6 +69,8 @@ export enum InputImageTypes {
     Calendar = "calendar",
     BottomArrow = "bottom_arrow",
     Search = "search",
+    Eye = 'eye',
+    CrossedEye = 'eye-crossed'
 }
 
 export enum UserRoles {

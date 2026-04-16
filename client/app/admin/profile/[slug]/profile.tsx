@@ -75,9 +75,17 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
     const router = useRouter();
     const [birthDate, setBirthDate] = useState<string | null>(profile?.birthDate ?? null);
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+    let rolesList : {
+        value: string;
+        label: string;
+    }[] = Roles;
 
     if (!user || !hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin])) {
         redirect("/");
+    }
+
+    if (user && hasRoles(user?.roles, [UserRoles.SuperAdmin])) {
+        rolesList = [...rolesList, { value: 'Admin', label: 'Admin' }];
     }
 
     // Avant chaque soumission, vérification des données fournies valides.
@@ -126,7 +134,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
             );
         }
         if (!res.error) {
-            redirectWithDelay(`${hasRoles(user.roles, ["Admin"]) ? "/admin" : ""}/profile/${res.id}`, 1000);
+            redirectWithDelay(`${hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin]) ? "/admin" : ""}/profile/${res.id}`, 1000);
             if (isNew) {
                 const result = await resetPassword(email);
                 if (result.error) {
@@ -187,7 +195,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="roles">Rôles {isNew ? "*": ""}</label>
                                 <Select
-                                    options={Roles}
+                                    options={rolesList}
                                     className="select"
                                     classNamePrefix="select"
                                     name="roles"
@@ -196,7 +204,7 @@ export default function Profile({ profile, users, isNew }: ProfileProps) {
                                     isClearable={false}
                                     isSearchable={false}
                                     placeholder="Rôles"
-                                    value={roles.split("|").map(r => { return Roles.find(rs => rs.value === r) })}
+                                    value={roles.split("|").map(r => { return rolesList.find(rs => rs.value === r) })}
                                     onChange={(e:any) => setRoles(e?.map((e: { value: any; }) => e.value).join("|") ?? "")}
                                     required={isNew}
                                 />

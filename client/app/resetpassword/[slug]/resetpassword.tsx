@@ -2,6 +2,7 @@
 
 import {
   FormEvent,
+  useEffect,
   useState,
 } from 'react';
 import { createPortal } from 'react-dom';
@@ -25,7 +26,10 @@ import {
   InputTypes,
 } from '@/app/core/enums/enums';
 import { User } from '@/app/core/interfaces/user';
-import { validatePassword } from '@/app/core/lib/utils';
+import {
+  prepareBodyToShowModal,
+  validatePassword,
+} from '@/app/core/lib/utils';
 import { updatePassword } from '@/app/core/services/server/usersService';
 
 /**
@@ -79,6 +83,10 @@ export default function ResetPassword({ token, tokenValid, user }: ResetPassword
             }, 1000);
         }
     };
+
+    useEffect(() => {
+        prepareBodyToShowModal(showModalConditionsOfUse ? "hidden" : "");
+    }, [showModalConditionsOfUse]);
 
     return (
         <main className="flex flex-col gap-40 w-full items-center md:pt-20 md:px-140 h-screen justify-between">
@@ -140,7 +148,7 @@ export default function ResetPassword({ token, tokenValid, user }: ResetPassword
                     </div> : <span className="text-sm text-(--primary) font-bold">Le token de réinitialisation du mot de passe est invalide ou a expiré</span>}
                     {error && <span className="text-sm text-(--primary) font-bold">{errorMsg}</span>}
                     {tokenValid && <div className="flex flex-col gap-22 w-full md:w-360 items-center">
-                        <Button text="Valider" className="flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230" disabled={!approuvedConditions} />
+                        <Button text="Valider" className="flex justify-center bg-(--primary) rounded-[10px] p-4 px-8 md:p-8 md:px-16  text-(--white) text-sm md:text-base" disabled={!approuvedConditions} />
                     </div>}
                 </form>
             </div>

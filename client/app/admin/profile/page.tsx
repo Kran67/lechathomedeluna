@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  ChangeEvent,
   FormEvent,
   useEffect,
   useState,
@@ -63,6 +64,7 @@ export default function Profile() {
     const [referrer, setReferrer] = useState<User | null>(null);
     const [showModalMessage, setShowModalMessage] = useState<boolean>(false);
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+    const [query, setQuery] = useState<string>("");
 
     if (!user) {
         redirect("/");
@@ -136,6 +138,37 @@ export default function Profile() {
         } else {
             setIsSubmitted(false);
             await sendResetPasswordEmail(profile!.email, result.token);
+        }
+    }
+
+    const dumpDb = async (e: React.FormEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+        try {
+            const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/dump`, {
+                method: "GET",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+            });
+
+            return await res.json();
+        } catch (err) {
+            console.error("Erreur lors de la récupération des données' :", err);
+            return null;
+        }
+    }
+
+    const send = async (e: React.FormEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+        try {
+            const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/sql`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
+                body: JSON.stringify({ query: query })
+            });
+
+            return await res.json();
+        } catch (err) {
+            console.error("Erreur lors de l''execution de la requête' :", err);
+            return null;
         }
     }
     
@@ -243,6 +276,21 @@ export default function Profile() {
                                 text="Administrer les utilisateurs"
                                 url="/admin/users"
                                 className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)' />
+                        </div>}
+                        {hasRoles(user?.roles, [UserRoles.SuperAdmin]) && <div className="flex justify-between items-center bg-(--white) border order-1 border-(--primary-dark) border-solid rounded-[4px] px-10 gap-10">
+                                <textarea className='text-sm text-(--text) w-full outline-0 h-100' onChange={ (e: ChangeEvent<HTMLTextAreaElement>) => setQuery(e.currentTarget.value) } />
+                                <Button
+                                    text="Send"
+                                    className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)'
+                                    onClick={(e: React.FormEvent<HTMLAnchorElement>) => send(e) }
+                            />
+                        </div>}
+                        {hasRoles(user?.roles, [UserRoles.SuperAdmin]) && <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
+                            <Button
+                                text="Dump Db"
+                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)'
+                                onClick={(e: React.FormEvent<HTMLAnchorElement>) => dumpDb(e) }
+                            />
                         </div>}
                     </form>
                     <Link 

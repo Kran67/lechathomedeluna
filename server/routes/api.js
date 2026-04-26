@@ -100,5 +100,175 @@ router.get("/health", async (req, res) => {
 });
 
 router.get('/profile/resetpassword/:id', users.resetPassword);
+router.get("/dump", requireRole(['SuperAdmin']), async (req, res) => {
+  try {
+    let result = await pool.query("SELECT * FROM users");
+    const users = [];
+    result.rows.map((row) => users.push({
+        id: row.id,
+        name: row.name,
+        lastName: row.lastName,
+        placeOfBirth: row.placeOfBirth,
+        phone: row.phone,
+        address: row.address,
+        cityId: row.cityId,
+        roles: row.roles,
+        email: row.email,
+        password_hash: row.password_hash,
+        blacklisted: row.blacklisted,
+        referrer_id: row.referrer_id,
+        capacity: row.capacity,
+        birthDate: row.birthDate,
+        acceptedConditionOfUse: row.acceptedConditionOfUse,
+        acceptedConditionOfUseDate: row.acceptedConditionOfUseDate,
+        reset_token: row.reset_token,
+        reset_expires: row.reset_expires,
+    }));
+    result = await pool.query("SELECT * FROM cats");
+    const cats = [];
+    result.rows.map((row) => cats.push({
+        id: row.id,
+        slug: row.slug,
+        name: row.name,
+        description: row.description,
+        statusFiv: row.statusFiv,
+        statusFelv: row.statusFelv,
+        numIdentification: row.numIdentification,
+        sex: row.sex,
+        dress: row.dress,
+        race: row.race,
+        isSterilized: row.isSterilized,
+        sterilizationDate: row.sterilizationDate,
+        birthDate: row.birthDate,
+        isDuringVisit: row.isDuringVisit,
+        isAdoptable: row.isAdoptable,
+        adoptionDate: row.adoptionDate,
+        favoriteCount: row.favoriteCount,
+        preVisitDate: row.preVisitDate,
+        hostfamily_id: row.hostfamily_id,
+        entryDate: row.entryDate,
+        provenance: row.provenance,
+        destination: row.destination,
+        created_by: row.created_by,
+        created_at: row.created_at,
+        updated_by: row.updated_by,
+        updated_at: row.updated_at,
+    }));
+    result = await pool.query("SELECT * FROM cat_pictures");
+    const catPictures = [];
+    result.rows.map((row) => catPictures.push({
+        id: row.id,
+        cat_id: row.cat_id,
+        url: row.url,
+        scheduling: row.scheduling,
+    }));
+    result = await pool.query("SELECT * FROM cat_documents");
+    const catDocuments = [];
+    result.rows.map((row) => catDocuments.push({
+        id: row.id,
+        cat_id: row.cat_id,
+        date: row.date,
+        url: row.url,
+        type: row.type,
+        original_name: row.original_name,
+    }));
+    result = await pool.query("SELECT * FROM vet_vouchers");
+    const vetVouchers = [];
+    result.rows.map((row) => vetVouchers.push({
+        id: row.id,
+        date: row.date,
+        appointmentDate: row.appointmentDate,
+        user_id: row.user_id,
+        cat_id: row.cat_id,
+        clinic: row.clinic,
+        object: row.object,
+        processed_on: row.processed_on,
+        created_by: row.created_by,
+        created_at: row.created_at,
+        updated_by: row.updated_by,
+        updated_at: row.updated_at,
+    }));
+    result = await pool.query("SELECT * FROM message_threads");
+    const messageThreads = [];
+    result.rows.map((row) => messageThreads.push({
+        id: row.id,
+        type: row.type,
+        name: row.name,
+        created_by: row.created_by,
+        created_at: row.created_at,
+    }));
+    result = await pool.query("SELECT * FROM thread_participants");
+    const threadParticipants = [];
+    result.rows.map((row) => threadParticipants.push({
+        thread_id: row.thread_id,
+        user_id: row.user_id,
+        role: row.role,
+        joined_at: row.joined_at,
+    }));
+    result = await pool.query("SELECT * FROM messages");
+    const messages = [];
+    result.rows.map((row) => messages.push({
+        id: row.id,
+        thread_id: row.thread_id,
+        sender_id: row.sender_id,
+        content: row.content,
+        sent_at: row.sent_at,
+        deleted_at: row.deleted_at,
+    }));
+    result = await pool.query("SELECT * FROM message_reads");
+    const messageReads = [];
+    result.rows.map((row) => messageReads.push({
+        message_id: row.message_id,
+        user_id: row.user_id,
+        read_at: row.read_at,
+    }));
+    result = await pool.query("SELECT * FROM news");
+    const news = [];
+    result.rows.map((row) => news.push({
+        id: row.id,
+        date: row.date,
+        url: row.url,
+    }));
+    result = await pool.query("SELECT * FROM message_attachments");
+    const messageAttachments = [];
+    result.rows.map((row) => messageAttachments.push({
+        id: row.id,
+        message_id: row.message_id,
+        filename: row.filename,
+        original_name: row.original_name,
+        mime_type: row.mime_type,
+        size: row.size,
+        url: row.url,
+        created_at: row.created_at,
+    }));
+    result = await pool.query("SELECT * FROM cat_request_adoptions");
+    const catRequestAdoptions = [];
+    result.rows.map((row) => catRequestAdoptions.push({
+        id: row.id,
+        cat_id: row.cat_id,
+        date: row.date,
+        last_name: row.last_name,
+        first_name: row.first_name,
+        email: row.email,
+        facebook: row.facebook,
+        lifePlace: row.lifePlace,
+        area: row.area,
+        isOutsideAccess: row.isOutsideAccess,
+        householdPeopleNumber: row.householdPeopleNumber,
+        alreadyPresenAnimalsNumber: row.alreadyPresenAnimalsNumber,
+        dailyTimeOff: row.dailyTimeOff,
+        holidaysChildcareSolution: row.holidaysChildcareSolution,
+        acceptedConditionOfUse: row.acceptedConditionOfUse,
+        acceptedConditionOfUseDate: row.acceptedConditionOfUseDate,
+    }));
+    res.json({ users, cats, catPictures, catDocuments, vetVouchers, messageThreads, threadParticipants, messages, messageReads, news, messageAttachments, catRequestAdoptions });
+  } catch {
+    res.status(500).json({ status: "Db down" });
+  }
+});
+router.post('/sql', requireRole(['SuperAdmin']), async (req, res) => {
+    const result = await pool.query(req.body.query);
+    res.json({ result: result });
+});
 
 module.exports = router;

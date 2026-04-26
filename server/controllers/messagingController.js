@@ -72,7 +72,7 @@ async function uploadMessageAttachment(req, res) {
 async function getByUserId(req, res) {
   try {
     const rows = await getAllThreadsByUserId(req.params.userid);
-    res.json(rows);
+    res.status(201).json(rows);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
   }
@@ -82,7 +82,7 @@ async function getAllMessagesByThreadId(req, res) {
   try {
     readAllMessages(req.params.id, req.params.userid).then(async ()  => {
       const rows = await getAllMessagesById(req.params.id, req.params.userid);
-      res.json(rows);
+      res.status(201).json(rows);
     });
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
@@ -92,7 +92,7 @@ async function getAllMessagesByThreadId(req, res) {
 async function create(req, res) {
   try {
     await createMessaging(req.body || {});
-    res.status(201).end();
+    res.status(201).json({ message: 'Thread created', ok: true });
   } catch (e) {
     const code = statusFromError(e);
     // Map message for validation consistency
@@ -109,7 +109,7 @@ async function createAndSendMessage(req, res) {
         await createMessage({ threadId: result.rows[0].thread_id, userId: u, content: req.body.message });
       }
     });
-    res.status(201).end();
+    res.status(201).json({ message: 'Thread created and message sent', ok: true });
   } catch (e) {
     const code = statusFromError(e);
     // Map message for validation consistency
@@ -121,7 +121,7 @@ async function createAndSendMessage(req, res) {
 async function remove(req, res) {
   try {
     await deleteMessaging(req.params.id);
-    res.status(204).end();
+    res.status(201).json({ message: 'Thread deleted', ok: true });
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
   }
@@ -130,7 +130,7 @@ async function remove(req, res) {
 async function createMsg(req, res) {
   try {
     await createMessage(req.body || {});
-    res.status(201).end();
+    res.status(201).json({ message: 'Message sent', ok: true });
   } catch (e) {
     const code = statusFromError(e);
     // Map message for validation consistency
@@ -142,7 +142,7 @@ async function createMsg(req, res) {
 async function removeMsg(req, res) {
   try {
     await deleteMessage(req.params.id);
-    res.status(204).end();
+    res.status(201).json({ message: 'Message deleted', ok: true });
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
   }
@@ -151,7 +151,7 @@ async function removeMsg(req, res) {
 async function addMembers(req, res) {
   try {
     await addMembersToThread(req.body || {});
-    res.status(201).end();
+    res.status(201).json({ message: 'Members added', ok: true });
   } catch (e) {
     const code = statusFromError(e);
     // Map message for validation consistency
@@ -163,7 +163,7 @@ async function addMembers(req, res) {
 async function removeMembers(req, res) {
   try {
     await removeMembersToThread(req.body || {});
-    res.status(201).end();
+    res.status(201).json({ message: 'Members removed', ok: true });
   } catch (e) {
     const code = statusFromError(e);
     // Map message for validation consistency
@@ -175,7 +175,7 @@ async function removeMembers(req, res) {
 async function renameThread(req, res) {
   try {
     await renameMessagingThread(req.body || {});
-    res.status(200).end();
+    res.status(201).json({ message: 'Thread renamed', ok: true });
   } catch (e) {
     const code = statusFromError(e);
     // Map message for validation consistency
@@ -192,7 +192,7 @@ async function leaveThread(req, res) {
     } else {
       await setNewAdmin(req.body.threadId);
     }
-    res.status(200).end();
+    res.status(201).json({ message: 'Thread leaved', ok: true });
   } catch (e) {
     const code = statusFromError(e);
     // Map message for validation consistency
@@ -204,7 +204,7 @@ async function leaveThread(req, res) {
 async function unreadMessageCountByUserId(req, res) {
   try {
     const rows = await getUnreadMessageCountByUserId(req.params.userid);
-    res.json(rows ? parseInt(rows.unread_count,10) : 0);
+    res.status(201).json(rows ? parseInt(rows.unread_count,10) : 0);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
   }
@@ -213,7 +213,7 @@ async function unreadMessageCountByUserId(req, res) {
 async function unreadMessageListByUserId(req, res) {
   try {
     const rows = await getUnreadMessageListByUserId(req.params.userid);
-      res.json(rows);
+      res.status(201).json(rows);
   } catch (e) {
     res.status(statusFromError(e)).json({ error: e.message });
   }

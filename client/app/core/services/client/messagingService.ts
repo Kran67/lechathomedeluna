@@ -181,7 +181,7 @@ export const createThread = async (
     memberIds: string[]
 ) => {
     try {
-        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/messaging/messaging`, {
+        const res: Response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/messaging`, {
             method: "POST",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
             body: JSON.stringify({

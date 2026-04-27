@@ -718,6 +718,10 @@ export const Clinics: {
         value: "L'Arche de Mittel (Mittelhausbergen)",
         label: "L'Arche de Mittel (Mittelhausbergen)"
     },
+    {
+        value: "Clinique Salomon (Molsheim)",
+        label: "Clinique Salomon (Molsheim)"
+    }
 ];
 
 export const VoucherObjects: {

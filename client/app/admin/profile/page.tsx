@@ -198,7 +198,7 @@ export default function Profile() {
                             <Input name="lastname" label="Nom" value={profile?.lastName} maxLength={50} />
                             <Input name="birthDate" label="Date de naissance" type={InputTypes.Date} value={birthDate ? formatYMMDD(new Date(birthDate)) : undefined}
                                 onChange={(e) => setBirthDate(e.currentTarget.value)} />
-                            <Input name="placeOfBirth" label="Lieu de naissance" value={profile?.placeOfBirth} required={true} maxLength={13} />
+                            <Input name="placeOfBirth" label="Lieu de naissance" value={profile?.placeOfBirth} required={true} maxLength={45} />
                             <Input name="phone" label="Téléphone" value={profile?.phone} maxLength={10} />
                             <Input name="address" label="Adresse" value={profile?.address} maxLength={255} />
                             <PostalCodeSelect

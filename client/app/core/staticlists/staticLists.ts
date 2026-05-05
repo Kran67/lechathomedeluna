@@ -721,6 +721,10 @@ export const Clinics: {
     {
         value: "Clinique Salomon (Molsheim)",
         label: "Clinique Salomon (Molsheim)"
+    },
+    {
+        value: "Clinique vétérinaire du Dr Rozet (Hochfelden)",
+        label: "Clinique vétérinaire du Dr Rozet (Hochfelden)"
     }
 ];
 

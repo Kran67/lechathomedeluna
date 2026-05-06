@@ -537,7 +537,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     required={true}
                                 /> : <div className='flex text-sm text-(--text) border border-1 border-(--pink) h-40 rounded-[4px] items-center px-10 py-16 bg-[#eee]'>{CatSexes?.find(c => c.value === sex)?.label}</div>}
                             </div>
-                            <Input name="dress" label="Robe" value={cat?.dress} maxLength={10} readOnly={isReadonly} required={true} />
+                            <Input name="dress" label="Robe" value={cat?.dress} maxLength={20} readOnly={isReadonly} required={true} />
                             <Input name="race" label="Race" value={cat?.race} maxLength={10} readOnly={isReadonly} />
                             <Input name="entryDate"
                                 label="Date d'entrée"

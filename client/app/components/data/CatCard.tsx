@@ -119,7 +119,7 @@ export default function CatCard({ cat }: PropsCC) {
             </div>
             <div className="flex flex-col justify-between pt-16 pb-24">
                 <div className="flex flex-col gap-8">
-                    <span className="text-lg text-(--text)">{cat.name} {cat.hostFamily?.id !== user?.id && cat.hostFamily?.id && (<><span>(FA : </span>
+                    <span className="text-lg text-(--text)">{cat.name} {!cat.isAdoptable && cat.hostFamily?.id !== user?.id && cat.hostFamily?.id && (<><span>(FA : </span>
                         <span onClick={(e) => { e.stopPropagation(); setToUserId(cat.hostFamily?.id as string); setShowModalMessage(true); }}>{cat.hostFamily?.name}</span>)</>)}</span>
                     <span className="text-sm text-(--text) font-normal md:h-80">{truncate(cat.description ?? "", 210)}</span>
                 </div>

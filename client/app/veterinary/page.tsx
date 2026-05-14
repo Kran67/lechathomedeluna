@@ -204,7 +204,7 @@ export default function VetVouchers() {
                                         icon={IconButtonImages.Approved}
                                         svgStroke='#902677'
                                         onClick={ (e:React.MouseEvent<HTMLButtonElement>) => approved(e, voucher)}
-                                        title='Traiter la demande' />
+                                        title='Demande traitée' />
                                     <IconButton
                                         icon={IconButtonImages.Trash}
                                         imgWidth={24}

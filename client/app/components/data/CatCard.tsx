@@ -23,8 +23,7 @@ import {
   truncate,
 } from '@/app/core/lib/utils';
 
-import ModalConfirmationDeleteAdoptedCat
-  from '../modals/modalConfirmationDeleteAdoptedCat';
+import ModalConfirmationDeleteCat from '../modals/modalConfirmationDeleteCat';
 import ModalMessage from '../modals/modalMessage';
 import IconButton from '../ui/IconButton';
 
@@ -48,7 +47,7 @@ export default function CatCard({ cat }: PropsCC) {
     const router: AppRouterInstance = useRouter();
     const { user } = useUser();
     const [showModalMessage, setShowModalMessage] = useState<boolean>(false);
-    const [showModalConfirmationDeleteAdoptedCat, setShowModalConfirmationDeleteAdoptedCat] = useState<boolean>(false);
+    const [showModalConfirmationDeleteCat, setShowModalConfirmationDeleteCat] = useState<boolean>(false);
     const [catSlugToDelete, setCatSlugToDelete] = useState<string | undefined>(undefined);
     const [toUserId, setToUserId] = useState<string>("");
 
@@ -57,11 +56,11 @@ export default function CatCard({ cat }: PropsCC) {
         router.push(`/cat/${cat.slug}`);
     };
 
-    const askBeforeDeletion = (e:React.MouseEvent<HTMLButtonElement>, catSlug: string) => {
+    const askBeforeDeletion = (e:React.MouseEvent<HTMLButtonElement>, cat: Cat) => {
         e.preventDefault();
         e.stopPropagation();
-        setCatSlugToDelete(catSlug);
-        setShowModalConfirmationDeleteAdoptedCat(true);
+        setCatSlugToDelete(cat.slug);
+        setShowModalConfirmationDeleteCat(true);
     }
 
     return (
@@ -76,12 +75,13 @@ export default function CatCard({ cat }: PropsCC) {
                 />,
                 document.body
             )}
-            {showModalConfirmationDeleteAdoptedCat && createPortal(
-                <ModalConfirmationDeleteAdoptedCat
+            {showModalConfirmationDeleteCat && createPortal(
+                <ModalConfirmationDeleteCat
                     catSlug={catSlugToDelete as string}
-                    closeModal={() => setShowModalConfirmationDeleteAdoptedCat(false)}
+                    isAdopted={!!cat.adoptionDate}
+                    closeModal={() => setShowModalConfirmationDeleteCat(false)}
                     onSuccess={() => {
-                        setShowModalConfirmationDeleteAdoptedCat(false);
+                        setShowModalConfirmationDeleteCat(false);
                         redirectWithDelay("/adoptedcats");
                     }}
                 />,
@@ -90,25 +90,27 @@ export default function CatCard({ cat }: PropsCC) {
             {cat.isDuringVisit && <div className="absolute ruban -left-5 -top-5 w-145 h-145 z-1 overflow-hidden">
                 <span className='absolute -left-30 top-40 w-160 text-center rotate-[-45deg] text-(--white) text-sm bg-gradient-to-b from-(--pink) to-(--primary) pl-5 pr-5'>EN COURS DE VISITE</span>
             </div>}
-            {!cat.adoptionDate && user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <IconButton
-                icon={IconButtonImages.Pen}
-                imgWidth={16}
-                imgHeight={16}
-                className={"w-32 h-32 absolute right-16 top-16 bg-(--primary) z-1 rounded-[5px] flex items-center justify-center"}
-                svgFill="#FFF"
-                url={`/admin/cat/${cat.slug}`}
-                onClick={(e) => {e.stopPropagation();}}
-                title="Éditer la fiche"
-            />}
-            {cat.adoptionDate && user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin]) && <IconButton
-                icon={IconButtonImages.Trash}
-                imgWidth={16}
-                imgHeight={16}
-                className={"w-32 h-32 absolute right-16 top-16 bg-(--primary) z-1 rounded-[5px] flex items-center justify-center"}
-                svgFill="#FFF"
-                onClick={(e:React.MouseEvent<HTMLButtonElement>) => { askBeforeDeletion(e, cat.slug); }}
-                title="Supprimer la fiche"
-            />}
+            <div className="absolute right-16 flex h-32 top-16 z-1 flex items-center justify-end gap-8">
+                {!cat.adoptionDate && user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <IconButton
+                    icon={IconButtonImages.Pen}
+                    imgWidth={16}
+                    imgHeight={16}
+                    className={"w-32 h-32 bg-(--primary) rounded-[5px] flex items-center justify-center"}
+                    svgFill="#FFF"
+                    url={`/admin/cat/${cat.slug}`}
+                    onClick={(e) => {e.stopPropagation();}}
+                    title="Éditer la fiche"
+                />}
+                {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin]) && <IconButton
+                    icon={IconButtonImages.Trash}
+                    imgWidth={16}
+                    imgHeight={16}
+                    className={"w-32 h-32 bg-(--primary) rounded-[5px] flex items-center justify-center"}
+                    svgFill="#FFF"
+                    onClick={(e:React.MouseEvent<HTMLButtonElement>) => { askBeforeDeletion(e, cat); }}
+                    title="Supprimer la fiche"
+                />}
+            </div>
             <div className="relative h-376 overflow-hidden flex justify-center">
                 <img
                     src={(cat.pictures?.[0].includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + cat.pictures?.[0]}

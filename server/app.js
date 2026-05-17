@@ -33,6 +33,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api', apiRouter);
 app.use('/auth', authRouter);
+app.use('/uploads', express.static(process.env.UPLOAD_DIR || '/var/data/uploads'));
 
 (async () => {
   try {

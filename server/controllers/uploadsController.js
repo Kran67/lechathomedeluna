@@ -2,6 +2,19 @@ const path = require('path');
 const fs = require('fs');
 const pool = require('../db/pool');
 
+// Configurable via env var. Defaults to Render's persistent disk mount path.
+// Make sure your Render persistent disk is mounted at /var/data
+const uploadDir = process.env.UPLOAD_DIR || '/var/data/uploads';
+
+// Ensure the upload directory exists at startup
+try {
+  fs.mkdirSync(uploadDir, { recursive: true });
+} catch (e) {
+  console.error('Failed to create upload directory:', uploadDir, e.message);
+}
+
+const ALLOWED_CONTEXTS = ['pictures', 'documents', 'news'];
+
 async function uploadImage(req, res) {
   let multer;
   try {
@@ -9,9 +22,7 @@ async function uploadImage(req, res) {
   } catch (e) {
     return res.status(500).json({ error: 'Upload not available: missing dependency (multer)' });
   }
-  const uploadDir = path.join(__dirname, '..', 'public', 'uploads');
-  try { fs.mkdirSync(uploadDir, { recursive: true }); } catch (_) {}
-
+  
   const storage = multer.diskStorage({
     destination: function (req, file, cb) { cb(null, uploadDir); },
     filename: function (req, file, cb) {
@@ -20,81 +31,114 @@ async function uploadImage(req, res) {
       cb(null, base + ext);
     }
   });
+
   const fileFilter = function (req, file, cb) {
     if (file && file.mimetype && file.mimetype.startsWith('image/')) return cb(null, true);
     cb(new Error('Only image files are allowed'));
   };
+
   const upload = multer({ storage, fileFilter, limits: { fileSize: 10 * 1024 * 1024 } }).single('file');
 
   upload(req, res, async function (err) {
     if (err) return res.status(400).json({ error: err.message });
     if (!req.file) return res.status(400).json({ error: 'file is required (field name "file")' });
 
+    const filePath = path.join(uploadDir, req.file.filename);
+
+    // Helper: remove the uploaded file if we abort the request after upload
+    const cleanupFile = () => {
+      try { fs.unlinkSync(filePath); } catch (_) {}
+    };
+
     // Optional metadata to clarify the intent of this image
-    const context = (req.body && String(req.body.context || '').toLowerCase()) || null; // pictures | vaccines |  | other
+     const rawContext = req.body && req.body.context ? String(req.body.context).toLowerCase() : null;
+    const context = rawContext && ALLOWED_CONTEXTS.includes(rawContext) ? rawContext : null;
     const documentDate = req.body && req.body.date ? String(req.body.date) : null;
     const catId = req.body && req.body.cat_id ? String(req.body.cat_id) : null;
     const type = req.body && req.body.type ? String(req.body.type) : null;
     const id = req.body && req.body.id ? String(req.body.id) : null;
     const original_name = req.body && req.body.original_name ? String(req.body.original_name) : null;
 
-    // If a cat_id is provided, ensure it exists (for better UX)
+    // Validate context if provided
+    if (rawContext && !context) {
+      cleanupFile();
+      return res.status(400).json({
+        error: `Invalid context. Allowed values: ${ALLOWED_CONTEXTS.join(', ')}`
+      });
+    }
+
+    // If a cat_id is provided, ensure it exists
     if (catId) {
       try {
-        const p = await pool.query('SELECT id FROM cats WHERE id = $1', [catId]);
-        if (!p) return res.status(404).json({ error: 'Cat not found for provided cat_id' });
+        const result = await pool.query('SELECT id FROM cats WHERE id = $1', [catId]);
+        if (!result || result.rows.length === 0) {
+          cleanupFile();
+          return res.status(404).json({ error: 'Cat not found for provided cat_id' });
+        }
       } catch (e) {
+        cleanupFile();
         return res.status(500).json({ error: 'Validation failed: ' + e.message });
       }
     }
 
-    // Build a simple guidance message for the client
-    const publicUrl = '/uploads/' + req.file.filename;
-    let instructions = 'Upload successful. Use the returned URL where appropriate.';
-    //if (purpose === 'property-cover') {
-    //  instructions = propertyId
-    //    ? `Set as cover: PATCH /api/properties/${propertyId} with { "cover": "${publicUrl}" }`
-    //    : 'Set as cover of a property by PATCH /api/properties/{id} with { "cover": "<url>" }';
-    //} else
-    // if (purpose === 'property-picture') {
-      instructions = catId
-        ? 'Add to gallery when creating/updating cat data. Currently, pictures are provided when creating a cat: include the URL in the pictures array.'
-        : 'Include the URL in the "pictures" array when creating a cat.';
-    //} else if (purpose === 'user-picture') {
-    //  const userId = req.user && req.user.id ? String(req.user.id) : '{yourUserId}';
-    //  instructions = `Set as user picture: PATCH /api/users/${userId} with { "picture": "${publicUrl}" } (self or admin)`;
-    //}
-    if (context === "pictures") {
-      await pool.query('INSERT INTO cat_pictures (cat_id, url) VALUES ($1, $2)', [catId, publicUrl]);
-    } else if (context === "documents") {
-      await pool.query('INSERT INTO cat_documents (cat_id, date, url, type, original_name) VALUES ($1, $2, $3, $4, $5)', [catId, documentDate, publicUrl, type, original_name]);
-    } else if (context === "news") {
-      await pool.query('UPDATE news SET url = $2 WHERE id = $1', [id, publicUrl]);
+    const publicUrl = '/uploads/' + req.file.filename;    
+
+    // Persist references in DB depending on context
+    try {
+      if (context === 'pictures') {
+        if (!catId) {
+          cleanupFile();
+          return res.status(400).json({ error: 'cat_id is required when context=pictures' });
+        }
+        await pool.query(
+          'INSERT INTO cat_pictures (cat_id, url) VALUES ($1, $2)',
+          [catId, publicUrl]
+        );
+      } else if (context === 'documents') {
+        if (!catId) {
+          cleanupFile();
+          return res.status(400).json({ error: 'cat_id is required when context=documents' });
+        }
+        await pool.query(
+          'INSERT INTO cat_documents (cat_id, date, url, type, original_name) VALUES ($1, $2, $3, $4, $5)',
+          [catId, documentDate, publicUrl, type, original_name]
+        );
+      } else if (context === 'news') {
+        if (!id) {
+          cleanupFile();
+          return res.status(400).json({ error: 'id is required when context=news' });
+        }
+        await pool.query('UPDATE news SET url = $2 WHERE id = $1', [id, publicUrl]);
+      }
+    } catch (e) {
+      cleanupFile();
+      return res.status(500).json({ error: 'Database error: ' + e.message });
     }
+
+    const instructions = catId
+      ? 'Add to gallery when creating/updating cat data. Currently, pictures are provided when creating a cat: include the URL in the pictures array.'
+      : 'Include the URL in the "pictures" array when creating a cat.';    
 
     res.status(201).json({
       url: publicUrl,
       filename: req.file.filename,
       size: req.file.size,
       mimetype: req.file.mimetype,
-      //purpose: purpose,
       cat_id: catId || undefined,
+      context: context || undefined,
       instructions
     });
   });
 }
 
 async function deleteImages(req, res) {
-  const uploadDir = path.join(__dirname, '..', 'public', 'uploads');
-  try { fs.mkdirSync(uploadDir, { recursive: true }); } catch (_) {}
-
   function toFilename(item) {
     if (!item) return null;
     const s = String(item);
     // Accept either "/uploads/filename.jpg" or just "filename.jpg"
     const base = s.includes('/uploads/') ? s.split('/uploads/').pop() : path.basename(s);
     // Reject path traversal
-    if (base.includes('..') || base.includes('/') || base.includes('\\')) return null;
+    if (!base ||base.includes('..') || base.includes('/') || base.includes('\\')) return null;
     return base;
   }
 
@@ -109,11 +153,14 @@ async function deleteImages(req, res) {
   if (typeof req.query.urls === 'string') inputs = inputs.concat(req.query.urls.split(','));
   if (typeof req.query.url === 'string') inputs.push(req.query.url);
 
-  const context = (req.body && String(req.body.context || '').toLowerCase()) || null; // pictures | vaccines |  | other
+  const rawContext = req.body && req.body.context ? String(req.body.context).toLowerCase() : null;
+  const context = rawContext && ALLOWED_CONTEXTS.includes(rawContext) ? rawContext : null;
 
   const set = new Set(inputs.map(toFilename).filter(Boolean));
   if (set.size === 0) {
-    return res.status(400).json({ error: 'Provide filename(s) or url(s) to delete (filenames[], urls[], filename, url, or query params).' });
+    return res.status(400).json({
+      error: 'Provide filename(s) or url(s) to delete (filenames[], urls[], filename, url, or query params).'
+    });
   }
 
   const filenames = Array.from(set);
@@ -128,36 +175,41 @@ async function deleteImages(req, res) {
       if (!fs.existsSync(full)) {
         not_found.push(name);
         results.push({ filename: name, status: 'not_found' });
-        continue;
+        // Still try to clean DB references for orphaned records
+      } else {
+        fs.unlinkSync(full);
+        deleted.push(name);
+        results.push({ filename: name, status: 'deleted' });
       }
-      // Unlink file
-      fs.unlinkSync(full);
-      deleted.push(name);
-      results.push({ filename: name, status: 'deleted' });
-
+ 
       const url = '/uploads/' + name;
       // Clean references in DB (best-effort)
       try {
-        if (context === "pictures") {
+        if (context === 'pictures') {
           await pool.query('DELETE FROM cat_pictures WHERE url = $1', [url]);
-        } else if (context === "documents") {
+        } else if (context === 'documents') {
           await pool.query('DELETE FROM cat_documents WHERE url = $1', [url]);
+        } else if (context === 'news') {
+          await pool.query('UPDATE news SET url = NULL WHERE url = $1', [url]);
         }
-      } catch (_) {}
-      //try {
-      //  await db.runAsync('UPDATE properties SET cover = NULL WHERE cover = ?', [url]);
-      //} catch (_) {}
-      //try {
-      //  await db.runAsync('UPDATE users SET picture = NULL WHERE picture = ?', [url]);
-      //} catch (_) {}
+      } catch (dbErr) {
+        // Log but don't fail the whole request
+        console.error('DB cleanup failed for', url, dbErr.message);
+      }
     } catch (e) {
       errors.push({ filename: name, error: e.message });
       results.push({ filename: name, status: 'error', error: e.message });
     }
   }
 
-  const status = errors.length === 0 ? 200 : (deleted.length > 0 ? 207 : 400); // 207 Multi-Status when partial
-  return res.status(status).json({ ok: errors.length === 0, deleted, not_found, errors, results });
+  const status = errors.length === 0 ? 200 : (deleted.length > 0 ? 207 : 400);
+  return res.status(status).json({
+    ok: errors.length === 0,
+    deleted,
+    not_found,
+    errors,
+    results
+  });
 }
 
 module.exports = { uploadImage, deleteImages };

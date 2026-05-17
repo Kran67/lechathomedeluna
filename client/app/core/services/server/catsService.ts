@@ -113,6 +113,7 @@ export const update = async (
     entryDate: string | null,
     provenance: string | null,
     destination: string | null,
+    location: string,
     baseUrl: string
     ) => {
     try {
@@ -140,6 +141,7 @@ export const update = async (
                 entryDate,
                 provenance,
                 destination,
+                location,
                 baseUrl
             }),
         });

@@ -133,6 +133,7 @@ export default function CatCard({ cat }: PropsCC) {
                     {user && <span className="text-sm text-(--text) font-medium">Statut FELV : {cat.statusFelv}</span>}
                     <span className="text-sm text-(--text) font-medium">Date d'entrée : {cat.entryDate ? DateUtils.differenceDate(new Date(cat.entryDate)).text : ""}</span>
                     {user && <span className="text-sm text-(--text) font-medium">Provenance : {cat.provenance}</span>}
+                    {user && <span className="text-sm text-(--text) font-medium">Localisation : {cat.location}</span>}
                 </div>
             </div>
         </div>

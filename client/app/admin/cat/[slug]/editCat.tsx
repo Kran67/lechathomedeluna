@@ -53,6 +53,7 @@ import {
 } from '@/app/core/services/server/catsService';
 import { create } from '@/app/core/services/server/vetVouchersService';
 import {
+  CatLocation,
   CatSexes,
   CatStatus,
   Clinics,
@@ -81,6 +82,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const [statusFelv, setStatusFelv] = useState<string | null>(cat?.statusFelv ?? null);
     const [sex, setSex] = useState<string | null>(cat?.sex ?? null);
     const [isSterilized, setIsSterilized] = useState<boolean>(cat?.isSterilized ?? false);
+    const [location, setLocation] = useState<string>(cat?.location ?? "");
     const [isDuringVisit, setIsDuringVisit] = useState<boolean>(cat?.isDuringVisit ?? false);
     let isAdoptable = cat?.isAdoptable ?? false;
     const [birthDate, setBirthDate] = useState<string | null>(cat?.birthDate ?? null);
@@ -183,6 +185,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
             entryDate,
             provenance,
             formData.get("destination") as string,
+            location,
             baseUrl,
         );
         if (!res.error) {
@@ -610,6 +613,22 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 type={InputTypes.Date}
                                 value={cat?.adoptionDate ? formatYMMDD(new Date(cat?.adoptionDate)) : undefined}
                                 readOnly={isReadonly} />
+                            <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                                <label className="text-sm text-(--text) font-medium " htmlFor="isSterilized">Localisation</label>
+                                {!isReadonly ? <Select
+                                    options={CatLocation}
+                                    className="select"
+                                    classNamePrefix="select"
+                                    name="location"
+                                    id="location"
+                                    isMulti={false}
+                                    isClearable={false}
+                                    isSearchable={false}
+                                    placeholder="Où se trouve le chat ?"
+                                    value={CatLocation.find(c => c.value === location)}
+                                    onChange={(e:any) => setLocation(e?.value as string ?? false)}
+                                /> : <div className='flex text-sm text-(--text) border border-1 border-(--pink) h-40 rounded-[4px] items-center px-10 py-16 bg-[#eee]'>{CatLocation?.find(c => c.value === location)?.label}</div>}
+                            </div>
                             {!isReadonly ? <Input
                                 name="catPictures"
                                 label="Photos"

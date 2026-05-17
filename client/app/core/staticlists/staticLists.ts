@@ -889,3 +889,29 @@ export const LifePlaces : {
         label: "Duplex, triplex ou souplex"
     },
 ];
+
+export const CatLocation : {
+    value: string;
+    label: string;
+}[] = [
+    {
+        value: "",
+        label: ""
+    },
+    {
+        value: "Adopté",
+        label: "Adopté"
+    },
+    {
+        value: "Libre",
+        label: "Libre"
+    },
+    {
+        value: "Panier retraite",
+        label: "Panier retraite"
+    },
+    {
+        value: "FA longue durée",
+        label: "FA longue durée"
+    },
+];

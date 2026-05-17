@@ -37,6 +37,7 @@ async function initializeDb(deleteAll = false) {
   }
   await initSchema(pool);
   await seedIfEmpty(pool);
+  await execSql(pool);
 
   await client.end();
 }
@@ -111,7 +112,7 @@ async function initSchema(pool) {
       statusFelv VARCHAR(9) NOT NULL CHECK (statusFelv IN ('Positif','Négatif','Non testé')),
       numIdentification VARCHAR(20),
       sex VARCHAR(7) NOT NULL CHECK (sex IN ('Mâle','Femelle')),
-      dress VARCHAR(10),
+      dress VARCHAR(20),
       race VARCHAR(10),
       isSterilized BOOLEAN DEFAULT false,
       sterilizationDate DATE,
@@ -125,6 +126,7 @@ async function initSchema(pool) {
       entryDate DATE,
       provenance VARCHAR(50),
       destination VARCHAR(50),
+      location VARCHAR(20),
       created_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       created_at TIMESTAMPTZ NOT NULL,
       updated_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -386,22 +388,22 @@ async function seedBaseData() {
   //          'Empty'
   //        ]);
   // groupes de discussion de base
-  await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'Adoption', 1]);
-  await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'Bons vétérinaire', 1]);
-  await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'Registre sanitaire', 1]);
-  await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'Visite', 1]);
-  await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'ICAD', 1]);
+  //await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'Adoption', 1]);
+  //await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'Bons vétérinaire', 1]);
+  //await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'Registre sanitaire', 1]);
+  //await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'Visite', 1]);
+  //await pool.query('INSERT INTO message_threads (type, name, created_by) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', ['group', 'ICAD', 1]);
   // participants sur les groupes de discussion de base
-  await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [1, 2, 'admin']);
-  await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [1, 3, 'member']);
-  await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [2, 2, 'admin']);
-  await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [2, 5, 'member']);
-  await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [3, 2, 'admin']);
-  await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [3, 4, 'member']);
-  await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [4, 2, 'admin']);
-  await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [4, 7, 'member']);
-  await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [5, 2, 'admin']);
-  await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [5, 6, 'member']);
+  //await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [1, 2, 'admin']);
+  //await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [1, 3, 'member']);
+  //await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [2, 2, 'admin']);
+  //await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [2, 5, 'member']);
+  //await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [3, 2, 'admin']);
+  //await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [3, 4, 'member']);
+  //await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [4, 2, 'admin']);
+  //await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [4, 7, 'member']);
+  //await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [5, 2, 'admin']);
+  //await pool.query('INSERT INTO thread_participants (thread_id, user_id, role) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [5, 6, 'member']);
 
 }
 
@@ -532,7 +534,14 @@ async function seedIfEmpty(pool) {
   }
 }
 
+async function execSql(pool) {
+  const result = await pool.query(
+    `ALTER TABLE cats ADD COLUMN IF NOT EXISTS location VARCHAR(20) NOT NULL DEFAULT '' CHECK (location IN ('', 'Adopté', 'Libre', 'Panier retraite', 'FA longue durée'))`
+  );
+}
+
 module.exports = {
     initializeDb,
+    execSql
     //slugify
 }

@@ -39,4 +39,5 @@ export interface Cat {
     entryDate?: string;
     provenance?: string;
     destination?: string;
+    location: string;
 }

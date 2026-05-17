@@ -31,11 +31,12 @@ function mapCatRow(row) {
     entryDate: row.entrydate,
     provenance: row.provenance,
     destination: row.destination,
+    location: row.location,
     userId: row.created_by
   };
 }
 
-function mapCatUnCompletdRow(row) {
+function mapCatUnCompletedRow(row) {
   if (!row) return null;
   return {
     slug: row.slug,
@@ -147,6 +148,7 @@ async function createCat(payload) {
     userId = null,
     entryDate = null,
     provenance = null,
+    location = null
   } = payload || {};
 
   if (!name) throw new Error('Nom est requis');
@@ -156,9 +158,9 @@ async function createCat(payload) {
   const base = tools.uuid();
   const uniqueSlug = await ensureUniqueSlug(base);
   const res = await pool.query(
-    `INSERT INTO cats(name, slug, description, statusFiv, statusFelv, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdoptable, adoptionDate, hostFamily_id, entryDate, provenance, created_by, created_at, updated_by, updated_at) 
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,false,$13,$14, $15, $16, $17, $18, NOW(), $18, NOW()) RETURNING id`,
-    [name, uniqueSlug, description, statusFiv, statusFelv, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, adoptionDate, hostFamilyId, entryDate, provenance, userId]
+    `INSERT INTO cats(name, slug, description, statusFiv, statusFelv, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, isAdoptable, adoptionDate, hostFamily_id, entryDate, provenance, location, created_by, created_at, updated_by, updated_at) 
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,false,$13,$14, $15, $16, $17, $18, $19, NOW(), $19, NOW()) RETURNING id`,
+    [name, uniqueSlug, description, statusFiv, statusFelv, numIdentification, sex, dress, race, isSterilized, sterilizationDate, birthDate, isDuringVisit, adoptionDate, hostFamilyId, entryDate, provenance, location, userId]
   );
   const lastId = res.rows[0].id;
 
@@ -173,7 +175,7 @@ async function createCat(payload) {
 
 async function updateCat(slug, changes) {
   const allowed = ['name', 'description', 'statusFiv', 'statusFelv', 'numIdentification', 'sex', 'dress', 'race', 'isSterilized', 'sterilizationDate', 
-    'birthDate', 'isDuringVisit', 'isAdoptable', 'adoptionDate', 'hostFamily_Id', 'preVisitDate', 'entryDate', 'provenance', 'destination'];
+    'birthDate', 'isDuringVisit', 'isAdoptable', 'adoptionDate', 'hostFamily_Id', 'preVisitDate', 'entryDate', 'provenance', 'destination', 'location'];
   const fields = [];
   const params = [];
 
@@ -300,7 +302,7 @@ async function getAllFACatsNotFullyCompletedList(id) {
   }
   sql += ' ORDER BY name;'
   const res = await pool.query(sql);
-  return res.rows.map(mapCatUnCompletdRow);
+  return res.rows.map(mapCatUnCompletedRow);
 }
 
 async function getAllAdoptedCatsNotFullyCompletedCount() {
@@ -350,7 +352,7 @@ async function getAllAdoptedCatsNotFullyCompletedList() {
       entryDate        IS NULL OR
       provenance        IS NULL)
     ORDER BY name;`);
-  return res.rows.map(mapCatUnCompletdRow);
+  return res.rows.map(mapCatUnCompletedRow);
 }
 
 async function getAdoptedCatsCount() {
@@ -359,7 +361,6 @@ async function getAdoptedCatsCount() {
     WHERE adoptionDate IS NOT NULL;`);
   return res.rows[0].count;
 }
-
 
 async function catsHasPreVisitWithoutDateList(id) {
   let sql = `

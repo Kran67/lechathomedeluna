@@ -50,6 +50,10 @@ body {
   color: var(--text);
 }
 
+.select .select__menu {
+  z-index: 2;
+}
+
 .cat-paw {
   position: absolute;
   opacity: 0;

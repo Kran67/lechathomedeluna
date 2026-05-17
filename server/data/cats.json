@@ -22,7 +22,8 @@
             "/images/chats/calypso/calypso-4.jpg",
             "/images/chats/calypso/calypso-5.jpg"
         ],
-        "documents": []
+        "documents": [],
+        "location": ""
     },
     {
         "slug": "0979876d",
@@ -43,7 +44,8 @@
             "/images/chats/réglisse/reglisse-3.jpg",
             "/images/chats/réglisse/reglisse-4.jpg"
         ],
-        "documents": []
+        "documents": [],
+        "location": ""
     },
     {
         "slug": "d60ca600",
@@ -66,7 +68,8 @@
             "/images/chats/choupinette/choupinette-6.jpg",
             "/images/chats/choupinette/choupinette-7.jpg"
         ],
-        "documents": []
+        "documents": [],
+        "location": ""
     },
     {
         "slug": "af6d2d48",
@@ -86,7 +89,8 @@
             "/images/chats/thimotée/thimotee-2.jpg",
             "/images/chats/thimotée/thimotee-3.jpg"
         ],
-        "documents": []
+        "documents": [],
+        "location": ""
     },
     {
         "slug": "1e180563",
@@ -117,7 +121,8 @@
             "roles": "CommitteeMember|HostFamily",
             "email": "faref@exemple.com",
             "password": "scrypt:8850c2aec59d2e4841e4f1f1a1091f55:2ec6fbedc853cd7f79fffa6f0fc952321b7363130bba327c6d5c5dcbcda839634b3bc68b6bc5afba493d0d04b49a7d793b68bbb2011832346bdc07ba238dbaba"
-        }
+        },
+        "location": ""
     },
     {
         "slug": "6ff132c6",
@@ -147,6 +152,7 @@
             "/images/chats/salem/salem-2.jpg",
             "/images/chats/salem/salem-3.jpg"
         ],
-        "documents": []
+        "documents": [],
+        "location": ""
     }
 ]

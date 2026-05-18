@@ -61,7 +61,8 @@ export const create = async (
                 hostFamilyId,
                 userId,
                 entryDate,
-                provenance
+                provenance,
+                location: ''
             }),
         });
         const result = await res.json();

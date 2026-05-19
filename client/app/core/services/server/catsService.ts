@@ -26,7 +26,7 @@ export const create = async (
     statusFiv: string | null,
     statusFelv: string | null,
     numIdentification: string | null,
-    sex: string | null,
+    sex: string,
     dress: string | null,
     race: string | null,
     isSterilized: boolean | null,

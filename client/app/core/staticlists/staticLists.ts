@@ -75,6 +75,10 @@ export const CatSexes : {
     label: String;
 }[] = [
     {
+        value: "Inconnu",
+        label: "Inconnu"
+    },
+    {
         value: "Mâle",
         label: "Mâle"
     },

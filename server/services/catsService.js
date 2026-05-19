@@ -153,7 +153,7 @@ async function createCat(payload) {
 
   if (!name) throw new Error('Nom est requis');
   if (!description) throw new Error('Description est requis');
-  if (!sex) throw new Error('Sexe est requis');
+  //if (!sex) throw new Error('Sexe est requis');
 
   const base = tools.uuid();
   const uniqueSlug = await ensureUniqueSlug(base);

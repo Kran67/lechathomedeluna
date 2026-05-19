@@ -62,7 +62,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
     const token: string = cookies.get("token") as string;
     const [statusFiv, setStatusFiv] = useState<string | null>("Non testé");
     const [statusFelv, setStatusFelv] = useState<string | null>("Non testé");
-    const [sex, setSex] = useState<string | null>(null);
+    const [sex, setSex] = useState<string>(CatSexes[0].value);
     const [isSterilized, setIsSterilized] = useState<boolean | null>(null);
     const [isDuringVisit, setIsDuringVisit] = useState<boolean | null>(null);
     const [hostFamilyId, setHostFamilyId] = useState<string | null>(null);
@@ -190,8 +190,8 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                             </div>}
                             <Input name="name" label="Nom" required={true} maxLength={20} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
-                                <label className="text-sm text-(--text) font-medium " htmlFor="status">Description</label>
-                                <textarea className='text-sm text-(--text) w-full outline-0 border border-(--pink) px-10 py-5' name="description" rows={5} />
+                                <label className="text-sm text-(--text) font-medium " htmlFor="status">Description *</label>
+                                <textarea className='text-sm text-(--text) w-full outline-0 border border-(--pink) px-10 py-5' name="description" rows={5} required={true} />
                             </div>
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
                                 <label className="text-sm text-(--text) font-medium " htmlFor="status">Statut FIV</label>
@@ -227,7 +227,7 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                             </div>
                             <Input name="numIdentification" label="N° d'identification" maxLength={20} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
-                                <label className="text-sm text-(--text) font-medium " htmlFor="sex">Sexe *</label>
+                                <label className="text-sm text-(--text) font-medium " htmlFor="sex">Sexe</label>
                                 <Select
                                     options={CatSexes}
                                     className="select"
@@ -238,8 +238,8 @@ export default function NewCat({ hostFamilies} : NewCatProps) {
                                     isClearable={false}
                                     isSearchable={false}
                                     placeholder="Sexe"
+                                    value={CatSexes.find(c => c.value === sex)}
                                     onChange={(e:any) => setSex(e?.value as string ?? "")}
-                                    required={true}
                                 />
                             </div>
                             <Input name="dress" label="Robe" maxLength={20} required={true} />

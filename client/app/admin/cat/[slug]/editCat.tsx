@@ -80,7 +80,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const token: string = cookies.get("token") as string;
     const [statusFiv, setStatusFiv] = useState<string | null>(cat?.statusFiv ?? null);
     const [statusFelv, setStatusFelv] = useState<string | null>(cat?.statusFelv ?? null);
-    const [sex, setSex] = useState<string | null>(cat?.sex ?? null);
+    const [sex, setSex] = useState<string>(cat?.sex ?? CatSexes[0].value);
     const [isSterilized, setIsSterilized] = useState<boolean>(cat?.isSterilized ?? false);
     const [location, setLocation] = useState<string>(cat?.location ?? "");
     const [isDuringVisit, setIsDuringVisit] = useState<boolean>(cat?.isDuringVisit ?? false);
@@ -166,7 +166,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
             statusFiv,
             statusFelv,
             numId,
-            sex,
+            sex ?? '',
             dress,
             formData.get("race") as string,
             isSterilized,
@@ -481,13 +481,14 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 readOnly={isReadonly}
                             />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
-                                <label className="text-sm text-(--text) font-medium " htmlFor="status">Description</label>
+                                <label className="text-sm text-(--text) font-medium " htmlFor="status">Description *</label>
                                 <textarea
                                     className={'text-sm text-(--text) w-full outline-0 border border-(--pink) px-10 py-5' + (isReadonly ? " bg-[#eee]" : "")}
                                     name="description"
                                     rows={5}
                                     defaultValue={cat?.description}
                                     readOnly={isReadonly}
+                                    required={true}
                                 />
                             </div>
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
@@ -524,7 +525,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                             </div>
                             <Input name="numIdentification" label="N° d'identification" value={cat?.numIdentification} maxLength={20} readOnly={isReadonly} />
                             <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
-                                <label className="text-sm text-(--text) font-medium " htmlFor="sex">Sexe *</label>
+                                <label className="text-sm text-(--text) font-medium " htmlFor="sex">Sexe</label>
                                 {!isReadonly ? <Select
                                     options={CatSexes}
                                     className="select"
@@ -537,7 +538,6 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     placeholder="Sexe"
                                     value={CatSexes.find(c => c.value === sex)}
                                     onChange={(e:any) => setSex(e?.value as string ?? "")}
-                                    required={true}
                                 /> : <div className='flex text-sm text-(--text) border border-1 border-(--pink) h-40 rounded-[4px] items-center px-10 py-16 bg-[#eee]'>{CatSexes?.find(c => c.value === sex)?.label}</div>}
                             </div>
                             <Input name="dress" label="Robe" value={cat?.dress} maxLength={20} readOnly={isReadonly} required={true} />

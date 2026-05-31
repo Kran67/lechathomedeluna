@@ -535,8 +535,11 @@ async function seedIfEmpty(pool) {
 }
 
 async function execSql(pool) {
-  const result = await pool.query(
+  await pool.query(
     `ALTER TABLE cats ADD COLUMN IF NOT EXISTS location VARCHAR(20) NOT NULL DEFAULT '' CHECK (location IN ('', 'Adopté', 'Libre', 'Panier retraite', 'FA longue durée'))`
+  );
+  await pool.query(
+    `ALTER TABLE vet_vouchers ADD COLUMN IF NOT EXISTS comment TEXT NULL`
   );
 }
 

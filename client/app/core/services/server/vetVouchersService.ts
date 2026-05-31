@@ -8,6 +8,7 @@ export const create = async (
     cat_id: string,
     clinic: string,
     object: string,
+    comment: string,
     created_by: string
     ) => {
     try {
@@ -21,6 +22,7 @@ export const create = async (
                 cat_id,
                 clinic,
                 object,
+                comment,
                 created_by
             }),
         });

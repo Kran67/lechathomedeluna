@@ -119,8 +119,8 @@ export default function VetVouchers() {
     return (
         <main className="flex flex-col gap-20 w-full items-center md:pt-20 md:px-140">
             <Header activeMenu={HeaderMenuItems.VeterinaryVouchers} />
-            <div className="flex flex-col gap-51 md:gap-20 px-16 md:p-0 w-full xl:w-1115">
-                <div className="flex flex-col gap-8 w-full xl:w-1115 lg:w-800 items-center text-center">
+            <div className="flex flex-col gap-51 md:gap-20 px-16 md:p-0 w-full">
+                <div className="flex flex-col gap-8 w-full items-center text-center">
                     <span className="text-[32px] text-(--primary) w-full">Bons vétérinaires</span>
                     <div className="flex gap-5 w-full items-center justify-center">
                         <Select
@@ -179,26 +179,31 @@ export default function VetVouchers() {
                 </div>
                 <table className="w-full border-l border-r border-t border-solid border-(--pink)">
                     <thead className="w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
-                        <tr>
+                    <tr>
                         <td className="text-(--white) w-100 px-5">Date de la demande</td>
                         <td className="text-(--white) border-l w-100 px-5">Date du rendez-vous</td>
                         <td className="text-(--white) border-l w-150 px-5">Demandeur</td>
                         <td className="text-(--white) border-l w-150 px-5">Pour</td>
                         <td className="text-(--white) border-l flex-1 px-5">Clinique</td>
                         <td className="text-(--white) border-l w-250 px-5">Objet</td>
+                        <td className="text-(--white) border-l w-250 px-5">Commentaire</td>
+                        <td className="text-(--white) border-l w-100 px-5">Traité le</td>
                         <td className="text-(--white) border-l w-70 px-5">Actions</td>
-                        </tr>
+                    </tr>
                     </thead>
                     <tbody>
                     {service.vetVouchers && service.vetVouchers.length > 0 ? service.vetVouchers?.map((voucher, idx) => (
                         <tr key={voucher.id} className={"w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
-                            <td className="w-100 px-5 text-(--text)">{formatDDMMY(new Date(voucher.date))}</td>
-                            <td className="border-l w-100 px-5 text-(--text)">{formatDDMMY(new Date(voucher.appointmentDate))}</td>
-                            <td className="border-l w-150 px-5 text-(--text)">{voucher.user_name}</td>
-                            <td className="border-l w-150 px-5 text-(--text)">{voucher.cat.numId} / {voucher.cat.name}</td>
-                            <td className="border-l flex-1 px-5 text-(--text)">{voucher.clinic}</td>
-                            <td className="border-l w-250 px-5 text-(--text)">{voucher.object}</td>
-                            <td className="border-(--pink) border-l w-70 px-5">
+                            <td className={"w-100 px-5 text-(--text)" + (voucher.processed_on ? " line-through" : "")}>{formatDDMMY(new Date(voucher.date))}</td>
+                            <td className={"border-l w-100 px-5 text-(--text)" + (voucher.processed_on ? " line-through" : "")}>{formatDDMMY(new Date(voucher.appointmentDate))}</td>
+                            <td className={"border-l w-150 px-5 text-(--text)" + (voucher.processed_on ? " line-through" : "")}>{voucher.user_name}</td>
+                            <td className={"border-l w-150 px-5 text-(--text)" + (voucher.processed_on ? " line-through" : "")}>{voucher.cat.numId} / {voucher.cat.name}</td>
+                            <td className={"border-l flex-1 px-5 text-(--text)" + (voucher.processed_on ? " line-through" : "")}>{voucher.clinic}</td>
+                            <td className={"border-l w-250 px-5 text-(--text)" + (voucher.processed_on ? " line-through" : "")}>{voucher.object}</td>
+                            <td className={"border-l w-250 px-5 text-(--text)" + (voucher.processed_on ? " line-through" : "")}>{voucher.comment}</td>
+                            <td className="border-l w-100 px-5 text-(--text)">{voucher.processed_on ? formatDDMMY(new Date(voucher.processed_on)): ""}</td>
+                            <td className={"border-(--pink) border-l w-70 px-5"}>
+                                {!voucher.processed_on &&
                                 <div className='flex gap-5 items-center justify-center'>
                                     <IconButton
                                         icon={IconButtonImages.Approved}
@@ -213,6 +218,7 @@ export default function VetVouchers() {
                                         onClick={ (e:React.MouseEvent<HTMLButtonElement>) => removed(e, voucher)}
                                         title='Supprimer la demande' />
                                 </div>
+                                }
                             </td>
                         </tr>
                         ))

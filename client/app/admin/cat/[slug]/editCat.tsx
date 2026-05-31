@@ -219,6 +219,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
 
     const handleSubmitVoucher: (e: FormEvent<HTMLFormElement>) => Promise<void> = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        const form: EventTarget & HTMLFormElement = e.currentTarget;
+        const formData: FormData = new FormData(form);
         setClinic(null);
         setVoucherObject(null);
         if (clinicInputRef.current) {
@@ -232,6 +234,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         }
 
         const date: string = formatYMMDD(new Date());
+        console.log(formData.get("comment") as string);
         const res = await create(
             token,
             date,
@@ -240,6 +243,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
             cat?.id ?? "-1",
             clinic ?? "",
             voucherObject ?? "",
+            formData.get("comment") as string,
             user?.id as string
         );
         if (!res.error) {
@@ -870,6 +874,13 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                         ref={appointmentDateRef}
                                     />
                                 </div>
+                                {voucherObject?.includes("Autre") && 
+                                    <textarea
+                                        className={'text-sm text-(--text) w-full outline-0 border border-(--pink) px-10 py-5' + (isReadonly ? " bg-[#eee]" : "")}
+                                        name="comment"
+                                        rows={5}
+                                    />
+                                }
                                 <div className='flex justify-center'>
                                     <Button
                                         text="Demander le bon"

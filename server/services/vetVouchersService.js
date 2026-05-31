@@ -12,13 +12,14 @@ function mapVetVoucherRow(row) {
     clinic: row.clinic,
     object: row.object,
     processed_on: row.processed_on,
+    comment: row.comment
   };
 }
 
 async function listVetVoucher(year = 0, clinic = '', object = '', id = null) {
   const params = [year];
   let sql = `
-      SELECT v.id, v.date, v.appointmentDate, v.user_id, u.user_name, v.clinic, v.object, v.processed_on, c.slug, c.name, c.numid, v.cat_id as catid
+      SELECT v.id, v.date, v.appointmentDate, v.user_id, u.user_name, v.clinic, v.object, v.processed_on, v.comment, c.slug, c.name, c.numid, v.cat_id as catid
       FROM vet_vouchers v
       LEFT JOIN LATERAL (
         SELECT slug, name, numIdentification as numid
@@ -31,8 +32,7 @@ async function listVetVoucher(year = 0, clinic = '', object = '', id = null) {
         FROM users
         WHERE users.id = v.user_id
         LIMIT 1
-      ) u ON true
-      WHERE v.processed_on IS NULL `;
+      ) u ON true `;
     if (id) {
       sql += ' AND v.id = $1';
       params.length = 0;
@@ -62,7 +62,7 @@ async function listVetVoucher(year = 0, clinic = '', object = '', id = null) {
 
 async function getVetVoucherById(id) {
   const res = await pool.query(`
-    SELECT v.id, v.date, v.appointmentDate, v.user_id, u.user_name, v.clinic, v.object, v.processed_on, c.slug, c.name, c.numid, v.cat_id as catid
+    SELECT v.id, v.date, v.appointmentDate, v.user_id, u.user_name, v.clinic, v.object, v.processed_on, v.comment, c.slug, c.name, c.numid, v.cat_id as catid
     FROM vet_vouchers v
     LEFT JOIN LATERAL (
       SELECT slug, name, numIdentification as numid
@@ -90,6 +90,7 @@ async function createVetVoucher(payload) {
     cat_id,
     clinic,
     object,
+    comment,
     created_by,
   } = payload || {};
 
@@ -101,9 +102,9 @@ async function createVetVoucher(payload) {
   if (!object) throw new Error("L'object est requis");
 
   const res = await pool.query(
-    `INSERT INTO vet_vouchers(date, appointmentDate, user_id, cat_id, clinic, object, created_by, created_at, updated_by, updated_at) 
-     VALUES ($1,$2,$3,$4,$5,$6,$7,NOW(),$7,NOW()) RETURNING id`,
-    [date, appointmentDate, user_id, cat_id, clinic, object, created_by]
+    `INSERT INTO vet_vouchers(date, appointmentDate, user_id, cat_id, clinic, object, comment, created_by, created_at, updated_by, updated_at) 
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,NOW(),$8,NOW()) RETURNING id`,
+    [date, appointmentDate, user_id, cat_id, clinic, object, comment, created_by]
   );
   const lastId = res.rows[0].id;
 

@@ -128,24 +128,37 @@ export default function MyAlerts() {
             </div> */}
             {user && hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.VetVoucherReferent]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Bons vétérinaires :</span>
-            <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
-                <div className="flex w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
-                    <span className="text-(--white) w-100 px-5">Date</span>
-                    <span className="text-(--white) border-l w-150 px-5">Demandeur</span>
-                    <span className="text-(--white) border-l w-170 px-5">Pour</span>
-                    <span className="text-(--white) border-l flex-1 px-5">Clinique</span>
-                    <span className="text-(--white) border-l w-250 px-5">Objet</span>
-                </div>
+            <table className="w-full border-l border-r border-t border-solid border-(--pink)">
+                <thead className="w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
+                  <tr>
+                      <td className="text-(--white) w-100 px-5">Date de la demande</td>
+                      <td className="text-(--white) border-l w-100 px-5">Date du rendez-vous</td>
+                      <td className="text-(--white) border-l w-150 px-5">Demandeur</td>
+                      <td className="text-(--white) border-l w-150 px-5">Pour</td>
+                      <td className="text-(--white) border-l flex-1 px-5">Clinique</td>
+                      <td className="text-(--white) border-l w-250 px-5">Objet</td>
+                      <td className="text-(--white) border-l w-250 px-5">Commentaire</td>
+                      <td className="text-(--white) border-l w-100 px-5">Traité le</td>
+                  </tr>
+                </thead>
+                <tbody>
                 {vetVoucherList.length > 0 ? vetVoucherList.map((voucher: VetVoucher, idx: number) => (
-                  <div key={voucher.id} className={"flex w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
-                        <span className="w-100 px-5 text-(--text)">{formatDDMMY(new Date(voucher.date))}</span>
-                        <span className="border-l w-150 px-5 text-(--text)">{voucher.user_name}</span>
-                        <span className="border-l w-170 px-5 text-(--text)">{voucher.cat.numId ?? voucher.cat.name}</span>
-                        <span className="border-l flex-1 px-5 text-(--text)">{voucher.clinic}</span>
-                        <span className="border-l w-250 px-5 text-(--text)">{voucher.object}</span>
-                    </div>
-                )) : <div className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)'>Pas de bon vétérinaire en attente</div>}
-              </div>
+                        <tr key={voucher.id} className={"w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") + (voucher.processed_on ? " line-through" : "") }>
+                            <td className={"w-100 px-5 text-(--text)"}>{formatDDMMY(new Date(voucher.date))}</td>
+                            <td className="border-l px-5 text-(--text)">{formatDDMMY(new Date(voucher.appointmentDate))}</td>
+                            <td className="border-l px-5 text-(--text)">{voucher.user_name}</td>
+                            <td className="border-l px-5 text-(--text)">{user && hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.HostFamily]) && 
+                              <Link url={"/admin/cat/" + voucher.cat.slug} text={voucher.cat.numId+ " / " + voucher.cat.name} />}
+                              {user && !hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.HostFamily]) && <>{voucher.cat.numId} / {voucher.cat.name}</>}
+                            </td>
+                            <td className="border-l px-5 text-(--text)">{voucher.clinic}</td>
+                            <td className="border-l px-5 text-(--text)">{voucher.object}</td>
+                            <td className="border-l px-5 text-(--text)">{voucher.comment}</td>
+                            <td className="border-l px-5 text-(--text)">{voucher.processed_on ? formatDDMMY(new Date(voucher.processed_on)): ""}</td>
+                        </tr>
+                )) : <tr><td className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)' colSpan={6}>Pas de bon vétérinaire en attente</td></tr>}
+              </tbody>
+            </table>
           </div>} 
           {user && hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Fiches chats en FA incomplètes :</span>

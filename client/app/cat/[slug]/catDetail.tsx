@@ -103,6 +103,10 @@ export default function Property({ cat }: CatProps) {
         prepareBodyToShowModal(viewCarousel ? "hidden" : "");
     }, [viewCarousel]);
 
+    useEffect(() => {
+        prepareBodyToShowModal(showModalAdoptionRequest ? "hidden" : "");
+    }, [showModalAdoptionRequest]);
+
     const animateHearts = async (e: React.MouseEvent<HTMLButtonElement>, url: string) => {
         const getRandom = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
         const colors: string[] = ["text-(--primary)", "text-(--primary-dark)", "text-(--pink)", "text-(--light-pink)"];
@@ -169,7 +173,7 @@ export default function Property({ cat }: CatProps) {
             )}
             <Header activeMenu={cat?.isAdoptable && cat?.adoptionDate ? HeaderMenuItems.AdoptedCats : HeaderMenuItems.Home} />
             <div className="flex flex-col w-full gap-10 lg:gap-24 lg:w-970 px-16 pb-80 lg:px-0 lg:pb-0">
-                <div className="lg:flex lg:flex-row lg:gap-10 w-full lg:py-16 lg:px-7 border-b-0 lg:border-b-1 border-solid border-b-(--pink)">
+                <div className="lg:flex lg:flex-row lg:gap-10 w-full lg:py-16 lg:px-7 border-b-0 border-b-1 border-solid border-b-(--pink)">
                     <IconButton
                         icon={IconButtonImages.LeftArrow}
                         imgWidth={8}
@@ -182,7 +186,7 @@ export default function Property({ cat }: CatProps) {
                 </div>
                 <div className="flex flex-col lg:flex-row gap-10 w-full lg:flex-wrap">
                     <div className="flex flex-col w-full lg:flex-row gap-10">
-                        <div className="flex h-302 overflow-hidden md:justify-center ">
+                        <div className="flex h-302 overflow-hidden ">
                             {cat?.pictures[0] && <img
                                 data-testid="property-image-1"
                                 src={(cat?.pictures[0].includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + cat?.pictures[0]}
@@ -216,7 +220,7 @@ export default function Property({ cat }: CatProps) {
                                         onClick={() => setShowModalMessage(true) }
                                     />
                                 }
-                                {favoriteCount > 0 && <span className='heart flex items-center justify-center text-sm text-(--primary)'>{favoriteCount}</span>}
+                                {favoriteCount > 0 && <span className='heart flex items-center justify-center text-sm text-(--primary) min-w-44'>{favoriteCount}</span>}
                             </div>
                             <p className="text-sm text-(--text) font-normal whitespace-break-spaces">{cat?.description}</p>
                         </div>

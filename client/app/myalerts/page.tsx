@@ -100,9 +100,9 @@ export default function MyAlerts() {
   }, [user]);
 
   return (
-    <main className="flex flex-col gap-51 md:gap-20 w-full items-center md:pt-20 md:px-140">
+    <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 lg:px-140 relative">
       <Header activeMenu={HeaderMenuItems.Alerts} />
-      <div className="flex flex-col gap-51 md:gap-20 px-16 md:p-0 w-full xl:w-1115">
+      <div className="flex flex-col gap-51 md:gap-20 px-16 md:p-10 w-full xl:w-1115">
         <div className="flex flex-col gap-8 w-full xl:w-1115 lg:w-800 items-center text-center">
           <span className="text-[32px] text-(--primary) w-full">Mes alertes</span>
         </div>
@@ -128,7 +128,8 @@ export default function MyAlerts() {
             </div> */}
             {user && hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.VetVoucherReferent]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Bons vétérinaires :</span>
-            <table className="w-full border-l border-r border-t border-solid border-(--pink)">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[800px] border-l border-r border-t border-solid border-(--pink)">
                 <thead className="w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
                   <tr>
                       <td className="text-(--white) w-100 px-5">Date de la demande</td>
@@ -159,10 +160,12 @@ export default function MyAlerts() {
                 )) : <tr><td className='flex-1 text-center border-b border-solid border-(--pink) text-(--text)' colSpan={6}>Pas de bon vétérinaire en attente</td></tr>}
               </tbody>
             </table>
-          </div>} 
+            </div>
+          </div>}
           {user && hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Fiches chats en FA incomplètes :</span>
-            <table className="w-full border-l border-r border-t border-solid border-(--pink)">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[500px] border-l border-r border-t border-solid border-(--pink)">
                 <thead className="w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
                   <tr>
                     <th className="text-(--white) w-100 px-5">Nom</th>
@@ -182,10 +185,12 @@ export default function MyAlerts() {
                   )) : <tr><td className='text-center border-b border-solid border-(--pink) text-(--text)' colSpan={4}>Pas de fiche de chats en FA incompléte</td></tr>}
                 </tbody>
               </table>
+            </div>
           </div>}
           {user && hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.CommitteeMember]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Fiches chats adoptés incomplètes :</span>
-            <table className="w-full border-l border-r border-t border-solid border-(--pink)">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[400px] border-l border-r border-t border-solid border-(--pink)">
                 <thead className="border-b border-solid border-(--pink) bg-(--pink) font-bold">
                   <tr>
                     <td className="text-(--white) w-100 px-5">Nom</td>
@@ -203,10 +208,12 @@ export default function MyAlerts() {
                   )) : <tr><td colSpan={3} className='text-center border-b border-solid border-(--pink) text-(--text)'>Pas de fiche de chats adoptés incompléte</td></tr>}
                 </tbody>
               </table>
+            </div>
           </div>}
           {user && hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.HostFamily]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Rappels :</span>
-            <table className="w-full border-l border-r border-t border-solid border-(--pink)">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[300px] border-l border-r border-t border-solid border-(--pink)">
                 <thead className="w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
                   <tr>
                     <td className="text-(--white) w-100 px-5">Concerne</td>
@@ -227,10 +234,12 @@ export default function MyAlerts() {
                     </tr>}
                 </tbody>
               </table>
+            </div>
           </div>}
           {user && hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.HostFamily]) && <div className='flex flex-col'>
             <span className='text-lg text-(--primary)'>Pré visites sans date :</span>
-            <table className="w-full border-l border-r border-t border-solid border-(--pink)">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[400px] border-l border-r border-t border-solid border-(--pink)">
                 <thead className="w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
                   <tr>
                     <td className="text-(--white) w-100 px-5">Nom</td>
@@ -266,6 +275,7 @@ export default function MyAlerts() {
                     </tr>
               </tbody>
               </table>
+            </div>
           </div>}
         </div>
       </div>

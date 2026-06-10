@@ -79,8 +79,8 @@ export default function NewCat() {
     return (
         <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 lg:px-140 relative">
             <Header activeMenu={HeaderMenuItems.Home} />
-            <div className="flex flex-col w-full gap-10 lg:gap-24 lg:w-970 px-16 pb-80 lg:px-0 lg:pb-0">
-                <div className="flex flex-col flex-1 gap-20 md:gap-41 rounded-[10px] border border-solid border-(--pink) bg-(--white) py-20 px-30 md:py-40 md:px-59">
+            <div className="flex flex-col gap-51 md:gap-20 px-16 md:p-10 w-full xl:w-1115">
+        <div className="flex flex-col gap-8 w-full xl:w-1115 lg:w-800 items-center text-center">
                     <form onSubmit={handleSubmit} className="flex flex-col gap-20 md:gap-41" role="form" aria-label="Ajouter une actualité" encType='multipart/form-data'>
                         <div className="flex flex-col gap-4 md:gap-8">
                             <h5 className="text-(--primary)">Nouvelle actualité</h5>
@@ -103,7 +103,7 @@ export default function NewCat() {
                                 ))}
                             </div>
                         </div>
-                        <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
+                        <div className='flex gap-10 justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
                             <Button
                                 text="Créer l'actualité"
                                 className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) md:w-230'

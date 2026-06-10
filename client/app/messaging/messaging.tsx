@@ -106,6 +106,7 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [showModalMessage, setShowModalMessage] = useState<boolean>(false);
     const [toUserId, setToUserId] = useState<string>('');
+    const [mobileShowChat, setMobileShowChat] = useState<boolean>(false);
 
     useEffect(() => {
         if (search.trim() !== "") {
@@ -186,7 +187,7 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
     }
 
   return (
-        <main className="flex flex-col gap-20 w-full h-screen items-center md:pt-20 md:px-140">
+        <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 lg:px-140 relative">
             <Header activeMenu={HeaderMenuItems.Messaging} />
             {showModalNewThread && createPortal(
                 <ModalCreateThread
@@ -252,8 +253,8 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
                 />,
                 document.body
             )}
-            <div className="flex gap-20 md:gap-30 p-30 md:p-0 w-full xl:w-1115 flex-1 min-h-0">
-                <div className="flex flex-col border border-1 border-(--primary) rounded-[10px] w-321 p-16 gap-10 h-full">
+            <div className="flex flex-col md:flex-row gap-20 md:gap-30 p-10 md:p-10 w-full xl:w-1115 flex-1 min-h-0">
+                <div className={`flex flex-col border border-1 border-(--primary) rounded-[10px] w-full md:w-321 p-16 gap-10 md:h-full ${mobileShowChat ? 'hidden md:flex' : 'flex'}`}>
                     <div className='flex felx-col gap-3'>
                         <IconButton
                             icon={IconButtonImages.Person}
@@ -278,9 +279,9 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
                     <hr className='border-(--primary)' />
                     <div className='flex flex-col flex-1 gap-2 overflow-y-auto' onClick={() => { setShowPicker(false)} }>
                         {visibleThreads?.map((thread:Messaging) => (
-                            <div key={thread.id} className='flex h-64 items-center cursor-pointer' onClick={(e) => setThreadId(thread.id)}>
+                            <div key={thread.id} className='flex h-64 items-center cursor-pointer' onClick={(e) => { setThreadId(thread.id); setMobileShowChat(true); }}>
                                 <div className='flex flex-1 gap-8'>
-                                    <div className={"flex justify-center items-center rounded-[50%] w-48 h-48 text-(--white) " + (thread.type === "private" ? "bg-(--text)" : "bg-(--pink)")}>{thread.type === "private" ? getInitials(thread.nickname) : "G"}</div>
+                                    <div className={"flex justify-center items-center rounded-[50%] min-w-48 min-h-48 max-h-48 text-(--white) " + (thread.type === "private" ? "bg-(--text)" : "bg-(--pink)")}>{thread.type === "private" ? getInitials(thread.nickname) : "G"}</div>
                                     <div className="flex flex-col">
                                         <div className="text-(--primary)">{thread.nickname}</div>
                                         <div className={"text-sm text-(--pink)" + (!thread.is_readed && thread.content && thread.content.id ? " font-bold" : "")}>{truncate(thread.content.content, 25)}</div>
@@ -294,11 +295,16 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
                         ))}
                     </div>
                 </div>
-                <div className={"flex flex-col flex-1 border border-1 border-(--primary) rounded-[10px] gap-6 bg-(--white) overflow-hidden "
-                    + (!currentThread ? " justify-center items-center": "")}>
+                <div className={`flex flex-col flex-1 border border-1 border-(--primary) rounded-[10px] gap-6 bg-(--white) ${!mobileShowChat ? 'hidden md:flex' : 'flex'}` + (!currentThread ? " justify-center items-center": "")}>
                     {currentThread ?
                         <>
                             <div className="flex h-75 p-16 border-b-1 border-b-(--primary) gap-8">
+                                <button
+                                    className="md:hidden flex items-center text-(--primary) mr-4"
+                                    onClick={() => setMobileShowChat(false)}
+                                    aria-label="Retour à la liste">
+                                    ←
+                                </button>
                                 <div className={"flex justify-center items-center rounded-[50%] w-48 h-48 text-(--white) relative " + (currentThread.type === "private" ? "bg-(--text)" : "bg-(--pink)")}>
                                     {currentThread.type === "private" ? getInitials(currentThread.nickname) : "G"}
                                     {currentThread.type === "group" && user?.id === currentThread.user_id && 
@@ -344,7 +350,7 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
                                     {currentThread.type === "group" && <Link text="Quitter le groupe" className='text-sm text-(--pink) hover:underline' onClick={() => setShowModalLeaveGroup(true)} />}
                                 </div>
                             </div>
-                            <div className="flex flex-col flex-1 min-h-0 relative bg-[url(/images/discussion.png)] bg-no-repeat bg-center bg-blend-lighten bg-[#ffffffcc]">
+                            <div className="flex flex-col flex-1 min-h-0 relative bg-[url(/images/discussion.png)] bg-no-repeat bg-center bg-blend-lighten bg-[#ffffffcc] rounded-xl">
                                 <div className="flex flex-col flex-1 overflow-y-auto pl-5 pr-5 gap-10" ref={messagesRef} onClick={() => { setShowPicker(false)} }>
                                     {messages.map((m: Message, idx: number) => (
                                         <div key={idx} className={"flex" + (user?.id === m.user_id ? " self-end" : "")}>
@@ -402,7 +408,7 @@ export default function MessagingPage({ threads, userList } : MessagingProps) {
                                 )}
                                 <form
                                     onSubmit={handleSendMessage}
-                                    className="flex w-full p-5 gap-5 bg-(--white)"
+                                    className="flex w-full p-5 gap-5 bg-(--white) rounded-xl"
                                     role="form"
                                     aria-label="Envoyer un message"
                                     encType='multipart/form-data'

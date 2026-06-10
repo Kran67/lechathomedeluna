@@ -82,7 +82,7 @@ export default function ModalCreateAdoptionRequest({
     }, []);
 
     return (
-        <aside className="fixed inset-0 bg-gray-500/50 flex items-center justify-center z-1 w-400 md:w-full" onClick={closeModal}>
+        <aside className="fixed inset-0 bg-gray-500/50 flex items-center justify-center z-3 p-10 w-320 w-full" onClick={closeModal}>
             {showModalConditionsOfUse && createPortal(
                 <ModalConditionsOfUse
                     firstName={firstName}
@@ -96,25 +96,25 @@ export default function ModalCreateAdoptionRequest({
                 document.body
             )}
             <div
-                className="bg-(--white) relative px-8 py-10 md:px-36 md:py-39 rounded-[10px] flex flex-col gap-20 w-full md:w-600 border border-(--primary) border-1"
+                className="bg-(--white) relative px-8 py-10 md:px-36 md:py-39 rounded-[10px] flex flex-col gap-20 w-full md:w-600 border border-(--primary) border-1 h-full"
                 onClick={(e) => e.stopPropagation()}
              >
-                <h4 className="text-(--primary)">Créer une demande d'adoption pour {catName}</h4>
-                <form onSubmit={handleSubmit} className="flex flex-col gap-10" role="form" aria-label="Information de la demande d'adoption">
-                    <div className='flex gap-20'>
+                <h4 className="text-(--primary) pr-30">Créer une demande d'adoption pour {catName}</h4>
+                <form onSubmit={handleSubmit} className="flex flex-col gap-10 overflow-y-auto" role="form" aria-label="Information de la demande d'adoption">
+                    <div className='flex flex-col md:flex-row flex-wrap gap-20'>
                         <Input name="lastname" label="Nom" type={InputTypes.Text} required={true} maxLength={30} onChange={(e) => setFirstName(e.currentTarget.value)} />
                         <Input name="firstname" label="Prénom" type={InputTypes.Text} required={true} maxLength={30} onChange={(e) => setLastName(e.currentTarget.value)} />
                     </div>
-                    <div className='flex gap-20'>
+                    <div className='flex flex-col md:flex-row flex-wrap gap-20'>
                         <Input name="email" label="Email" type={InputTypes.Text} required={true} maxLength={100} />
                         <Input name="facebook" label="Facebook" type={InputTypes.Text} maxLength={100} />
                     </div>
-                    <div className='flex gap-20'>
-                        <div className="flex flex-col gap-8">
+                    <div className='flex flex-col md:flex-row flex-wrap gap-20'>
+                        <div className="flex flex-col gap-8 w-full">
                             <label htmlFor="lifePlace" className='text-sm text-(--primary) font-medium'>Lieu de vie *</label>
                             <Select
                                 options={LifePlaces}
-                                className="select text-(--primary)"
+                                className="select text-(--primary) min-w-full max-w-full"
                                 classNamePrefix="select"
                                 name="lifePlace"
                                 id="lifePlace"
@@ -136,7 +136,7 @@ export default function ModalCreateAdoptionRequest({
                         <label htmlFor="isOutsideAccess" className='text-sm text-(--primary) font-medium'>Accès à l’extérieur ? *</label>
                         <Select
                             options={YesNo}
-                            className="select text-(--primary)"
+                            className="select text-(--primary) min-w-full max-w-full"
                             classNamePrefix="select"
                             name="isOutsideAccess"
                             id="isOutsideAccess"
@@ -148,16 +148,16 @@ export default function ModalCreateAdoptionRequest({
                             onChange={(e:any) => setIsOutsideAccess(e?.value as boolean ?? false)}
                         />
                     </div>
-                    <div className='flex gap-20'>
+                    <div className='flex flex-col md:flex-row flex-wrap gap-20'>
                         <Input name="householdPeopleNumber" label="Nombre de personnes dans le foyer" type={InputTypes.Number} required={true} min={1} max={5} />
                         <Input name="alreadyPresenAnimalsNumber" label="Nombre d’animaux déjà présent" type={InputTypes.Number} required={true} min={0} max={10} /> 
                     </div>
-                    <div className='flex gap-20'>
+                    <div className='flex flex-col md:flex-row flex-wrap gap-20'>
                         <div className="flex flex-col gap-8">
                             <label htmlFor="dailyTimeOff" className='text-sm text-(--primary) font-medium'>Temps d’absence quotidien *</label>
                             <Select
                                 options={DailyTimes}
-                                className="select text-(--primary)"
+                                className="select text-(--primary) min-w-full max-w-full"
                                 classNamePrefix="select"
                                 name="dailyTimeOff"
                                 id="dailyTimeOff"
@@ -177,7 +177,7 @@ export default function ModalCreateAdoptionRequest({
                             <label htmlFor="holidaysChildcareSolution" className='text-sm text-(--primary) font-medium'>Solution de garde pendant les congés ? *</label>
                             <Select
                                 options={YesNo}
-                                className="select text-(--primary)"
+                                className="select text-(--primary) min-w-full max-w-full"
                                 classNamePrefix="select"
                                 name="holidaysChildcareSolution"
                                 id="holidaysChildcareSolution"

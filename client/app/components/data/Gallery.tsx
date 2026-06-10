@@ -1,10 +1,7 @@
 'use client'
 
-import { useEffect } from 'react';
-
 import CatCard from '@/app/components/data/CatCard';
 import { Cat } from '@/app/core/interfaces/cat';
-import { prepareBodyToShowModal } from '@/app/core/lib/utils';
 
 /**
  * Ajout les métadata à la page
@@ -47,10 +44,6 @@ interface GalleryProps {
  * @param {boolean?} CarouselProps.onlyToAdopt - Indique si on affiche uniqument les chat à adopter
  */
 export default function Gallery({ cats }: GalleryProps) {
-    useEffect(() => {
-        prepareBodyToShowModal("");
-    }, [cats]);
-
     return (
         <section>
             <script
@@ -59,7 +52,7 @@ export default function Gallery({ cats }: GalleryProps) {
                     __html: JSON.stringify(generateMetadata(cats ?? [])).replace(/</g, '\\u003c'),
                 }}
             />
-            <div className="flex flex-wrap gap-24 w-full xl:w-1113 md:w-768 px-16 md:p-0 justify-center">
+            <div className="flex flex-wrap gap-24 w-full max-w-[1113px] px-16 md:px-0 justify-center">
                 {cats?.map((cat: Cat, index: number) => (
                     <CatCard key={index} cat={cat} />
                 ))}

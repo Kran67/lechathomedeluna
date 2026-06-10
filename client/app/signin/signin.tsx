@@ -13,7 +13,6 @@ import {
 import Footer from '@/app/components/layout/Footer';
 import Header from '@/app/components/layout/Header';
 import Button from '@/app/components/ui/Button';
-import Checkbox from '@/app/components/ui/Checkbox';
 import Input from '@/app/components/ui/Input';
 import Link from '@/app/components/ui/Link';
 import { InputTypes } from '@/app/core/enums/enums';
@@ -70,8 +69,8 @@ export default function Signin() {
                     className="flex flex-col w-full gap-38 px-16 py-32 lg:p-80 bg-(--white) border border-solid border-(--pink) rounded-[10px] items-center"
                 >
                     <div className="flex flex-col gap-8 items-center">
-                        <span className="text-2xl md:text-[32px] text-(--primary) font-bold px-50 lg:px-0">Devenir famille d'accueil</span>
-                        <span className="text-sm text-(--text) font-normal text-center md:w-488">Créez votre compte et consuter nos chats à l'adoption.</span>
+                        <span className="text-xl md:text-[32px] text-(--primary) font-bold md:px-50 lg:px-0">Devenir famille d'accueil</span>
+                        <span className="text-sm text-(--text) font-normal text-center md:w-488">Créez votre compte et consulter nos chats à l'adoption.</span>
                     </div>
                     <div className="flex flex-col gap-22 w-full md:w-360 px-10">
                         <Input
@@ -118,13 +117,6 @@ export default function Signin() {
                                 setError(false);
                             }}
                             hasError={error} />
-                        <div className="flex text-xs text-(--pink)">
-                            <Checkbox
-                                id="readed-generals-conditions"
-                                text="J’accepte les"
-                                className="text-xs" />
-                            <span className="ml-3 underline">conditions générales d’utilisation</span>
-                        </div>
                     </div>
                     {error && <span className="text-sm text-(--primary) font-bold">{errorMsg}</span>}
                     <div className="flex flex-col gap-22 w-full md:w-360 items-center">

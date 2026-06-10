@@ -1,7 +1,10 @@
 // À cause de l'événement onClick
 'use client'
 
-import { useState } from 'react';
+import {
+  useEffect,
+  useState,
+} from 'react';
 import { createPortal } from 'react-dom';
 
 import {
@@ -19,6 +22,7 @@ import { DateUtils } from '@/app/core/lib/dateUtils';
 import {
   dateAge,
   hasRoles,
+  prepareBodyToShowModal,
   redirectWithDelay,
   truncate,
 } from '@/app/core/lib/utils';
@@ -62,6 +66,10 @@ export default function CatCard({ cat }: PropsCC) {
         setCatSlugToDelete(cat.slug);
         setShowModalConfirmationDeleteCat(true);
     }
+
+    useEffect(() => {
+        prepareBodyToShowModal(showModalConfirmationDeleteCat ? "hidden" : "");
+    }, [showModalConfirmationDeleteCat]);
 
     return (
         <div className="flex flex-col rounded-[10px] bg-(--white) w-full md:w-355 relative cursor-pointer border border-(--primary) p-5" onClick={() => handleClick()}>

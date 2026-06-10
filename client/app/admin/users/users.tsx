@@ -115,13 +115,13 @@ export default function UsersList({ users }: UsersListProps) {
                         className="text-sm text-(--text) gap-5 bg-(--white) rounded-[10px] py-8 px-16 w-189" />
                 </div>
                 <span className="text-lg text-(--primary) w-full">Liste des utilisateurs</span>
-                <div className="flex flex w-full gap-10">
-                    <Button text='Ajouter un utilisateur' url='/admin/profile/new' className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-16 text-(--white)' />
+                <div className="flex flex-wrap w-full gap-10 items-center">
+                    <Button text='Ajouter un utilisateur' url='/admin/profile/new' className='flex justify-center bg-(--primary) rounded-[10px] p-8 px-16 text-(--white)' />
                     <Input
                         name="search"
                         placeHolder="Rechercher un utilisateur"
                         imageType={InputImageTypes.Search}
-                        className="lg:max-w-250 w-full"
+                        className="lg:max-w-250 md:min-w-250"
                         value={search}
                         showLabel={false}
                         onChange={(e) => setSearch(e.target.value)} />
@@ -138,7 +138,9 @@ export default function UsersList({ users }: UsersListProps) {
                             onChange={(e:any) => setRoles(e?.map((e: { value: any; }) => e.value).join("|") ?? "")}
                             styles={{container: provided => ({
                                 ...provided,
-                                width: 460
+                                minWidth: 200,
+                                maxWidth: 460,
+                                flex: "1 1 200px"
                             })}}
                         />
                         <Select
@@ -154,7 +156,9 @@ export default function UsersList({ users }: UsersListProps) {
                             onChange={(e:any) => { setBlacklisted(e?.value ?? false)}}
                             styles={{container: provided => ({
                                 ...provided,
-                                width: 150
+                                minWidth: 130,
+                                maxWidth: 150,
+                                flex: "1 1 130px"
                             })}}
                         />
                         <Button
@@ -164,8 +168,8 @@ export default function UsersList({ users }: UsersListProps) {
                             onClick={() => setShowModalMessage(true) }
                             />
                 </div>
-                <div className="flex flex-col w-full border-l border-r border-t border-solid border-(--pink)">
-                    <table className="w-full border-b border-solid border-(--pink)">
+                <div className="overflow-x-auto w-full border-l border-r border-t border-solid border-(--pink)">
+                    <table className="w-full min-w-[1000px] border-b border-solid border-(--pink)">
                         <thead>
                             <tr className='font-bold  bg-(--pink)'>
                                 <td className="text-(--white) w-20 px-5"></td>

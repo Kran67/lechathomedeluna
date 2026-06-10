@@ -67,9 +67,9 @@ export default function HomePage() {
   };
   
   return (
-    <main className="flex flex-col gap-51 md:gap-20 w-full items-center md:pt-20 md:px-140">
+    <main className="flex flex-col gap-51 md:gap-20 w-full items-center pt-20 px-20 xl:px-140">
       <Header activeMenu={HeaderMenuItems.Home} />
-      <div className="flex flex-col gap-51 md:gap-20 px-16 md:p-0 w-full xl:w-1115 jsustify-center items-center">
+      <div className="flex flex-col gap-20 px-16 md:p-0 w-full xl:w-1115 jsustify-center items-center">
         <div className="flex gap-8 w-full lg:w-260 items-center justify-center">
           <span className="text-[32px] text-(--primary)">Actualités</span>
           <Select
@@ -90,10 +90,10 @@ export default function HomePage() {
             })}}
           />
         </div>
+        {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin]) &&
         <div className="flex w-full items-center justify-center gap-10">
-          {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin]) && 
-            <Button text='Ajouter une actualité' url='/admin/news' className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-16 text-(--white) md:w-170' /> }
-        </div>
+            <Button text='Ajouter une actualité' url='/admin/news' className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-16 text-(--white) md:w-170' />
+        </div>}
         {service.news && service.news.length === 0 && <span className="text-(--text) text-center">Aucune actualité pour le moment.</span>}
         {service.news && service.news.map((newItem: New, idx: number) => (
           <div key={newItem.id + idx} className='relative'>

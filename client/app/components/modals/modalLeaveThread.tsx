@@ -56,7 +56,7 @@ export default function ModalLeaveThread({
     }, []);
 
     return (
-        <aside className="fixed inset-0 bg-gray-500/50 flex items-center justify-center z-1 w-320 md:w-full" onClick={closeModal}>
+        <aside className="fixed inset-0 bg-gray-500/50 flex items-center justify-center z-3 p-10 w-320 w-full" onClick={closeModal}>
             <div
                 className="bg-(--white) relative px-8 py-10 md:px-36 md:py-39 rounded-[10px] flex flex-col gap-20 md:gap-40 w-full md:w-380 border border-(--primary) border-1"
                 onClick={(e) => e.stopPropagation()}

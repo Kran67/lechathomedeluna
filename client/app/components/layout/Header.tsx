@@ -11,7 +11,6 @@ import {
 } from 'next-client-cookies';
 
 import IconButton from '@/app/components/ui/IconButton';
-import Link from '@/app/components/ui/Link';
 import Logo from '@/app/components/ui/Logo';
 import MenuItem from '@/app/components/ui/MenuItem';
 import { useHeader } from '@/app/core/contexts/headerContext';
@@ -68,12 +67,23 @@ export default function Header({ activeMenu }: HeaderProps) {
     const token: string = cookies.get("token") as string;
     let isHostFamily: boolean = false;
     const { refreshBadges, refreshKey } = useHeader();
+    const [innerWidth, setInnerWidth] = useState<number>(0);
 
     useEffect(() => {
         const interval = setInterval(() => refreshBadges(), 60000);
 
         return () => clearInterval(interval);
     }, []);
+
+    useEffect(() => {
+        // Initialisation au montage
+        setInnerWidth(window.innerWidth);
+
+        const handleResize = () => setInnerWidth(window.innerWidth);
+        window.addEventListener("resize", handleResize);
+
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);   
 
     useEffect(() => {
         if (token && user) {
@@ -119,33 +129,45 @@ export default function Header({ activeMenu }: HeaderProps) {
             className="flex w-full xl:w-1140 md:p-20 items-center justify-between font-normal">
             <Logo size={LogoSizes.Small} className="flex md:hidden" />
             <Logo size={LogoSizes.Large} className="hidden md:flex" />
+            <div className={`flex flex-col md:flex-row gap-28 absolute md:relative h-[calc(100vh-60px)] md:h-auto top-60 left-0 right-0 md:top-auto pt-28 md:pt-0 px-16 z-2 bg-(--white) items-start md:items-center overflow-y-auto md:overflow-visible ` +
+                    (isMenuVisible || innerWidth >= 768 ? "" : "hidden")}>
             <MenuItem
                 text="Actualités / évènements"
                 isActive={activeMenu === HeaderMenuItems.Home}
                 url="/"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />
+                className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                iconPath="/images/news.png"
+                forceDisplayTextOnMobile={isMenuVisible} />
             {user && hasRoles(user.roles, [UserRoles.HostFamily]) && <MenuItem
                 text="Mes chats"
                 isActive={activeMenu === HeaderMenuItems.MyCats}
                 url="/mycats"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
+                className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                iconPath="/images/meschats.png"
+                forceDisplayTextOnMobile={isMenuVisible} />}
             {(!user || (user && !hasRoles(user.roles, [UserRoles.HostFamily]))) && <MenuItem
                 text="Les chats à adopter"
                 isActive={activeMenu === HeaderMenuItems.CatsForAdoption}
                 url="/catsforadoption"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
+                className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                iconPath="/images/chatsaadopter.png"
+                forceDisplayTextOnMobile={isMenuVisible} />}
             {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.VetVoucherReferent, UserRoles.HostFamily]) && <MenuItem
                 text="Mes alertes"
                 isActive={activeMenu === HeaderMenuItems.Alerts}
                 url="/myalerts"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                badge={faCatNotFullyCompletedCount + adoptedCatNotFullyCompletedCount + vetVoucherCount + catBoosterVaccinationNoLaterThanOneMonthCount} />}
+                className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                badge={faCatNotFullyCompletedCount + adoptedCatNotFullyCompletedCount + vetVoucherCount + catBoosterVaccinationNoLaterThanOneMonthCount}
+                iconPath="/images/alerte.png"
+                forceDisplayTextOnMobile={isMenuVisible} />}
             {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.VetVoucherReferent]) && <MenuItem
                 text="Bons vétérinaires"
                 isActive={activeMenu === HeaderMenuItems.VeterinaryVouchers}
                 url="/veterinary"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                badge={vetVoucherCount} />}
+                className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                badge={vetVoucherCount}
+                iconPath="/images/bonveto.png"
+                forceDisplayTextOnMobile={isMenuVisible} />}
             {/* {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRole.Admin, UserRole.Volunteer]) && <MenuItem
                 text="Evénements"
                 isActive={activeMenu === HeaderMenuItems.Events}
@@ -155,8 +177,10 @@ export default function Header({ activeMenu }: HeaderProps) {
                 text="Chats en FA"
                 isActive={activeMenu === HeaderMenuItems.Adoption}
                 url="/facats"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                badge={hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily]) ? faCatNotFullyCompletedCount : 0} />}
+                className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                badge={hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily]) ? faCatNotFullyCompletedCount : 0}
+                iconPath="/images/chatsFA.png"
+                forceDisplayTextOnMobile={isMenuVisible} />}
             {/* {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRole.Admin, UserRole.Assistant, UserRole.Volunteer]) && <MenuItem
                 text="Bénévoles"
                 isActive={activeMenu === HeaderMenuItems.Volunteers}
@@ -166,29 +190,40 @@ export default function Header({ activeMenu }: HeaderProps) {
                 text="Les chats adoptés Pris en charge"
                 isActive={activeMenu === HeaderMenuItems.AdoptedCats}
                 url="/adoptedcats"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold w-110"
-                badge={adoptedCatCount} />}
+                className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold w-110"
+                badge={adoptedCatCount}
+                iconPath="/images/chatsadoptes.png"
+                forceDisplayTextOnMobile={isMenuVisible} />}
             {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.VetVoucherReferent, UserRoles.HostFamily]) && <MenuItem
                 text="Messagerie"
                 isActive={activeMenu === HeaderMenuItems.Messaging}
                 url="/messaging"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                badge={unreadMsg} />}
+                className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                badge={unreadMsg}
+                iconPath="/images/messagerie.png"
+                forceDisplayTextOnMobile={isMenuVisible} />}
             {!user && <MenuItem
                 text="À propos"
                 isActive={activeMenu === HeaderMenuItems.About}
                 url="/about"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold" />}
+                className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold"
+                iconPath="/images/apropos.png"
+                forceDisplayTextOnMobile={isMenuVisible} />}
             {!user && <MenuItem
                 text="Se connecter"
                 isActive={activeMenu === HeaderMenuItems.Login}
                 url="/login"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />}
+                className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                iconPath="/images/seconnecter.png"
+                forceDisplayTextOnMobile={isMenuVisible} />}
             {user && <MenuItem
                 text={user.lastName + " " + user.name}
                 isActive={activeMenu === HeaderMenuItems.Profile}
                 url="/admin/profile"
-                className="hidden md:flex text-lg cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold w-90 catpaw" />}
+                className={"md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold w-90 mb-15 md:mb-0 "+ (innerWidth > 1280 ? "catpaw" : "")}
+                iconPath="/images/profile.png"
+                forceDisplayTextOnMobile={isMenuVisible} />}
+            </div>
             <IconButton
                 icon={isMenuVisible ? IconButtonImages.Cross : IconButtonImages.Menu}
                 className="md:hidden mr-11 mb-6"
@@ -199,41 +234,6 @@ export default function Header({ activeMenu }: HeaderProps) {
                     setIsMenuVisible(!isMenuVisible);
                     prepareBodyToShowModal(isMenuVisible ? "" : "hidden");
                 }} />
-            <div
-                className={`flex flex-col gap-28 absolute top-85 left-0 right-0 h-full pt-28 px-16 z-2 bg-(--white) items-start ` +
-                    (isMenuVisible ? "" : "hidden")}>
-                <Link
-                    text="Accueil"
-                    url="/"
-                    className="text-2xl hover:text-(--main-red) hover:font-bold w-full"
-                    isActive={activeMenu === HeaderMenuItems.Home}
-                />
-                <hr className="w-full h-1 border-(--light-grey)" />
-                <Link
-                    text="À propos"
-                    url="/about"
-                    className="text-2xl hover:text-(--main-red) hover:font-bold w-full"
-                    isActive={activeMenu === HeaderMenuItems.About}
-                />
-                <hr className="w-full h-1 border-(--light-grey)" />
-                <Link
-                    text="Messagerie"
-                    url="/messaging"
-                    className="text-2xl hover:text-(--main-red) hover:font-bold w-full"
-                    isActive={activeMenu === HeaderMenuItems.Messaging}
-                />
-                <hr className="w-full h-1 border-(--light-grey)" />
-                <Link
-                    text="Adoption"
-                    url="/adoption"
-                    className="text-2xl hover:text-(--main-red) hover:font-bold w-full"
-                    isActive={activeMenu === HeaderMenuItems.Adoption}
-                />
-                <hr className="w-full h-1 border-(--light-grey)" />
-                {/* <Button
-                    text="Ajouter un logement"
-                    className="flex items-center bg-(--main-red) rounded-[10px] p-8 px-32 text-(--white) w-full content-center" /> */}
-            </div>
         </header >
     );
 }

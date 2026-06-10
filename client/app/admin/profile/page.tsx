@@ -275,7 +275,7 @@ export default function Profile() {
                             <Link
                                 text="Administrer les utilisateurs"
                                 url="/admin/users"
-                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)' />
+                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white) text-center' />
                         </div>}
                         {hasRoles(user?.roles, [UserRoles.SuperAdmin]) && <div className="flex justify-between items-center bg-(--white) border order-1 border-(--primary-dark) border-solid rounded-[4px] px-10 gap-10">
                                 <textarea className='text-sm text-(--text) w-full outline-0 h-100' onChange={ (e: ChangeEvent<HTMLTextAreaElement>) => setQuery(e.currentTarget.value) } />

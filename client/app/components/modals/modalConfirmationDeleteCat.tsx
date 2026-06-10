@@ -53,12 +53,12 @@ export default function ModalConfirmationDeleteCat({
     }, []);
 
     return (
-        <aside className="fixed inset-0 bg-gray-500/50 flex items-center justify-center z-1 w-320 md:w-full" onClick={ (e) => { e.stopPropagation(); closeModal(); }}>
+        <aside className="fixed inset-0 bg-gray-500/50 flex items-center justify-center z-3 p-10 w-320 w-full" onClick={ (e) => { e.stopPropagation(); closeModal(); }}>
             <div
                 className="bg-(--white) relative px-8 py-10 md:px-36 md:py-39 rounded-[10px] flex flex-col gap-20 md:gap-40 w-full md:w-380 border border-(--primary) border-1"
                 onClick={(e) => { e.stopPropagation();  }}
             >
-                <h4 className="text-(--primary)">Attention, vous êtes sur le point de supprimer la fiche d'un chat.<br />Cette action est irréversible{isAdopted && <>, cependant, si le chat adopté doit revenir dans l'association, veuillez cocher la case retour à l'association.</>}<br /><br />Êtes-vous sûr de vouloir continuer ?</h4>
+                <h4 className="text-(--primary) mt-20 sm:mt-0 ">Attention, vous êtes sur le point de supprimer la fiche d'un chat.<br />Cette action est irréversible{isAdopted && <>, cependant, si le chat adopté doit revenir dans l'association, veuillez cocher la case retour à l'association.</>}<br /><br />Êtes-vous sûr de vouloir continuer ?</h4>
                 {isAdopted && 
                     <div className="flex flex-1 gap-10 items-center">
                         <input type="checkbox" name="clone" id="clone" checked={clone} onChange={(e) => { setClone(!clone) }} />

@@ -1,6 +1,11 @@
 'use client'
 
 import {
+  useEffect,
+  useState,
+} from 'react';
+
+import {
   AppRouterInstance,
 } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { useRouter } from 'next/navigation';
@@ -17,21 +22,35 @@ interface MenuItemProps {
     className?: string;
     onClick?: () => void;
     badge?: number;
+    iconPath: string;
+    forceDisplayTextOnMobile?: boolean;
 }
 
 /**
  * Affiche d'un élément du menu
  * 
  * @function MenuItem
- * @param { text, isActive = false, url, className } MenuItemProps - Les proriétés d'un élément du menu
+ * @param { text, isActive = false, url, className } MenuItemProps - Les propriétés d'un élément du menu
  * @param {string} MenuItemProps.text - Text de l'élément
  * @param {boolean?} MenuItemProps.isActive - Statut de l'élément actif ou non actif
  * @param {string?} MenuItemProps.url - Url de redirection lors du clique sur l'élément
  * @param {string?} MenuItemProps.className - Classes css de l'élément
  * @param {function?} MenuItemProps.onClick - Function à executer sur le clique du lien avant redirection si elle est passée
+ * @param {string} MenuItemProps.iconPath - Classes css de l'élément
  */
-export default function MenuItem({ text, isActive = false, url, className, onClick, badge }: MenuItemProps) {
+export default function MenuItem({ text, isActive = false, url, className, onClick, badge, iconPath, forceDisplayTextOnMobile = true }: MenuItemProps) {
     const router: AppRouterInstance = useRouter();
+    const [innerWidth, setInnerWidth] = useState<number>(0);
+
+    useEffect(() => {
+        // Initialisation au montage
+        setInnerWidth(window.innerWidth);
+
+        const handleResize = () => setInnerWidth(window.innerWidth);
+        window.addEventListener("resize", handleResize);
+
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);   
 
     const handleClick: () => void = () => {
         onClick?.();
@@ -40,11 +59,11 @@ export default function MenuItem({ text, isActive = false, url, className, onCli
 
     return (
         <button
-            className={"relative " + (isActive ? "text-(--main-red) font-bold " : "") + className}
+            className={"relative flex items-center w-full " + (isActive ? "text-(--main-red) font-bold " : "") + className}
             onClick={handleClick}
             role="button">
-                {text}
-                <span className={'flex items-center justify-center absolute -right-14 w-12 h-12 bg-(--primary) text-[8px] text-(--white) rounded-[50%]' + (badge && badge > 0 ? "" : " hidden")}>{badge}</span>
+                {innerWidth >= 1280 || forceDisplayTextOnMobile ? <span className='text-xl md:text-sm'>{text}</span> : <img src={iconPath} alt={text}  title={text} className={"min-w-48 min-h-48 border-(--pink) hover:border-b-2" + (isActive ? " border-b-2" : "")} />}
+                <span className={'flex items-center justify-center md:absolute mx-10 md:mx-0 -top-10 xl:top-0 -right-14 w-24 xl:w-12 h-24 xl:h-12 bg-(--primary) text-[16px] xl:text-[8px] text-(--white) rounded-[50%]' + (badge && badge > 0 ? "" : " hidden")}>{badge}</span>
         </button>
     );
 }

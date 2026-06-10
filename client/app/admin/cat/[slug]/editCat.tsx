@@ -656,9 +656,9 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     </div>
                                 ))}
                             </div>
-                            {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.HostFamily]) && <><div className="select flex flex-col flex-1 justify-start h-77">
-                                <label className="text-sm text-(--text) font-medium " htmlFor="">Vaccins</label>
-                                <div className='flex gap-10 items-center'>
+                            {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.HostFamily]) && <><div className="select flex flex-col flex-1 justify-start md:h-77 w-full">
+                                <label className="text-sm text-(--text) font-medium w-full" htmlFor="">Vaccins</label>
+                                <div className='flex gap-10 items-center w-full flex-wrap'>
                                     <Input
                                         name="vaccineDate"
                                         label="Date du vaccin"
@@ -676,7 +676,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                         showLabel={false}
                                         className='max-w-44'
                                         ref={inputVaccineFile} />
-                                    <span className='text-sm text-(--primary)'>{vaccinePicture?.name}</span>
+                                    <span className='text-sm text-(--primary) text-ellipsis overflow-hidden w-full'>{vaccinePicture?.name}</span>
                                     <Button className="flex text-sm p-10 h-40 bg-(--primary) items-center justify-center rounded-[10px] text-lg text-(--white) cursor-pointer md:w-180"
                                          onClick={(e:any) => { addDocument("vaccin"); e.preventDefault(); }}
                                          text="Ajouter le vaccin"
@@ -703,9 +703,9 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     ))}
                                 </div>
                             </div>
-                            <div className="select flex flex-col flex-1 justify-start h-77">
-                                <label className="text-sm text-(--text) font-medium " htmlFor="">Antiparasitaires</label>
-                                <div className='flex gap-10 items-center'>
+                            <div className="select flex flex-col flex-1 justify-start md:h-77 w-full">
+                                <label className="text-sm text-(--text) font-medium w-full" htmlFor="">Antiparasitaires</label>
+                                <div className='flex gap-10 items-center w-full flex-wrap'>
                                     <Input
                                         name="antiparasiticDate"
                                         label="Date de l'antiparasitaire"
@@ -750,9 +750,9 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     ))}
                                 </div>
                             </div>
-                            <div className="select flex flex-col flex-1 justify-start h-77">
-                                <label className="text-sm text-(--text) font-medium " htmlFor="">CR interventions / résultats PS / Examens</label>
-                                <div className='flex gap-10 items-center'>
+                            <div className="select flex flex-col flex-1 justify-start md:h-77 w-full">
+                                <label className="text-sm text-(--text) font-medium w-full" htmlFor="">CR interventions / résultats PS / Examens</label>
+                                <div className='flex gap-10 items-center w-full flex-wrap'>
                                     <Input
                                         name="examDate"
                                         label="Date"
@@ -798,7 +798,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 </div>
                             </div></>}
                         </div>
-                        <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
+                        <div className='flex gap-10 justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
                             {user && !hasRoles(user.roles, [UserRoles.VetVoucherReferent]) && <Button
                                 ref={primaryButton}
                                 text="Valider les modifications"
@@ -827,8 +827,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 <div className="flex flex-col gap-4 md:gap-8">
                                     <h5 className="text-(--primary)">Demander un bon vétérinaire</h5>
                                 </div>
-                                <div className="flex gap-12 md:gap-24">
-                                    <div className="select flex flex-col flex-1 gap-7 justify-start h-77">
+                                <div className="flex flex-wrap gap-12 md:gap-24 w-full">
+                                    <div className="select flex flex-col flex-1 gap-7 justify-start md:h-77 min-w-209">
                                         <label className="text-sm text-(--text) font-medium " htmlFor="clinical">Clinique</label>
                                         <Select
                                             ref={clinicInputRef}
@@ -846,7 +846,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                         />
                                         <span className="text-sm text-(--text)">* Clinique de l'association</span>
                                     </div>
-                                    <div className="select flex flex-col flex-1 gap-7 justify-start h-auto">
+                                    <div className="select flex flex-col flex-1 gap-7 justify-start md:h-77 min-w-209">
                                         <label className="text-sm text-(--text) font-medium " htmlFor="voucherObjet">Objet du bon</label>
                                         <Select
                                             ref={voucherObjectInputRef}

@@ -52,12 +52,12 @@ export default function CollapseElement({ title, content, opened = false }: Coll
                 <Image src={arrowBottom} alt="Plier / déplier le contenu" className="transition-rotate duration-300 ease-out" style={{ rotate: isOpen ? "180deg" : "0deg" }} />
             </div>
             <div className="overflow-hidden transition-height duration-300 ease-out" style={{ height: isOpen ? contentHeight : 0 }}>
-                <div ref={ref} className="grid gap-8 grid-cols-8" style={{ "gridTemplateRows": `repeat(${(content?.length ?? 3) / 3}, 1fr)` }}>
+                <div ref={ref} className="flex flex-wrap gap-8 flex-cols">
                     {content?.map((tag: { name: string, url?: string}, index: number) => (
                         <Tag
                             key={index}
                             text={tag.name}
-                            className="flex items-center justify-center text-xs text-(--white) font-normal bg-(--primary-dark) rounded-[5px] py-8 px-8 text-center" />
+                            className="flex items-center justify-center text-xs text-(--white) font-normal bg-(--primary-dark) rounded-[5px] py-8 px-8 text-center min-w-min" />
                     ))}
                 </div>
             </div>

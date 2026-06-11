@@ -117,15 +117,15 @@ export default function VetVouchers() {
     }
   
     return (
-        <main className="flex flex-col gap-20 w-full items-center md:pt-20 md:px-140">
+        <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 lg:px-140 relative">
             <Header activeMenu={HeaderMenuItems.VeterinaryVouchers} />
-            <div className="flex flex-col gap-51 md:gap-20 px-16 md:p-0 w-full">
-                <div className="flex flex-col gap-8 w-full items-center text-center">
+            <div className="flex flex-col gap-51 md:gap-20 px-16 md:p-10 w-full xl:w-1115">
+                <div className="flex flex-col gap-8 w-full xl:w-1115 lg:w-800 items-center text-center">
                     <span className="text-[32px] text-(--primary) w-full">Bons vétérinaires</span>
-                    <div className="flex gap-5 w-full items-center justify-center">
+                    <div className="flex flex-wrap gap-5 w-full items-center justify-center">
                         <Select
                             options={Clinics}
-                            className="select"
+                            className="select w-full sm:w-auto"
                             classNamePrefix="select"
                             name="clinical"
                             id="clinical"
@@ -136,13 +136,15 @@ export default function VetVouchers() {
                             onChange={(e:any) => { setVetVoucherId(null); setClinic(e?.value ?? null)}}
                             styles={{container: provided => ({
                                 ...provided,
-                                width: 370,
+                                minWidth: 200,
+                                maxWidth: 370,
+                                flex: "1 1 200px",
                                 textAlign: "left"
                             })}}
                         />
                         <Select
                             options={VoucherObjects}
-                            className="select"
+                            className="select w-full sm:w-auto"
                             classNamePrefix="select"
                             name="voucherObjet"
                             id="voucherObjet"
@@ -153,13 +155,15 @@ export default function VetVouchers() {
                             onChange={(e:any) => { setVetVoucherId(null); setVoucherObject(e?.value ?? null) }}
                             styles={{container: provided => ({
                                 ...provided,
-                                width: 200,
+                                minWidth: 160,
+                                maxWidth: 200,
+                                flex: "1 1 160px",
                                 textAlign: "left"
                             })}}
                         />
                         <Select
                             options={Years}
-                            className="select"
+                            className="select w-full sm:w-auto"
                             classNamePrefix="select"
                             name="role"
                             id="role"
@@ -171,13 +175,16 @@ export default function VetVouchers() {
                             onChange={(e:any) => setYear(e?.value ?? "")}
                             styles={{container: provided => ({
                                 ...provided,
-                                width: 170
+                                minWidth: 120,
+                                maxWidth: 170,
+                                flex: "1 1 120px"
                             })}}
                         />
 
                     </div>
                 </div>
-                <table className="w-full border-l border-r border-t border-solid border-(--pink)">
+                <div className="overflow-x-auto">
+                <table className="w-full min-w-[900px] border-l border-r border-t border-solid border-(--pink)">
                     <thead className="w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
                     <tr>
                         <td className="text-(--white) w-100 px-5">Date de la demande</td>
@@ -228,6 +235,7 @@ export default function VetVouchers() {
                     }
                     </tbody>
                 </table>
+                </div>
             </div>
             <Footer />
         </main>

@@ -23,7 +23,7 @@ export const metadata: Metadata = {
  */
 export default function AboutPage() {
     return (
-        <main className="flex flex-col gap-20 w-full md:pt-20 md:px-140 items-center">
+        <main className="flex flex-col gap-20 w-full md:pt-20 md:px-140 items-center overflow-x-hidden">
             <Header activeMenu={HeaderMenuItems.About} />
             <div className="flex flex-col gap-10 w-full max-w-[900px] px-16 md:px-0 text-xl text-(--primary) relative">
                 <h1 className="text-[32px] self-center font-bold text-(--primary) uppercase">Qui est Luna ?</h1>

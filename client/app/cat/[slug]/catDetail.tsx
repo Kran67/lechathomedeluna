@@ -195,7 +195,7 @@ export default function Property({ cat }: CatProps) {
                                 style={{ objectFit: "contain" }}
                                 onClick={() => viewCarouselAndActiveImage(true, 0)} />}
                         </div>
-                        <div className="flex flex-1 flex-wrap gap-10 justify-center lg:justify-normal" style={{ width: "460px" }}>
+                        <div className="flex flex-1 flex-wrap gap-10 justify-normal">
                             {cat?.pictures.map((pic, idx) => idx > 0 && 
                                 <div key={idx} className="w-65 h-65 lg:w-146 lg:h-146 overflow-hidden relative rounded-[10px]">
                                     <img

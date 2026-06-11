@@ -23,6 +23,7 @@ interface ButtonProps {
     onClick?: (e: any) => void;
     buttonType?: ButtonTypes;
     ref?: RefObject<null>
+    loading?: boolean;
 }
 
 /**
@@ -38,7 +39,7 @@ interface ButtonProps {
  * @param {ButtonTypes?} ButtonProps.buttonType - Type de bouton (Button / Submit)
  * @param {RefObject<null>} ButtonProps.ref - reférence DOM du bouton
  */
-export default function Button({ text, disabled, className, url, onClick, buttonType = ButtonTypes.Submit, ref }: ButtonProps) {
+export default function Button({ text, disabled, className, url, onClick, buttonType = ButtonTypes.Submit, ref, loading = false }: ButtonProps) {
     const router: AppRouterInstance = useRouter();
 
     const handleClick = (e: any) => {
@@ -54,6 +55,7 @@ export default function Button({ text, disabled, className, url, onClick, button
             onClick={handleClick}
             role="button"
             ref={ref}>
+                <img src="/images/cat_loading.gif" alt="Loading" className='h-30' style={{ display: loading ? "inline" : "none"}} />
             {text}
         </button>
     );

@@ -70,6 +70,7 @@ export default function Header({ activeMenu }: HeaderProps) {
     const [innerWidth, setInnerWidth] = useState<number>(0);
 
     useEffect(() => {
+        prepareBodyToShowModal("");
         const interval = setInterval(() => refreshBadges(), 60000);
 
         return () => clearInterval(interval);

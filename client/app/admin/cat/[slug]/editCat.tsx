@@ -117,6 +117,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const primaryButton = useRef(null);
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
     const [lightbox, setLightbox] = useState<string | null>(null);
+    const [isSubmittedForValidation, setIsSubmittedForValidation] = useState<boolean>(false);
 
     const clinicInputRef = useRef(null);
     const voucherObjectInputRef = useRef(null);
@@ -800,16 +801,20 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                         </div>
                         <div className='flex gap-10 justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
                             {user && !hasRoles(user.roles, [UserRoles.VetVoucherReferent]) && <Button
-                                ref={primaryButton}
-                                text="Valider les modifications"
-                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)'
-                                disabled={isSubmitted} />}
+                                    ref={primaryButton}
+                                    text="Valider les modifications"
+                                    className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 text-(--white) w-full gap-10 items-center'
+                                    disabled={isSubmitted}
+                                    loading={isSubmitted && !isSubmittedForValidation} />
+                            }
                             {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.HostFamily, UserRoles.AdoptionReferent]) && !isAdoptable && 
                             <Button 
                                 text={user && !hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent]) ? "Valider la fiche pour vérification avant adoption" : "Valider la fiche pour l'adoption"}
-                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)'
+                                className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 text-(--white) w-full gap-10 items-center'
                                 disabled={isSubmitted}
+                                loading={isSubmittedForValidation}
                                 onClick={async (e) => {
+                                    setIsSubmittedForValidation(true);
                                     if (hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent])) isAdoptable = true;
                                     if (isAdoptable) {
                                         await createThreadAndSendMessage(token, user?.id, [hostFamilyId as string], `🔥 Le 🐈 ${baseUrl}/admin/cat/${cat?.slug}[${cat?.name}] ${cat?.numIdentification ? '('+cat.numIdentification+')' : ''} est validé pour l'adoption.`);

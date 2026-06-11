@@ -231,7 +231,7 @@ async function getAllFACatsNotFullyCompletedCount(id) {
       numIdentification IS NULL OR numIdentification = '' OR
       dress             IS NULL OR dress             = '' OR
       race              IS NULL OR race              = '' OR
-      sterilizationDate IS NULL OR
+      (birthDate < NOW() - INTERVAL '5 months' AND sterilizationDate IS NULL) OR
       birthDate         IS NULL OR
       hostfamily_id     IS NULL OR
       entryDate        IS NULL OR
@@ -248,7 +248,7 @@ async function getAllFACatsNotFullyCompletedCount(id) {
       numIdentification IS NULL OR numIdentification = '' OR
       dress             IS NULL OR dress             = '' OR
       race              IS NULL OR race              = '' OR
-      sterilizationDate IS NULL OR
+      (birthDate < NOW() - INTERVAL '5 months' AND sterilizationDate IS NULL) OR
       birthDate         IS NULL OR
       hostfamily_id     IS NULL OR
       entryDate        IS NULL OR
@@ -269,7 +269,8 @@ async function getAllFACatsNotFullyCompletedList(id) {
         CASE WHEN numIdentification IS NULL OR numIdentification = '' THEN 'N° d''identification' END,
         CASE WHEN dress             IS NULL OR dress             = '' THEN 'Robe'             END,
         CASE WHEN race              IS NULL OR race              = '' THEN 'Race'              END,
-        CASE WHEN sterilizationDate IS NULL                          THEN 'Date de stérilisation' END,
+        CASE WHEN birthDate < NOW() - INTERVAL '5 months'
+              AND sterilizationDate IS NULL                          THEN 'Date de stérilisation' END,
         CASE WHEN birthDate         IS NULL                          THEN 'Date de naissance'         END,
         CASE WHEN hostfamily_id     IS NULL                          THEN 'Famille d''accueil'     END,
         CASE WHEN entryDate         IS NULL                          THEN 'Date d''entrée'      END,
@@ -287,7 +288,7 @@ async function getAllFACatsNotFullyCompletedList(id) {
       numIdentification IS NULL OR numIdentification = '' OR
       dress             IS NULL OR dress             = '' OR
       race              IS NULL OR race              = '' OR
-      sterilizationDate IS NULL OR
+      (birthDate < NOW() - INTERVAL '5 months' AND sterilizationDate IS NULL) OR
       birthDate         IS NULL OR
       hostfamily_id     IS NULL OR
       entryDate        IS NULL OR

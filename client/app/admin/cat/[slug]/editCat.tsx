@@ -86,6 +86,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const [isDuringVisit, setIsDuringVisit] = useState<boolean>(cat?.isDuringVisit ?? false);
     let isAdoptable = cat?.isAdoptable ?? false;
     const [birthDate, setBirthDate] = useState<string | null>(cat?.birthDate ?? null);
+    const [sterilizationDate, setSterilizationDate] = useState<string | null>(cat?.sterilizationDate ?? null);
     const [entryDate, setEntryDate] = useState<string | null>(cat?.entryDate ?? null);
     const [sterilizationDateError, setSterilizationDateError] = useState<boolean>(false);
     const [hostFamilyId, setHostFamilyId] = useState<string | null>(cat?.hostFamily?.id ?? null);
@@ -433,8 +434,8 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     }
 
     useEffect(() => {
-        setSterilizationDateError(isTodayGreaterThanDatePlus6Months(birthDate));
-    }, [birthDate]);
+        setSterilizationDateError(!sterilizationDate && isTodayGreaterThanDatePlus6Months(birthDate));
+    }, [birthDate, sterilizationDate]);
 
     useEffect(() => {
         prepareBodyToShowModal(lightbox ? "hidden" : "");
@@ -580,7 +581,9 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                             <Input 
                                 name="sterilizationDate"
                                 label="Date de la stérilisation  / castration"
-                                type={InputTypes.Date} value={cat?.sterilizationDate ? formatYMMDD(new Date(cat?.sterilizationDate)) : undefined}
+                                type={InputTypes.Date}
+                                value={cat?.sterilizationDate ? formatYMMDD(new Date(cat?.sterilizationDate)) : undefined}
+                                onChange={(e) => setSterilizationDate(e.currentTarget.value)}
                                 className={ sterilizationDateError ? "error" : "" }
                                 readOnly={isReadonly}
                             />
@@ -677,12 +680,12 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                         showLabel={false}
                                         className='max-w-44'
                                         ref={inputVaccineFile} />
-                                    <span className='text-sm text-(--primary) text-ellipsis overflow-hidden w-full'>{vaccinePicture?.name}</span>
                                     <Button className="flex text-sm p-10 h-40 bg-(--primary) items-center justify-center rounded-[10px] text-lg text-(--white) cursor-pointer md:w-180"
                                          onClick={(e:any) => { addDocument("vaccin"); e.preventDefault(); }}
                                          text="Ajouter le vaccin"
                                          disabled={!vaccineDate || !vaccinePicture}
                                          />
+                                    <span className='text-sm text-(--primary) text-ellipsis overflow-hidden flex-1'>{vaccinePicture?.name}</span>
                                 </div>
                                 <div className='flex flex-wrap w-full gap-7 mt-24'>
                                     {vaccinesPreview.map((value: { url: string, index: number}, idx: number) => (
@@ -724,12 +727,12 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                         showLabel={false}
                                         className='max-w-44'
                                         ref={inputPestControlFile} />
-                                    <span className='text-sm text-(--primary)'>{pestControlPicture?.name}</span>
                                     <Button className="flex text-sm p-10 h-40 bg-(--primary) items-center justify-center rounded-[10px] text-lg text-(--white) cursor-pointer md:w-180"
                                          onClick={(e:any) => { addDocument("antiparasitaire"); e.preventDefault(); }}
                                          text="Ajouter l'antiparasitaire"
                                          disabled={!pestControlDate || !pestControlPicture}
                                          />
+                                    <span className='text-sm text-(--primary) text-ellipsis overflow-hidden flex-1'>{pestControlPicture?.name}</span>
                                 </div>
                                 <div className='flex flex-wrap w-full gap-7 mt-24'>
                                     {pestControlsPreview.map((value: { url: string, index: number}, idx: number) => (
@@ -771,12 +774,12 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                         showLabel={false}
                                         className='max-w-44'
                                         ref={inputExamFile} />
-                                    <span className='text-sm text-(--primary)'>{examPicture?.name}</span>
                                     <Button className="flex text-sm p-10 h-40 bg-(--primary) items-center justify-center rounded-[10px] text-lg text-(--white) cursor-pointer md:w-180"
                                          onClick={(e:any) => { addDocument("examen"); e.preventDefault(); }}
                                          text="Ajouter le CR/ PS / Examens"
                                          disabled={!examDate || !examPicture}
                                          />
+                                    <span className='text-sm text-(--primary) text-ellipsis overflow-hidden flex-1'>{examPicture?.name}</span>
                                 </div>
                                 <div className='flex flex-wrap w-full gap-7 mt-24'>
                                     {examsPreview.map((value: { url: string, index: number}, idx: number) => (

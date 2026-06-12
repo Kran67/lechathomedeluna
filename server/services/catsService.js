@@ -375,15 +375,16 @@ async function catsHasPreVisitWithoutDateList(id) {
 
 async function catsBoosterVaccinationNoLaterThanOneMonthCount(id) {
   let sql = `
-      SELECT DISTINCT count(*) AS count
-      FROM cats c
-      LEFT JOIN LATERAL (
-        SELECT count(*) as count
-        FROM cat_documents cd
-        WHERE cd.cat_id = c.id
-        LIMIT 1
-      ) d on true
-	    WHERE d.count = 1`;
+      SELECT count(*) AS count
+        FROM cats c
+        WHERE EXISTS (
+          SELECT 1
+          FROM cat_documents cd
+          WHERE cd.cat_id = c.id
+            AND cd.type = 'vaccin'
+            AND cd.date + INTERVAL '1 month' >= CURRENT_DATE
+            AND cd.date + INTERVAL '1 month' <= CURRENT_DATE + INTERVAL '1 month'
+        )`;
   if (id) {
     const res = await getByReferentId(id);
     if (res.rowCount > 0) {
@@ -398,15 +399,16 @@ async function catsBoosterVaccinationNoLaterThanOneMonthCount(id) {
 
 async function catsBoosterVaccinationNoLaterThanOneMonthList(id) {
   let sql = `
-      SELECT DISTINCT c.*
-      FROM cats c
-      LEFT JOIN LATERAL (
-        SELECT count(*) as count
-        FROM cat_documents cd
-        WHERE cd.cat_id = c.id
-        LIMIT 1
-      ) d on true
-	    WHERE d.count = 1`;
+      SELECT count(*) AS count
+        FROM cats c
+        WHERE EXISTS (
+          SELECT 1
+          FROM cat_documents cd
+          WHERE cd.cat_id = c.id
+            AND cd.type = 'vaccin'
+            AND cd.date + INTERVAL '1 month' >= CURRENT_DATE
+            AND cd.date + INTERVAL '1 month' <= CURRENT_DATE + INTERVAL '1 month'
+        )`;
   if (id) {
     const res = await getByReferentId(id);
     if (res.rowCount > 0) {

@@ -131,7 +131,7 @@ export default function MyAlerts() {
               </div>
             </div> */}
           {user && hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.VetVoucherReferent]) && <div className='flex flex-col'>
-            <div className='flex flex-row gap-10 items-center'>
+            <div className='flex flex-row gap-10 items-center cursor-pointer'>
               <span className={'text-lg text-(--primary)' + (showVetVoucherAlertes ? " rotate-90" : "")}>&gt;</span>
               <span className='text-lg text-(--primary)' onClick={ () => setShowVetVoucherAlertes(!showVetVoucherAlertes)}>Bons vétérinaires :</span>
               {vetVoucherList.length > 0 && <span className="flex text-sm text-(--white) rounded-full bg-(--primary) w-20 h-20 items-center justify-center">{vetVoucherList.length}</span>}
@@ -327,8 +327,8 @@ export default function MyAlerts() {
             </>}
           </div>}
           {user && hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily]) && <div className='flex flex-col'>
-            <div className='flex flex-row gap-10 items-center'>
-              <span className={'text-lg text-(--primary)' + (showVetVoucherAlertes ? " rotate-90" : "")}>&gt;</span>
+            <div className='flex flex-row gap-10 items-center cursor-pointer'>
+              <span className={'text-lg text-(--primary)' + (showIncompletesCatsInFAAlertes ? " rotate-90" : "")}>&gt;</span>
               <span className='text-lg text-(--primary)' onClick={ () => setShowIncompletesCatsInFAAlertes(!showIncompletesCatsInFAAlertes)}>Fiches chats en FA incomplètes :</span>
               {unCompletedFACatList.length > 0 && <span className="flex text-sm text-(--white) rounded-full bg-(--primary) w-20 h-20 items-center justify-center">{unCompletedFACatList.length}</span>}
             </div>
@@ -444,8 +444,8 @@ export default function MyAlerts() {
             </>}
           </div>}
           {user && hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.CommitteeMember]) && <div className='flex flex-col'>
-            <div className='flex flex-row gap-10 items-center'>
-              <span className={'text-lg text-(--primary)' + (showVetVoucherAlertes ? " rotate-90" : "")}>&gt;</span>
+            <div className='flex flex-row gap-10 items-center cursor-pointer'>
+              <span className={'text-lg text-(--primary)' + (showIncompletesAdoptedCatsAlertes ? " rotate-90" : "")}>&gt;</span>
               <span className='text-lg text-(--primary)' onClick={ () => setShowIncompletesAdoptedCatsAlertes(!showIncompletesAdoptedCatsAlertes)}>Fiches chats adoptés incomplètes :</span>
               {unCompletedAdoptedCatList.length > 0 && <span className="flex text-sm text-(--white) rounded-full bg-(--primary) w-20 h-20 items-center justify-center">{unCompletedAdoptedCatList.length}</span>}
             </div>
@@ -545,8 +545,8 @@ export default function MyAlerts() {
             </>}
           </div>}
           {user && hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.HostFamily]) && <div className='flex flex-col'>
-            <div className='flex flex-row gap-10 items-center'>
-              <span className={'text-lg text-(--primary)' + (showVetVoucherAlertes ? " rotate-90" : "")}>&gt;</span>
+            <div className='flex flex-row gap-10 items-center cursor-pointer'>
+              <span className={'text-lg text-(--primary)' + (showReminderAlertes ? " rotate-90" : "")}>&gt;</span>
               <span className='text-lg text-(--primary)' onClick={ () => setShowReminderAlertes(!showReminderAlertes)}>Rappels :</span>
               {vaccineBoosterList.length > 0 && <span className="flex text-sm text-(--white) rounded-full bg-(--primary) w-20 h-20 items-center justify-center">{vaccineBoosterList.length}</span>}
             </div>

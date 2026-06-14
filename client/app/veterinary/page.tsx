@@ -326,7 +326,7 @@ export default function VetVouchers() {
 
                                         <div>
                                             <div className="text-xs tracking-wide text-gray-500">
-                                                Demande
+                                                Demandé le
                                             </div>
                                             <div className="font-medium">
                                                 {formatDDMMY(new Date(voucher.date))}
@@ -335,7 +335,7 @@ export default function VetVouchers() {
 
                                         <div>
                                             <div className="text-xs tracking-wide text-gray-500">
-                                                Rendez-vous
+                                                Rendez-vous le
                                             </div>
                                             <div className="font-medium">
                                                 {formatDDMMY(

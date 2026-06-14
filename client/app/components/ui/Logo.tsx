@@ -1,6 +1,7 @@
 import Image from 'next/image';
 
 import Logo from '@/app/assets/images/logo.png';
+import LogoSmall from '@/app/assets/images/logo_small.png';
 import { LogoSizes } from '@/app/core/enums/enums';
 
 /**
@@ -25,7 +26,7 @@ export default function LogoPage({ size = LogoSizes.Large, className }: LogoProp
     return (
         <Image
             className={className}
-            src={Logo}
+            src={size === LogoSizes.Large ? Logo : LogoSmall}
             alt="Image du logo"
             width={size === LogoSizes.Large ? 198 : 99}
             height={size === LogoSizes.Large ? 112 : 56}

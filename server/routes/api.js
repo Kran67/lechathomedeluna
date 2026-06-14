@@ -25,7 +25,7 @@ router.delete('/cats/cloneandremove/:slug', requireRole(['SuperAdmin', 'Admin'])
 router.get('/facatnotfullycompletedcount', requireRole(['SuperAdmin', 'Admin', 'AdoptionReferent']), cats.notFullyCompletedCount);
 router.get('/facatnotfullycompletedcount/:id', requireRole(['SuperAdmin', 'Admin', 'AdoptionReferent', 'HostFamily']), cats.notFullyCompletedCount);
 router.get('/facatnotfullycompletedlist', requireRole(['SuperAdmin', 'Admin', 'AdoptionReferent', 'HostFamily']), cats.notFullyCompletedList);
-router.get('/facatnotfullycompletedlist/:id', requireRole(['HostFamily']), cats.notFullyCompletedList);
+router.get('/facatnotfullycompletedlist/:id', requireRole(['SuperAdmin', 'HostFamily']), cats.notFullyCompletedList);
 router.get('/adoptedcatnotfullycompletedcount', requireRole(['SuperAdmin', 'Admin', 'CommitteeMember']), cats.adoptedNotFullyCompletedCount);
 router.get('/adoptedcatnotfullycompletedlist', requireRole(['SuperAdmin', 'Admin', 'CommitteeMember']), cats.adoptedNotFullyCompletedList);
 router.get('/hasprevisitwithoutdatelist', requireRole(['SuperAdmin', 'Admin', 'CommitteeMember']), cats.hasPreVisitWithoutDateList);

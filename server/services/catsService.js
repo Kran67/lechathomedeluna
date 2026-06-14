@@ -399,7 +399,7 @@ async function catsBoosterVaccinationNoLaterThanOneMonthCount(id) {
 
 async function catsBoosterVaccinationNoLaterThanOneMonthList(id) {
   let sql = `
-      SELECT count(*) AS count
+      SELECT *
         FROM cats c
         WHERE EXISTS (
           SELECT 1

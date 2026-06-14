@@ -9,6 +9,7 @@ import {
   Cookies,
   useCookies,
 } from 'next-client-cookies';
+import { useRouter } from 'next/navigation';
 
 import IconButton from '@/app/components/ui/IconButton';
 import Logo from '@/app/components/ui/Logo';
@@ -56,7 +57,8 @@ interface HeaderProps {
  */
 export default function Header({ activeMenu }: HeaderProps) {
     const [isMenuVisible, setIsMenuVisible] = useState(false);
-    const { user } = useUser();
+    const { user, isImpersonating, originalUser, stopImpersonation } = useUser();
+    const router = useRouter();
     const [unreadMsg, setUnreadMsg] = useState<number>(0);
     const [vetVoucherCount, setVetVoucherCount] = useState<number>(0);
     const [faCatNotFullyCompletedCount, setFACatNotFullyCompletedCount] = useState<number>(0);
@@ -126,8 +128,20 @@ export default function Header({ activeMenu }: HeaderProps) {
     }, [user, refreshKey]);
 
     return (
+        <>
+        {isImpersonating && (
+            <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center gap-10 bg-orange-500 text-white text-sm px-16 py-8">
+                <span>Vous naviguez en tant que <strong>{user?.lastName} {user?.name}</strong> (connecté : {originalUser?.lastName} {originalUser?.name})</span>
+                <button
+                    onClick={() => { stopImpersonation(); router.push('/admin/users'); }}
+                    className="cursor-pointer rounded bg-white text-orange-600 font-semibold px-10 py-4 text-xs hover:bg-orange-100"
+                >
+                    Revenir à mon compte
+                </button>
+            </div>
+        )}
         <header
-            className="flex w-full xl:w-1140 md:p-20 items-center justify-between font-normal">
+            className={"flex w-full xl:w-1140 md:p-20 items-center justify-between font-normal" + (isImpersonating ? " mt-71 md:mt-36" : "")}>
             <Logo size={LogoSizes.Small} className="flex md:hidden" />
             <Logo size={LogoSizes.Large} className="hidden md:flex" />
             <div className={`flex flex-col md:flex-row gap-28 absolute md:relative h-[calc(100vh-60px)] md:h-auto top-60 left-0 right-0 md:top-auto pt-28 md:pt-0 px-16 z-2 bg-(--white) items-start md:items-center overflow-y-auto md:overflow-visible ` +
@@ -235,6 +249,7 @@ export default function Header({ activeMenu }: HeaderProps) {
                     setIsMenuVisible(!isMenuVisible);
                     prepareBodyToShowModal(isMenuVisible ? "" : "hidden");
                 }} />
-        </header >
+        </header>
+        </>
     );
 }

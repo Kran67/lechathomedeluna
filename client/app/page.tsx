@@ -67,7 +67,7 @@ export default function HomePage() {
   };
   
   return (
-    <main className="flex flex-col gap-20 w-full md:pt-20 md:px-140 items-center">
+    <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 lg:px-140 relative">
       <Header activeMenu={HeaderMenuItems.Home} />
       <div className="flex flex-col gap-20 px-16 md:p-0 w-full xl:w-1115 jsustify-center items-center">
         <div className="flex gap-8 w-full lg:w-260 items-center justify-center">

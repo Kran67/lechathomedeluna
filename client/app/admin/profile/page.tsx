@@ -258,7 +258,7 @@ export default function Profile() {
                                 </div>
                             </div>}
                         </div>
-                        <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
+                        <div className='flex gap-10 justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
                             <Button
                                 text="Modifier les informations"
                                 className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 px-32 text-(--white)'
@@ -271,7 +271,7 @@ export default function Profile() {
                                 disabled={isSubmitted}
                             />
                         </div>
-                        {hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin]) && <div className='flex gap-10 md:justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
+                        {hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin]) && <div className='flex gap-10 justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
                             <Link
                                 text="Administrer les utilisateurs"
                                 url="/admin/users"

@@ -7,7 +7,10 @@ import {
 import { createPortal } from 'react-dom';
 
 import dynamic from 'next/dynamic';
-import { redirect } from 'next/navigation';
+import {
+  redirect,
+  useRouter,
+} from 'next/navigation';
 import { toast } from 'react-toastify';
 
 import Footer from '@/app/components/layout/Footer';
@@ -47,7 +50,8 @@ interface UsersListProps {
 }
 
 export default function UsersList({ users }: UsersListProps) {
-    const { user } = useUser();
+    const { user, originalUser, startImpersonation } = useUser();
+    const router = useRouter();
     const [search, setSearch] = useState<string>("");
     const [filteredUsers, setFilteredUsers] = useState<User[] | undefined>(users);
     const [roles, setRoles] = useState<string>("");
@@ -55,7 +59,8 @@ export default function UsersList({ users }: UsersListProps) {
     const [checkedUser, setCheckedUser] = useState<string[]>([]);
     const [showModalMessage, setShowModalMessage] = useState<boolean>(false);
 
-    if (!user || !hasRoles(user?.roles, [UserRoles.SuperAdmin, UserRoles.Admin])) {
+    const effectiveUser = originalUser ?? user;
+    if (!effectiveUser || !hasRoles(effectiveUser.roles, [UserRoles.SuperAdmin, UserRoles.Admin])) {
         redirect("/");
     }
 
@@ -89,9 +94,24 @@ export default function UsersList({ users }: UsersListProps) {
         }
     }
 
+    const impersonate = (targetUser: User) => {
+        startImpersonation(targetUser);
+        router.push('/');
+    }
+
+    const capacityClass = (capacity: string) => {
+        switch (capacity) {
+            case "Empty":
+                return " bg-[#00ff00]";
+            case "Full":
+                return " bg-[#ff0000]";
+            default:
+                return " bg-[#ffff00]";
+        }
+    }
 
     return (
-        <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 xl:px-140 relative">
+        <main className="flex flex-col gap-10 lg:gap-20 w-full items-center lg:pt-20 lg:px-140 relative">
             <Header activeMenu={HeaderMenuItems.Profile} />
             {showModalMessage && createPortal(
                 <ModalMessage
@@ -103,8 +123,8 @@ export default function UsersList({ users }: UsersListProps) {
                 />,
                 document.body
             )}
-            <div className="flex flex-col w-full gap-10 lg:gap-24 lg:w-1200 px-16 pb-80 lg:px-0 lg:pb-0">
-                <div className="lg:flex lg:flex-row lg:gap-10 w-full lg:py-16 lg:px-7 border-b-0 lg:border-b-1 border-solid border-b-(--pink)">
+            <div className="flex flex-col gap-10 px-16 md:p-10 w-full xl:w-1115">
+                <div className="flex flex-col gap-8 w-full xl:w-1115 lg:w-800">
                     <IconButton
                         icon={IconButtonImages.LeftArrow}
                         imgWidth={8}
@@ -168,13 +188,13 @@ export default function UsersList({ users }: UsersListProps) {
                             onClick={() => setShowModalMessage(true) }
                             />
                 </div>
-                <div className="overflow-x-auto w-full border-l border-r border-t border-solid border-(--pink)">
+                <div className="hidden md:block overflow-x-auto w-full border-l border-r border-t border-solid border-(--pink)">
                     <table className="w-full min-w-[1000px] border-b border-solid border-(--pink)">
                         <thead>
                             <tr className='font-bold  bg-(--pink)'>
                                 <td className="text-(--white) w-20 px-5"></td>
                                 <td className="text-(--white) w-150 px-5">Nom Prénom</td>
-                                <td className="text-(--white) border-l w-115 px-5">N° sécu</td>
+                                <td className="text-(--white) border-l w-115 px-5">Lieu de naissance</td>
                                 <td className="text-(--white) border-l w-150 px-5">Email</td>
                                 <td className="text-(--white) border-l w-100 px-5 text-center">Téléphone</td>
                                 <td className="text-(--white) border-l flex-1 px-5">Adresse</td>
@@ -190,7 +210,7 @@ export default function UsersList({ users }: UsersListProps) {
                             <tr key={u.id} className={"w-full border-solid border-(--pink) border-b " + (u.blacklisted ? " italic" : "") + (idx % 2 === 0 ? " bg-(--light-pink)": "") }>
                                 <td className="px-5 w-20">
                                     <div className='flex justify-center items-center'>
-                                        {user.id !== u.id && <input type="checkbox" name={"check-" + u.id} value={u.id} onChange={(e) => { addOrRemoveUserToMessage(e.currentTarget.checked, e.currentTarget.value)}} />}
+                                        {user?.id !== u.id && <input type="checkbox" name={"check-" + u.id} value={u.id} onChange={(e) => { addOrRemoveUserToMessage(e.currentTarget.checked, e.currentTarget.value)}} />}
                                         {u.blacklisted ? <IconButton url="#" icon={IconButtonImages.BlackListed} svgFill="#CE25A6" imgWidth={20} title="Sur la liste noire" /> : null}
                                     </div>
                                 </td>
@@ -212,12 +232,15 @@ export default function UsersList({ users }: UsersListProps) {
                                             UserRoles.HostFamily |
                                             UserRoles.Volunteer)}</div>))}
                                 </td>
-                                <td className={"border-l w-70 px-5 border-(--pink)" + (u.capacity === "Empty" ? " bg-[#00ff00]": " bg-[#ff0000]")}>&nbsp;</td>
+                                <td className={"border-l w-70 px-5 border-(--pink)" + capacityClass(u.capacity as string)}>&nbsp;</td>
                                 <td className="border-(--pink) border-l w-70 px-5">
-                                    {u &&
+                                    {user && u &&
                                         <div className='flex justify-center gap-5 '>
                                             <IconButton url={`/admin/profile/${u.id}`} icon={IconButtonImages.Pen} svgFill="#CE25A6" imgWidth={20} title="Editer le profile" />
                                             <IconButton onClick={(e:React.MouseEvent<HTMLButtonElement>) => resetUserPassword(e, u.email) } icon={IconButtonImages.ChangePassword} svgFill="#CE25A6" imgWidth={20} title="Changer le mot de passe" />
+                                            {user.id !== u.id && hasRoles(user.roles, [UserRoles.SuperAdmin]) && (
+                                                <IconButton onClick={(e:React.MouseEvent<HTMLButtonElement>) => { e.preventDefault(); impersonate(u); }} icon={IconButtonImages.Person} svgFill="#CE25A6" imgWidth={20} title="Naviguer en tant que cet utilisateur" />
+                                            )}
                                         </div>
                                     }
                                 </td>
@@ -225,6 +248,180 @@ export default function UsersList({ users }: UsersListProps) {
                         ))}
                         </tbody>
                     </table>
+                </div>
+                {/* Mobile */}
+                <div className="md:hidden flex flex-col gap-4">
+                    {filteredUsers?.map((u) => (
+                        <div
+                            key={u.id}
+                            className={`overflow-hidden rounded-xl border shadow-sm transition-all hover:shadow-md
+                                ${
+                                    u.blacklisted
+                                        ? "bg-gray-50 border-gray-300 border-l-4 border-l-gray-500"
+                                        : "bg-(--light-pink) border-(--pink) border-l-4 border-l-(--pink)"
+                                }`}
+                        >
+                            {/* Header */}
+                            <div className="flex items-start justify-between bg-(--pink) px-4 py-3">
+
+                                <div className="flex items-start gap-3">
+
+                                    {user?.id !== u.id && (
+                                        <div className="mt-5">
+                                            <input
+                                                type="checkbox"
+                                                name={`check-${u.id}`}
+                                                value={u.id}
+                                                onChange={(e) =>
+                                                    addOrRemoveUserToMessage(
+                                                        e.currentTarget.checked,
+                                                        e.currentTarget.value
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                    )}
+
+                                    <div>
+
+                                        <div
+                                            className={`font-bold text-lg text-(--white)
+                                                ${u.blacklisted ? "line-through opacity-70" : ""}`}
+                                        >
+                                            {u.lastName} {u.name}
+                                        </div>
+
+                                        <div className="text-xs text-(--white)/80 mt-1">
+                                            Lieu de naissance : {u.placeOfBirth}
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div className="flex flex-col gap-2 items-end">
+
+                                    {u.blacklisted && (
+                                        <span className="rounded-full bg-red-100 text-red-700 px-3 py-1 text-xs font-semibold">
+                                            Liste noire
+                                        </span>
+                                    )}
+
+                                    <span
+                                        className={`rounded-full px-3 py-1 text-xs
+                                            ${
+                                                capacityClass(u.capacity as string)
+                                            }`}
+                                    >
+                                        {(u.capacity === "Empty" ? " Disponible" : u.capacity === "PartiallyFull" ? " Semi-complet" : " Complet")}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                            {/* Body */}
+
+                            <div className="p-4 space-y-4 text-(--text)">
+
+                                <div>
+
+                                    <div className="text-xs tracking-wide text-gray-500 mb-2">
+                                        Coordonnées
+                                    </div>
+
+                                    <div className="space-y-1 text-sm">
+
+                                        <div className="break-all">
+                                            {u.email}
+                                        </div>
+
+                                        <div>
+                                            {u.phone}
+                                        </div>
+
+                                        <div>
+                                            {u.address}
+                                        </div>
+
+                                        <div>
+                                            {u.postalCode} {u.city}
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div className="border-t border-gray-200 pt-3">
+
+                                    <div className="text-xs tracking-wide text-gray-500 mb-2">
+                                        Rôles
+                                    </div>
+
+                                    <div className="flex flex-wrap gap-2">
+
+                                        {u.roles
+                                            .split("|")
+                                            .map((r: string, idx: number) => (
+                                                <span
+                                                    key={u.id + idx}
+                                                    className="rounded-full border border-(--pink) bg-white px-3 py-1 text-xs font-medium"
+                                                >
+                                                    {getRoleLabel(
+                                                        r as
+                                                            | UserRoles.SuperAdmin
+                                                            | UserRoles.Admin
+                                                            | UserRoles.CommitteeMember
+                                                            | UserRoles.AdoptionReferent
+                                                            | UserRoles.HealthRegisterReferent
+                                                            | UserRoles.VetVoucherReferent
+                                                            | UserRoles.ICADReferent
+                                                            | UserRoles.HostFamily
+                                                            | UserRoles.Volunteer
+                                                    )}
+                                                </span>
+                                            ))}
+
+                                    </div>
+
+                                </div>
+
+                                <div className="border-t border-gray-200 pt-3 flex justify-center gap-6">
+
+                                    <IconButton
+                                        url={`/admin/profile/${u.id}`}
+                                        icon={IconButtonImages.Pen}
+                                        svgFill="#CE25A6"
+                                        imgWidth={22}
+                                        title="Éditer le profil"
+                                    />
+
+                                    <IconButton
+                                        onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+                                            resetUserPassword(e, u.email)
+                                        }
+                                        icon={IconButtonImages.ChangePassword}
+                                        svgFill="#CE25A6"
+                                        imgWidth={22}
+                                        title="Changer le mot de passe"
+                                    />
+
+                                    {user && user.id !== u.id && hasRoles(user.roles, [UserRoles.SuperAdmin]) && (
+                                        <IconButton
+                                            icon={IconButtonImages.Person}
+                                            svgFill="#CE25A6"
+                                            imgWidth={22}
+                                            onClick={(e: React.MouseEvent<HTMLButtonElement>) => { e.preventDefault(); impersonate(u); }}
+                                            title="Naviguer en tant que cet utilisateur"
+                                        />
+                                    )}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    ))}
                 </div>
             </div>
             <Footer />

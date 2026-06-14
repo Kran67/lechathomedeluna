@@ -63,6 +63,7 @@ export default function MyAlerts() {
   const [showIncompletesCatsInFAAlertes, setShowIncompletesCatsInFAAlertes] = useState<boolean>(false);
   const [showIncompletesAdoptedCatsAlertes, setShowIncompletesAdoptedCatsAlertes] = useState<boolean>(false);
   const [showReminderAlertes, setShowReminderAlertes] = useState<boolean>(false);
+  const [onlyWaitingVouchers, setOnlyWaitingVouchers] = useState<boolean>(true);
   let isHostFamily: boolean = false;
 
   useEffect(() => {
@@ -137,6 +138,14 @@ export default function MyAlerts() {
               {vetVoucherList.length > 0 && <span className="flex text-sm text-(--white) rounded-full bg-(--primary) w-20 h-20 items-center justify-center">{vetVoucherList.length}</span>}
             </div>
             {showVetVoucherAlertes && <>
+                <div className='flex flex-row gap-10 items-center'>
+                    <label htmlFor="check-status" className="text-(--text) text-sm">Afficher uniqument les bons en attente</label>
+                    <input type="checkbox" id="check-status" name="check-status"
+                        onChange={(e) => {
+                            setOnlyWaitingVouchers(!onlyWaitingVouchers)
+                        }}
+                        checked={onlyWaitingVouchers} />
+                </div>
               <div className="overflow-x-auto hidden md:block">
                 <table className="w-full min-w-[800px] border-l border-r border-t border-solid border-(--pink)">
                     <thead className="w-full border-b border-solid border-(--pink) bg-(--pink) font-bold">
@@ -152,7 +161,7 @@ export default function MyAlerts() {
                       </tr>
                     </thead>
                     <tbody>
-                    {vetVoucherList.length > 0 ? vetVoucherList.map((voucher: VetVoucher, idx: number) => (
+                    {vetVoucherList.length > 0 ? vetVoucherList.filter((voucher: VetVoucher) => onlyWaitingVouchers ? !voucher.processed_on : voucher).map((voucher: VetVoucher, idx: number) => (
                             <tr key={voucher.id} className={"w-full border-solid border-(--pink) border-b " + (idx % 2 === 0 ? " bg-(--light-pink)": "") + (voucher.processed_on ? " line-through" : "") }>
                                 <td className={"w-100 px-5 text-(--text)"}>{formatDDMMY(new Date(voucher.date))}</td>
                                 <td className="border-l px-5 text-(--text)">{formatDDMMY(new Date(voucher.appointmentDate))}</td>
@@ -172,7 +181,7 @@ export default function MyAlerts() {
               </div>
               <div className="md:hidden flex flex-col gap-4">
                 {vetVoucherList.length > 0 ? (
-                    vetVoucherList.map((voucher: VetVoucher) => (
+                    vetVoucherList.filter((voucher: VetVoucher) => onlyWaitingVouchers ? !voucher.processed_on : voucher).map((voucher: VetVoucher) => (
                         <div
                             key={voucher.id}
                             className={`overflow-hidden rounded-xl border shadow-sm transition-all hover:shadow-md

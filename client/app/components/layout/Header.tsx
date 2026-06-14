@@ -144,100 +144,100 @@ export default function Header({ activeMenu }: HeaderProps) {
             className={"flex w-full xl:w-1140 md:p-20 items-center justify-between font-normal" + (isImpersonating ? " mt-71 md:mt-36" : "")}>
             <Logo size={LogoSizes.Small} className="flex md:hidden" />
             <Logo size={LogoSizes.Large} className="hidden md:flex" />
-            <div className={`flex flex-col md:flex-row gap-28 absolute md:relative h-[calc(100vh-60px)] md:h-auto top-60 left-0 right-0 md:top-auto pt-28 md:pt-0 px-16 z-2 bg-(--white) items-start md:items-center overflow-y-auto md:overflow-visible ` +
-                    (isMenuVisible || innerWidth >= 768 ? "" : "hidden")}>
-            <MenuItem
-                text="Actualités / évènements"
-                isActive={activeMenu === HeaderMenuItems.Home}
-                url="/"
-                className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                iconPath="/images/news.png"
-                forceDisplayTextOnMobile={isMenuVisible} />
-            {user && hasRoles(user.roles, [UserRoles.HostFamily]) && <MenuItem
-                text="Mes chats"
-                isActive={activeMenu === HeaderMenuItems.MyCats}
-                url="/mycats"
-                className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                iconPath="/images/meschats.png"
-                forceDisplayTextOnMobile={isMenuVisible} />}
-            {(!user || (user && !hasRoles(user.roles, [UserRoles.HostFamily]))) && <MenuItem
-                text="Les chats à adopter"
-                isActive={activeMenu === HeaderMenuItems.CatsForAdoption}
-                url="/catsforadoption"
-                className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                iconPath="/images/chatsaadopter.png"
-                forceDisplayTextOnMobile={isMenuVisible} />}
-            {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.VetVoucherReferent, UserRoles.HostFamily]) && <MenuItem
-                text="Mes alertes"
-                isActive={activeMenu === HeaderMenuItems.Alerts}
-                url="/myalerts"
-                className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                badge={faCatNotFullyCompletedCount + adoptedCatNotFullyCompletedCount + vetVoucherCount + catBoosterVaccinationNoLaterThanOneMonthCount}
-                iconPath="/images/alerte.png"
-                forceDisplayTextOnMobile={isMenuVisible} />}
-            {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.VetVoucherReferent]) && <MenuItem
-                text="Bons vétérinaires"
-                isActive={activeMenu === HeaderMenuItems.VeterinaryVouchers}
-                url="/veterinary"
-                className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                badge={vetVoucherCount}
-                iconPath="/images/bonveto.png"
-                forceDisplayTextOnMobile={isMenuVisible} />}
-            {/* {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRole.Admin, UserRole.Volunteer]) && <MenuItem
-                text="Evénements"
-                isActive={activeMenu === HeaderMenuItems.Events}
-                url="/events"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />} */}
-            {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HealthRegisterReferent/*, UserRoles.VetVoucherReferent*/]) && <MenuItem
-                text="Chats en FA"
-                isActive={activeMenu === HeaderMenuItems.Adoption}
-                url="/facats"
-                className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                badge={hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily]) ? faCatNotFullyCompletedCount : 0}
-                iconPath="/images/chatsFA.png"
-                forceDisplayTextOnMobile={isMenuVisible} />}
-            {/* {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRole.Admin, UserRole.Assistant, UserRole.Volunteer]) && <MenuItem
-                text="Bénévoles"
-                isActive={activeMenu === HeaderMenuItems.Volunteers}
-                url="/"
-                className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />} */}
-            {(!user || (user && !hasRoles(user.roles, [UserRoles.HostFamily]))) && <MenuItem
-                text="Les chats adoptés Pris en charge"
-                isActive={activeMenu === HeaderMenuItems.AdoptedCats}
-                url="/adoptedcats"
-                className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold w-110"
-                badge={adoptedCatCount}
-                iconPath="/images/chatsadoptes.png"
-                forceDisplayTextOnMobile={isMenuVisible} />}
-            {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.VetVoucherReferent, UserRoles.HostFamily]) && <MenuItem
-                text="Messagerie"
-                isActive={activeMenu === HeaderMenuItems.Messaging}
-                url="/messaging"
-                className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                badge={unreadMsg}
-                iconPath="/images/messagerie.png"
-                forceDisplayTextOnMobile={isMenuVisible} />}
-            {!user && <MenuItem
-                text="À propos"
-                isActive={activeMenu === HeaderMenuItems.About}
-                url="/about"
-                className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold"
-                iconPath="/images/apropos.png"
-                forceDisplayTextOnMobile={isMenuVisible} />}
-            {!user && <MenuItem
-                text="Se connecter"
-                isActive={activeMenu === HeaderMenuItems.Login}
-                url="/login"
-                className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
-                iconPath="/images/seconnecter.png"
-                forceDisplayTextOnMobile={isMenuVisible} />}
-            {user && <MenuItem
-                text={user.lastName + " " + user.name}
-                isActive={activeMenu === HeaderMenuItems.Profile}
-                url="/admin/profile"
-                className={"md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold w-90 mb-15 md:mb-0 "+ (innerWidth > 1280 ? "catpaw" : "")}
-                iconPath="/images/profile.png"
-                forceDisplayTextOnMobile={isMenuVisible} />}
+            <div className={`flex flex-col md:flex-row gap-28 absolute md:relative md:h-auto h-[calc(100vh-60px)] left-0 right-0 md:top-auto pt-28 md:pt-0 px-16 z-2 bg-(--white) items-start md:items-center overflow-y-auto md:overflow-visible ` +
+                    (isMenuVisible || innerWidth >= 768 ? "" : "hidden") + (isImpersonating ? " top-127" : " top-60")}>
+                <MenuItem
+                    text="Actualités / évènements"
+                    isActive={activeMenu === HeaderMenuItems.Home}
+                    url="/"
+                    className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                    iconPath="/images/news.png"
+                    forceDisplayTextOnMobile={isMenuVisible} />
+                {user && hasRoles(user.roles, [UserRoles.HostFamily]) && <MenuItem
+                    text="Mes chats"
+                    isActive={activeMenu === HeaderMenuItems.MyCats}
+                    url="/mycats"
+                    className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                    iconPath="/images/meschats.png"
+                    forceDisplayTextOnMobile={isMenuVisible} />}
+                {(!user || (user && !hasRoles(user.roles, [UserRoles.HostFamily]))) && <MenuItem
+                    text="Les chats à adopter"
+                    isActive={activeMenu === HeaderMenuItems.CatsForAdoption}
+                    url="/catsforadoption"
+                    className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                    iconPath="/images/chatsaadopter.png"
+                    forceDisplayTextOnMobile={isMenuVisible} />}
+                {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.CommitteeMember, UserRoles.VetVoucherReferent, UserRoles.HostFamily]) && <MenuItem
+                    text="Mes alertes"
+                    isActive={activeMenu === HeaderMenuItems.Alerts}
+                    url="/myalerts"
+                    className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                    badge={faCatNotFullyCompletedCount + adoptedCatNotFullyCompletedCount + vetVoucherCount + catBoosterVaccinationNoLaterThanOneMonthCount}
+                    iconPath="/images/alerte.png"
+                    forceDisplayTextOnMobile={isMenuVisible} />}
+                {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.VetVoucherReferent]) && <MenuItem
+                    text="Bons vétérinaires"
+                    isActive={activeMenu === HeaderMenuItems.VeterinaryVouchers}
+                    url="/veterinary"
+                    className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                    badge={vetVoucherCount}
+                    iconPath="/images/bonveto.png"
+                    forceDisplayTextOnMobile={isMenuVisible} />}
+                {/* {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRole.Admin, UserRole.Volunteer]) && <MenuItem
+                    text="Evénements"
+                    isActive={activeMenu === HeaderMenuItems.Events}
+                    url="/events"
+                    className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />} */}
+                {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HealthRegisterReferent/*, UserRoles.VetVoucherReferent*/]) && <MenuItem
+                    text="Chats en FA"
+                    isActive={activeMenu === HeaderMenuItems.Adoption}
+                    url="/facats"
+                    className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                    badge={hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent, UserRoles.HostFamily]) ? faCatNotFullyCompletedCount : 0}
+                    iconPath="/images/chatsFA.png"
+                    forceDisplayTextOnMobile={isMenuVisible} />}
+                {/* {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRole.Admin, UserRole.Assistant, UserRole.Volunteer]) && <MenuItem
+                    text="Bénévoles"
+                    isActive={activeMenu === HeaderMenuItems.Volunteers}
+                    url="/"
+                    className="hidden md:flex text-sm cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap" />} */}
+                {(!user || (user && !hasRoles(user.roles, [UserRoles.HostFamily]))) && <MenuItem
+                    text="Les chats adoptés Pris en charge"
+                    isActive={activeMenu === HeaderMenuItems.AdoptedCats}
+                    url="/adoptedcats"
+                    className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold w-110"
+                    badge={adoptedCatCount}
+                    iconPath="/images/chatsadoptes.png"
+                    forceDisplayTextOnMobile={isMenuVisible} />}
+                {user && hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.VetVoucherReferent, UserRoles.HostFamily]) && <MenuItem
+                    text="Messagerie"
+                    isActive={activeMenu === HeaderMenuItems.Messaging}
+                    url="/messaging"
+                    className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                    badge={unreadMsg}
+                    iconPath="/images/messagerie.png"
+                    forceDisplayTextOnMobile={isMenuVisible} />}
+                {!user && <MenuItem
+                    text="À propos"
+                    isActive={activeMenu === HeaderMenuItems.About}
+                    url="/about"
+                    className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold"
+                    iconPath="/images/apropos.png"
+                    forceDisplayTextOnMobile={isMenuVisible} />}
+                {!user && <MenuItem
+                    text="Se connecter"
+                    isActive={activeMenu === HeaderMenuItems.Login}
+                    url="/login"
+                    className="md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold whitespace-nowrap"
+                    iconPath="/images/seconnecter.png"
+                    forceDisplayTextOnMobile={isMenuVisible} />}
+                {user && <MenuItem
+                    text={user.lastName + " " + user.name}
+                    isActive={activeMenu === HeaderMenuItems.Profile}
+                    url="/admin/profile"
+                    className={"md:flex cursor-pointer text-(--primary) hover:text-(--primary-dark) hover:font-bold w-90 mb-15 md:mb-0 "+ (innerWidth > 1280 ? "catpaw" : "")}
+                    iconPath="/images/profile.png"
+                    forceDisplayTextOnMobile={isMenuVisible} />}
             </div>
             <IconButton
                 icon={isMenuVisible ? IconButtonImages.Cross : IconButtonImages.Menu}

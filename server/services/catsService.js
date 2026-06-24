@@ -382,8 +382,7 @@ async function catsBoosterVaccinationNoLaterThanOneMonthCount(id) {
           FROM cat_documents cd
           WHERE cd.cat_id = c.id
             AND cd.type = 'vaccin'
-            AND cd.date + INTERVAL '1 month' >= CURRENT_DATE
-            AND cd.date + INTERVAL '1 month' <= CURRENT_DATE + INTERVAL '1 month'
+            AND cd.date + INTERVAL '1 month' >= CURRENT_DATE + INTERVAL '1 month'
         )`;
   if (id) {
     const res = await getByReferentId(id);
@@ -406,8 +405,7 @@ async function catsBoosterVaccinationNoLaterThanOneMonthList(id) {
           FROM cat_documents cd
           WHERE cd.cat_id = c.id
             AND cd.type = 'vaccin'
-            AND cd.date + INTERVAL '1 month' >= CURRENT_DATE
-            AND cd.date + INTERVAL '1 month' <= CURRENT_DATE + INTERVAL '1 month'
+            AND cd.date + INTERVAL '1 month' >= CURRENT_DATE + INTERVAL '1 month'
         )`;
   if (id) {
     const res = await getByReferentId(id);

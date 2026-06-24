@@ -84,7 +84,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const [isSterilized, setIsSterilized] = useState<boolean>(cat?.isSterilized ?? false);
     const [location, setLocation] = useState<string>(cat?.location ?? "");
     const [isDuringVisit, setIsDuringVisit] = useState<boolean>(cat?.isDuringVisit ?? false);
-    let isAdoptable = cat?.isAdoptable ?? false;
+    const [isAdoptable, setIsAdoptable] = useState<boolean>(cat?.isAdoptable ?? false);
     const [birthDate, setBirthDate] = useState<string | null>(cat?.birthDate ?? null);
     const [sterilizationDate, setSterilizationDate] = useState<string | null>(cat?.sterilizationDate ?? null);
     const [entryDate, setEntryDate] = useState<string | null>(cat?.entryDate ?? null);
@@ -115,7 +115,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const [examPicture, setExamPicture] = useState<any | null>(null);
     const inputExamFile = useRef(null);
     const inputExamDate = useRef(null);
-    const primaryButton = useRef(null);
+    const primaryButton = useRef<HTMLButtonElement | null>(null);
     const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
     const [lightbox, setLightbox] = useState<string | null>(null);
     const [isSubmittedForValidation, setIsSubmittedForValidation] = useState<boolean>(false);
@@ -689,20 +689,20 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 </div>
                                 <div className='flex flex-wrap w-full gap-7 mt-24'>
                                     {vaccinesPreview.map((value: { url: string, index: number}, idx: number) => (
-                                        <div key={idx} className="rounded-[10px] h-124 w-100 overflow-hidden relative border border-1 border-solid border-(--pink)">
+                                        <div key={idx} className="flex rounded-[10px] h-124 w-100 overflow-hidden relative border border-1 border-solid border-(--pink)">
                                             <IconButton className='absolute right-3 top-3 w-16 h-16 z-1 bg-(--primary) flex justify-center items-center rounded-[5px]'
                                                 icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removeDocument(e, value.index, "vaccin")} />
-                                            <figcaption className='flex flex-col p-5'>
+                                            <figure className='flex flex-col p-5 flex-1'>
                                                 <img
                                                     data-testid={"vaccin-image-" + (idx + 1)}
                                                     src={(value.url.includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + value.url}
                                                     alt={"Image du vaccin n°" + (idx + 1)}
                                                     style={{ objectFit: "contain" }}
-                                                    className=' max-h-150 cursor-pointer'
+                                                    className='h-[90px] cursor-pointer'
                                                     onClick={(e) => setLightbox(e.currentTarget.src) }
                                                 />
                                                 <figcaption className='text-(--primary) text-sm p-3 text-center'>{ formatDDMMY(new Date(catDocuments[value.index]?.date)) }</figcaption>
-                                            </figcaption>
+                                            </figure>
                                         </div>
                                     ))}
                                 </div>
@@ -736,20 +736,20 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 </div>
                                 <div className='flex flex-wrap w-full gap-7 mt-24'>
                                     {pestControlsPreview.map((value: { url: string, index: number}, idx: number) => (
-                                        <div key={idx} className="rounded-[10px] h-124 w-100 overflow-hidden relative border border-1 border-solid border-(--pink)">
+                                        <div key={idx} className="flex rounded-[10px] h-124 w-100 overflow-hidden relative border border-1 border-solid border-(--pink)">
                                             <IconButton className='absolute right-3 top-3 w-16 h-16 z-1 bg-(--primary) flex justify-center items-center rounded-[5px]'
                                                 icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removeDocument(e, value.index, "antiparasitaire")} />
-                                            <figcaption className='flex flex-col p-5'>
+                                            <figure className='flex flex-col p-5 flex-1'>
                                                 <img
                                                     data-testid={"antiparasitaire-image-" + (idx + 1)}
                                                     src={(value.url.includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + value.url}
                                                     alt={"Image de l'antiparasitaire n°" + (idx + 1)}
                                                     style={{ objectFit: "contain" }}
-                                                    className=' max-h-150 cursor-pointer'
+                                                    className='h-[90px] cursor-pointer'
                                                     onClick={(e) => setLightbox(e.currentTarget.src) }
                                                 />
                                                 <figcaption className='text-(--primary) text-sm p-3 text-center'>{ formatDDMMY(new Date(catDocuments[value.index]?.date)) }</figcaption>
-                                            </figcaption>
+                                            </figure>
                                         </div>
                                     ))}
                                 </div>
@@ -783,16 +783,16 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 </div>
                                 <div className='flex flex-wrap w-full gap-7 mt-24'>
                                     {examsPreview.map((value: { url: string, index: number}, idx: number) => (
-                                        <div key={idx} className="rounded-[10px] h-124 w-100 overflow-hidden relative border border-1 border-solid border-(--pink)">
+                                        <div key={idx} className="flex rounded-[10px] h-124 w-100 overflow-hidden relative border border-1 border-solid border-(--pink)">
                                             <IconButton className='absolute right-3 top-3 w-16 h-16 z-1 bg-(--primary) flex justify-center items-center rounded-[5px]'
                                                 icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removeDocument(e, value.index, "examen")} />
-                                            <figcaption className='flex flex-col p-5'>
+                                            <figcaption className='flex flex-col p-5 flex-1'>
                                                 <img
                                                     data-testid={"examen-image-" + (idx + 1)}
                                                     src={(value.url.includes('/uploads/') ? process.env.NEXT_PUBLIC_API_BASE_URL : "") + value.url}
                                                     alt={"Image de l'examen n°" + (idx + 1)}
                                                     style={{ objectFit: "contain" }}
-                                                    className=' max-h-150 cursor-pointer'
+                                                    className='h-[90px] cursor-pointer'
                                                     onClick={(e) => setLightbox(e.currentTarget.src) }
                                                 />
                                                 <figcaption className='text-(--primary) text-sm p-3 text-center'>{ formatDDMMY(new Date(catDocuments[value.index]?.date)) }</figcaption>
@@ -804,7 +804,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                         </div>
                         <div className='flex gap-10 justify-center flex-wrap md:flex-nowrap mt-10 md:mt-0 gap-y-10'>
                             {user && !hasRoles(user.roles, [UserRoles.VetVoucherReferent]) && <Button
-                                    ref={primaryButton}
+                                    ref={primaryButton as any}
                                     text="Valider les modifications"
                                     className='cursor-pointer flex justify-center bg-(--primary) rounded-[10px] p-8 text-(--white) w-full gap-10 items-center'
                                     disabled={isSubmitted}
@@ -818,13 +818,14 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                 loading={isSubmittedForValidation}
                                 onClick={async (e) => {
                                     setIsSubmittedForValidation(true);
-                                    if (hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent])) isAdoptable = true;
+                                    if (hasRoles(user.roles, [UserRoles.SuperAdmin, UserRoles.Admin, UserRoles.AdoptionReferent])) setIsAdoptable(true);
                                     if (isAdoptable) {
                                         await createThreadAndSendMessage(token, user?.id, [hostFamilyId as string], `🔥 Le 🐈 ${baseUrl}/admin/cat/${cat?.slug}[${cat?.name}] ${cat?.numIdentification ? '('+cat.numIdentification+')' : ''} est validé pour l'adoption.`);
                                     }
                                     if (hostFamilyId && !isAdoptable) {
                                         await sendMessage(token, CONSTANTS.THREAD_GROUPS.ADOPTION.toString(), user?.id as string, `Le 🐈 ${baseUrl}/admin/cat/${cat?.slug}[${cat?.name}] ${cat?.numIdentification ? '('+cat.numIdentification+')' : ''} est prêt pour l'adoption 🔥.`, []);
                                     }
+                                    primaryButton.current?.click();
                                 } }/>}
                         </div>
                     </form>

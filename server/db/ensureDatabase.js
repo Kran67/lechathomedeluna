@@ -541,6 +541,22 @@ async function execSql(pool) {
   await pool.query(
     `ALTER TABLE vet_vouchers ADD COLUMN IF NOT EXISTS comment TEXT NULL`
   );
+  await pool.query(
+    `DO $$
+      BEGIN
+        IF EXISTS (
+          SELECT 1 FROM pg_constraint WHERE conname = 'cat_documents_cat_id_date_type_key'
+        ) THEN
+          ALTER TABLE cat_documents DROP CONSTRAINT cat_documents_cat_id_date_type_key;
+        END IF;
+
+        IF NOT EXISTS (
+          SELECT 1 FROM pg_constraint WHERE conname = 'cat_documents_cat_id_url_key'
+        ) THEN
+          ALTER TABLE cat_documents ADD CONSTRAINT cat_documents_cat_id_url_key UNIQUE (cat_id, url);
+        END IF;
+      END $$;`
+  );
 }
 
 module.exports = {

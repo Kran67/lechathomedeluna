@@ -100,17 +100,17 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     const [voucherObject, setVoucherObject] = useState<string | null>();
 
     const [catDocuments, setCatDocuments] = useState<CatDocument[]>([...cat?.documents ?? []]);
-    const [vaccinesPreview, setVaccinesPreview] = useState<{ url:any, index: number}[]>([]);
+    const [vaccinesPreview, setVaccinesPreview] = useState<{ url:any, date:string}[]>([]);
     const [vaccineDate, setVaccineDate] = useState<string | undefined>(undefined);
     const [vaccinePicture, setVaccinePicture] = useState<any | null>(null);
     const inputVaccineFile = useRef(null);
     const inputVaccineDate = useRef(null);
-    const [pestControlsPreview, setPestControlsPreview] = useState<{ url:any, index: number}[]>([]);
+    const [pestControlsPreview, setPestControlsPreview] = useState<{ url:any, date:string}[]>([]);
     const [pestControlDate, setPestControlDate] = useState<string | undefined>(undefined);
     const [pestControlPicture, setPestControlPicture] = useState<any | null>(null);
     const inputPestControlFile = useRef(null);
     const inputPestControlDate = useRef(null);
-    const [examsPreview, setExamsPreview] = useState<{ url:any, index: number}[]>([]);
+    const [examsPreview, setExamsPreview] = useState<{ url:any, date:string}[]>([]);
     const [examDate, setExamDate] = useState<string | undefined>(undefined);
     const [examPicture, setExamPicture] = useState<any | null>(null);
     const inputExamFile = useRef(null);
@@ -286,10 +286,10 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
     }
 
     useEffect(() => {
-        const newVaccineUrls: { url:any, index: number}[] = [];
-        const newPestControlUrls: { url:any, index: number}[] = [];
-        const newExamenUrls: { url:any, index: number}[] = [];
-        catDocuments.map((document:CatDocument, index: number) => {
+        const newVaccineUrls: { url:any, date: string}[] = [];
+        const newPestControlUrls: { url:any, date: string}[] = [];
+        const newExamenUrls: { url:any, date: string}[] = [];
+        catDocuments.map((document:CatDocument) => {
             let array = null;
             switch (document.type) {
                 case "vaccin":
@@ -302,7 +302,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                     array = newExamenUrls;
                     break;
             }
-            array.push({ url: typeof document.picture === "string" ? document.picture : URL.createObjectURL(document.picture), index });
+            array.push({ url: typeof document.picture === "string" ? document.picture : URL.createObjectURL(document.picture), date: document.date });
         });
         setVaccinesPreview(newVaccineUrls);
         setPestControlsPreview(newPestControlUrls);
@@ -378,21 +378,26 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         handleReset(type);
     }
 
-    const removeDocument = (e: { preventDefault: () => void; }, idx: number, type: "vaccin" | "antiparasitaire" | "examen") => {
+    const removeDocument = (e: { preventDefault: () => void; }, picture: string, date: string, type: "vaccin" | "antiparasitaire" | "examen") => {
         e.preventDefault();
-        catDocuments.splice(idx, 1);
+        let previewIdx = -1;
+        const idx = catDocuments.findIndex((d) => d.type === type && d.picture === picture && d.date === date);
+        const removedDoc = catDocuments.splice(idx, 1)[0];
         setCatDocuments([...catDocuments]);
         switch (type)  {
             case "vaccin":
-                vaccinesPreview.splice(idx, 1);
+                previewIdx = vaccinesPreview.findIndex((d) => d.url === removedDoc.picture);
+                vaccinesPreview.splice(previewIdx, 1);
                 setVaccinesPreview([...vaccinesPreview]);
                 break;
             case "antiparasitaire":
-                pestControlsPreview.splice(idx, 1);
+                previewIdx = pestControlsPreview.findIndex((d) => d.url === removedDoc.picture);
+                pestControlsPreview.splice(previewIdx, 1);
                 setPestControlsPreview([...pestControlsPreview]);
                 break;
             case "examen":
-                examsPreview.splice(idx, 1);
+                previewIdx = examsPreview.findIndex((d) => d.url === removedDoc.picture);
+                examsPreview.splice(previewIdx, 1);
                 setExamsPreview([...examsPreview]);
                 break;
         }
@@ -688,10 +693,10 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     <span className='text-sm text-(--primary) text-ellipsis overflow-hidden flex-1'>{vaccinePicture?.name}</span>
                                 </div>
                                 <div className='flex flex-wrap w-full gap-7 mt-24'>
-                                    {vaccinesPreview.map((value: { url: string, index: number}, idx: number) => (
+                                    {vaccinesPreview.map((value: { url: string, date: string}, idx: number) => (
                                         <div key={idx} className="flex rounded-[10px] h-124 w-100 overflow-hidden relative border border-1 border-solid border-(--pink)">
                                             <IconButton className='absolute right-3 top-3 w-16 h-16 z-1 bg-(--primary) flex justify-center items-center rounded-[5px]'
-                                                icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removeDocument(e, value.index, "vaccin")} />
+                                                icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removeDocument(e, value.url, value.date, "vaccin")} />
                                             <figure className='flex flex-col p-5 flex-1'>
                                                 <img
                                                     data-testid={"vaccin-image-" + (idx + 1)}
@@ -701,7 +706,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                                     className='h-[90px] cursor-pointer'
                                                     onClick={(e) => setLightbox(e.currentTarget.src) }
                                                 />
-                                                <figcaption className='text-(--primary) text-sm p-3 text-center'>{ formatDDMMY(new Date(catDocuments[value.index]?.date)) }</figcaption>
+                                                <figcaption className='text-(--primary) text-sm p-3 text-center'>{ formatDDMMY(new Date(value.date)) }</figcaption>
                                             </figure>
                                         </div>
                                     ))}
@@ -735,10 +740,10 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     <span className='text-sm text-(--primary) text-ellipsis overflow-hidden flex-1'>{pestControlPicture?.name}</span>
                                 </div>
                                 <div className='flex flex-wrap w-full gap-7 mt-24'>
-                                    {pestControlsPreview.map((value: { url: string, index: number}, idx: number) => (
+                                    {pestControlsPreview.map((value: { url: string, date: string}, idx: number) => (
                                         <div key={idx} className="flex rounded-[10px] h-124 w-100 overflow-hidden relative border border-1 border-solid border-(--pink)">
                                             <IconButton className='absolute right-3 top-3 w-16 h-16 z-1 bg-(--primary) flex justify-center items-center rounded-[5px]'
-                                                icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removeDocument(e, value.index, "antiparasitaire")} />
+                                                icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removeDocument(e, value.url, value.date, "antiparasitaire")} />
                                             <figure className='flex flex-col p-5 flex-1'>
                                                 <img
                                                     data-testid={"antiparasitaire-image-" + (idx + 1)}
@@ -748,7 +753,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                                     className='h-[90px] cursor-pointer'
                                                     onClick={(e) => setLightbox(e.currentTarget.src) }
                                                 />
-                                                <figcaption className='text-(--primary) text-sm p-3 text-center'>{ formatDDMMY(new Date(catDocuments[value.index]?.date)) }</figcaption>
+                                                <figcaption className='text-(--primary) text-sm p-3 text-center'>{ formatDDMMY(new Date(value.date)) }</figcaption>
                                             </figure>
                                         </div>
                                     ))}
@@ -782,10 +787,10 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                     <span className='text-sm text-(--primary) text-ellipsis overflow-hidden flex-1'>{examPicture?.name}</span>
                                 </div>
                                 <div className='flex flex-wrap w-full gap-7 mt-24'>
-                                    {examsPreview.map((value: { url: string, index: number}, idx: number) => (
+                                    {examsPreview.map((value: { url: string, date: string}, idx: number) => (
                                         <div key={idx} className="flex rounded-[10px] h-124 w-100 overflow-hidden relative border border-1 border-solid border-(--pink)">
                                             <IconButton className='absolute right-3 top-3 w-16 h-16 z-1 bg-(--primary) flex justify-center items-center rounded-[5px]'
-                                                icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removeDocument(e, value.index, "examen")} />
+                                                icon={IconButtonImages.Trash} svgFill='#fff' title='Supprimer cette image' onClick={(e) => removeDocument(e, value.url, value.date, "examen")} />
                                             <figcaption className='flex flex-col p-5 flex-1'>
                                                 <img
                                                     data-testid={"examen-image-" + (idx + 1)}
@@ -795,7 +800,7 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
                                                     className='h-[90px] cursor-pointer'
                                                     onClick={(e) => setLightbox(e.currentTarget.src) }
                                                 />
-                                                <figcaption className='text-(--primary) text-sm p-3 text-center'>{ formatDDMMY(new Date(catDocuments[value.index]?.date)) }</figcaption>
+                                                <figcaption className='text-(--primary) text-sm p-3 text-center'>{ formatDDMMY(new Date(value.date)) }</figcaption>
                                             </figcaption>
                                         </div>
                                     ))}

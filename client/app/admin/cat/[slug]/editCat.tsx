@@ -236,7 +236,6 @@ export default function EditCat({ hostFamilies, cat, slug } : EditCatProps) {
         }
 
         const date: string = formatYMMDD(new Date());
-        console.log(formData.get("comment") as string);
         const res = await create(
             token,
             date,

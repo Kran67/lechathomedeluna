@@ -40,7 +40,6 @@ export default async function ProfilePage({ params }: { params: Promise<{ slug: 
     } else {
         throw new Error(res.error);
     }
-    //console.log(profile);
 
     return (
         <Profile profile={profile} users={users} isNew={slug === "new"} />

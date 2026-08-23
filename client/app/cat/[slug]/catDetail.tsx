@@ -68,7 +68,6 @@ export default function Property({ cat }: CatProps) {
     if (cat?.birthDate) {
         collapseElementContent.push({ name: `${dateAge(cat?.birthDate)}` });
     }
-    console.log(cat);
     if (cat?.sex) {
         collapseElementContent.push({ name: cat?.sex});
     }
